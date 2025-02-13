@@ -1,26 +1,22 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <!-- router-view를 통해 router파일에서 설정한 url경로로 라우팅한 화면을 여기서 보여주겠다는 뜻 -->
+   <!-- vuetify에서는 모든 태그의 최상단에 v-app으로 감싸져 있어야 정상적으로 동작. -->
+<v-app>
+  <HeaderComponent/>
+  <v-main>
+    <router-view/>
+  </v-main>
+<FooterComponent/>
+</v-app>
 </template>
-
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
-export default {
-  name: 'App',
+import HeaderComponent from './components/HeaderComponent.vue'
+import FooterComponent from './components/FooterComponent.vue'
+export default{
+  name: "App",
+  // 화면을 import한 이후에 template에서 사용하려고 할때는 components에 나열
   components: {
-    HelloWorld
+    HeaderComponent, FooterComponent
   }
 }
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
