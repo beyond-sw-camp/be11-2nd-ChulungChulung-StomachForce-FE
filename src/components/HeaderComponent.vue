@@ -14,8 +14,15 @@
             ></v-text-field>
           </v-col>
           <v-col class="d-flex justify-end">
-            <v-btn v-if="!isLogin" text to="/signup">회원가입</v-btn>
+            <v-btn v-if="!isLogin" :to="{path:'/user/create'}">회원가입</v-btn>
             <v-img v-if="!isLogin" text @click="doLogin" src="/login.png" contain max-height="40" max-width="80" class="login-img"></v-img>
+            <div v-if="isLogin" class="d-flex align-center">
+              <v-avatar size="40">
+                <v-img :src="profilePhoto"/>
+              </v-avatar>
+              <span class="ml-2">{{ userName }}</span>
+            </div>
+            <v-btn v-if="isLogin" text @click="myPage">MyPage</v-btn>
             <v-btn v-if="isLogin" text @click="doLogout">로그아웃</v-btn>
           </v-col>
         </v-row>
@@ -40,14 +47,19 @@
   export default {
     data() {
       return {
-        isLogin: false
+        isLogin: false,
+        userName:"",
+        profilePhoto: "",
       };
     },
     created() {
       const token = localStorage.getItem('token');
       if (token) {
         this.isLogin = true;
-      }
+        this.userName = localStorage.getItem("userName") || "";
+        this.profilePhoto =
+          localStorage.getItem("profilePhoto") || "";
+        }
     },
     methods: {
       doLogout() {
@@ -56,6 +68,9 @@
       },
       doLogin(){
         window.location.href = "/user/login";
+      },
+      myPage(){
+        window.location.href = "/user/mypage";
       }
     }
   };
