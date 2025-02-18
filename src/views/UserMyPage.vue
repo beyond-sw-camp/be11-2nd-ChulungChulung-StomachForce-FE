@@ -218,7 +218,7 @@ export default {
       }
     },
     goToPostDetail(index) {
-      this.$router.push(`/post/detail/${index}`);
+      this.$router.push(`/post/detail/${index+1}`);
     },
     editProfile() {
       alert("내 정보 수정 화면으로 이동합니다 (예시)");
