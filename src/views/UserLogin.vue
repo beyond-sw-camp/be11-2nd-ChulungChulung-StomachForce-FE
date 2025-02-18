@@ -63,7 +63,7 @@
             async fetchUserInfo() {
                 try {
                     const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/user/userInfo`);
-                    console.log
+                    console.log(response);
                     localStorage.setItem("userName", response.data.userName);
                     localStorage.setItem("profilePhoto", response.data.profilePhoto);
                 } catch (error) {
