@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from "vue-router"
 import { membereRouter } from "./userRouter";
 import { postRouter } from "./postRouter";
 
-
 const routes = [
     ...membereRouter,
     ...postRouter
