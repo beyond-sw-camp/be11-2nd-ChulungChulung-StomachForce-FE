@@ -34,7 +34,7 @@
       <v-container>
         <v-row justify="center">
           <v-btn text to="/notice" class="menu-item">공지사항</v-btn>
-          <v-btn text to="/restaurant" class="menu-item">레스토랑</v-btn>
+          <v-btn text to="/restaurant/list" class="menu-item">레스토랑</v-btn>
           <v-btn text to="/influencer" class="menu-item">인플루언서</v-btn>
           <v-btn text to="/event" class="menu-item">이벤트</v-btn>
           <v-btn text to="/customer" class="menu-item">고객센터</v-btn>
