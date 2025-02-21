@@ -14,7 +14,7 @@
             ></v-text-field>
           </v-col>
           <v-col class="d-flex justify-end">
-            <v-btn v-if="!isLogin" :to="{path:'/user/create'}">회원가입</v-btn>
+            <v-btn v-if="!isLogin" :to="{path:'/selectCreate'}">회원가입</v-btn>
             <v-img v-if="!isLogin" text @click="doLogin" src="/login.png" contain max-height="40" max-width="80" class="login-img"></v-img>
             <div v-if="isLogin" class="d-flex align-center">
               <v-avatar size="40">
@@ -67,7 +67,7 @@
         window.location.href = "/";
       },
       doLogin(){
-        window.location.href = "/user/login";
+        window.location.href = "/login";
       },
       myPage(){
         window.location.href = "/user/mypage";
