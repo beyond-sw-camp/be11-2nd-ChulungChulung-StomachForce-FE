@@ -135,7 +135,7 @@ export default {
       categories: ["레스토랑", "회원"],
       menuItems: [
         { title: "공지사항", path: "/notice" },
-        { title: "레스토랑", path: "/restaurant" },
+        { title: "레스토랑", path: "/restaurant/list" },
         { title: "인플루언서", path: "/influencer" },
         { title: "이벤트", path: "/event" },
         { title: "고객센터", path: "/customer" }
