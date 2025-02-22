@@ -1,5 +1,6 @@
 import RestaurantListComponent from "@/components/RestaurantListComponent.vue";
 import RestaurantCreate from "@/views/RestaurantCreate.vue";
+import RestaurantDetailHome from "@/views/RestaurantDetailHome.vue";
 
 export const RestaurantRouter = [
     {
@@ -12,7 +13,11 @@ export const RestaurantRouter = [
         name: 'RestaurantListComponent',
         component: RestaurantListComponent
     },
-
+    {
+        path: '/restaurant/detail/:id',
+        name: 'RestaurantDetailHome',
+        component: RestaurantDetailHome
+    },
 
 
 
