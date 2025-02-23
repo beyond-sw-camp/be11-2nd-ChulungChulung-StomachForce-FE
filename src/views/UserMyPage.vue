@@ -12,14 +12,23 @@
           <v-list-item @click="editProfile">
             <v-list-item-title>내 정보 수정</v-list-item-title>
           </v-list-item>
-          <v-list-item @click="goToPostCreate">
-            <v-list-item-title>게시글 작성</v-list-item-title>
+          <v-list-item @click="goToMileage">
+            <v-list-item-title>마일리지 내역</v-list-item-title>
           </v-list-item>
-          <v-list-item @click="goToSettings">
-            <v-list-item-title>설정</v-list-item-title>
+          <v-list-item @click="goToReservation">
+            <v-list-item-title>내 예약 내역</v-list-item-title>
           </v-list-item>
-          <v-list-item @click="logout">
-            <v-list-item-title>로그아웃</v-list-item-title>
+          <v-list-item @click="goToVipInfo">
+            <v-list-item-title>내 Vip 정보</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="goToFavorite">
+            <v-list-item-title>즐겨찾기</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="goToBlockList">
+            <v-list-item-title>차단목록</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="withdrawAccount">
+            <v-list-item-title>회원 탈퇴</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-menu>
@@ -48,7 +57,6 @@
               </v-col>
               <v-col cols="auto" class="stat-item text-center">
                 <strong>게시글</strong>
-                <!-- postPhotos.length 대신 백엔드에서 전달한 전체 게시글 수 totalPost 표시 -->
                 <p>{{ totalPost }}</p>
               </v-col>
             </v-row>
@@ -79,8 +87,7 @@
                 aspect-ratio="1" 
                 cover 
                 class="post-image"
-              >
-              </v-img>
+              ></v-img>
             </v-card>
           </v-col>
         </v-row>
@@ -92,63 +99,57 @@
       </v-container>
     </v-main>
 
-    <!-- 팔로워 목록 모달 -->
+    <!-- 팔로워 다이얼로그 -->
     <v-dialog v-model="showFollowersDialog" max-width="400">
-      <v-card>
-        <v-card-title>
-          팔로워 목록
-          <v-spacer></v-spacer>
-          <v-btn icon @click="showFollowersDialog = false">
-            <v-icon>mdi-close</v-icon>
+      <v-card class="follow-dialog">
+        <v-card-title class="d-flex justify-space-between align-center pa-4">
+          <span class="text-h6">팔로워 목록</span>
+          <v-btn icon size="small" @click="showFollowersDialog = false" class="close-btn">
+            <v-icon size="20">mdi-close</v-icon>
           </v-btn>
         </v-card-title>
         <v-divider></v-divider>
-        <v-card-text>
-          <v-list>
-            <v-list-item v-for="(follower, index) in followersList" :key="index">
-              <v-list-item-avatar>
-                <v-avatar size="40">
-                  <v-img :src="follower.userProfile || placeholderProfile" />
+        <v-card-text class="pa-4">
+          <v-list v-if="followersList && followersList.length" class="follow-list">
+            <v-list-item v-for="(follower, index) in followersList" :key="index" class="follow-item mb-3">
+              <template v-slot:prepend>
+                <v-avatar size="48" class="mr-3">
+                  <v-img :src="follower.userProfile || placeholderProfile" alt="" cover></v-img>
                 </v-avatar>
-              </v-list-item-avatar>
-              <v-list-item-content>
-                <v-list-item-title>{{ follower.userName }}</v-list-item-title>
-              </v-list-item-content>
+              </template>
+              <v-list-item-title class="text-subtitle-1 font-weight-medium">{{ follower.userName }}</v-list-item-title>
             </v-list-item>
           </v-list>
-          <div v-if="followersList.length === 0" class="text-center">
-            <p>팔로워가 없습니다.</p>
+          <div v-else class="d-flex justify-center align-center empty-state">
+            <span class="text-grey">팔로워가 없습니다</span>
           </div>
         </v-card-text>
       </v-card>
     </v-dialog>
 
-    <!-- 팔로잉 목록 모달 -->
+    <!-- 팔로잉 다이얼로그 -->
     <v-dialog v-model="showFollowingDialog" max-width="400">
-      <v-card>
-        <v-card-title>
-          팔로잉 목록
-          <v-spacer></v-spacer>
-          <v-btn icon @click="showFollowingDialog = false">
-            <v-icon>mdi-close</v-icon>
+      <v-card class="follow-dialog">
+        <v-card-title class="d-flex justify-space-between align-center pa-4">
+          <span class="text-h6">팔로잉 목록</span>
+          <v-btn icon size="small" @click="showFollowingDialog = false" class="close-btn">
+            <v-icon size="20">mdi-close</v-icon>
           </v-btn>
         </v-card-title>
         <v-divider></v-divider>
-        <v-card-text>
-          <v-list>
-            <v-list-item v-for="(following, index) in followingList" :key="index">
-              <v-list-item-avatar>
-                <v-avatar size="40">
-                  <v-img :src="following.userProfile || placeholderProfile" />
+        <v-card-text class="pa-4">
+          <v-list v-if="followingList && followingList.length" class="follow-list">
+            <v-list-item v-for="(following, index) in followingList" :key="index" class="follow-item mb-3">
+              <template v-slot:prepend>
+                <v-avatar size="48" class="mr-3">
+                  <v-img :src="following.userProfile || placeholderProfile" alt="" cover></v-img>
                 </v-avatar>
-              </v-list-item-avatar>
-              <v-list-item-content>
-                <v-list-item-title>{{ following.userName }}</v-list-item-title>
-              </v-list-item-content>
+              </template>
+              <v-list-item-title class="text-subtitle-1 font-weight-medium">{{ following.userName }}</v-list-item-title>
             </v-list-item>
           </v-list>
-          <div v-if="followingList.length === 0" class="text-center">
-            <p>팔로잉한 회원이 없습니다.</p>
+          <div v-else class="d-flex justify-center align-center empty-state">
+            <span class="text-grey">팔로잉하는 사용자가 없습니다</span>
           </div>
         </v-card-text>
       </v-card>
@@ -164,24 +165,18 @@ export default {
       // 프로필 정보
       userNickName: "",
       userEmail: "",
-      profilePhoto:
-        localStorage.getItem("profilePhoto") ||
-        "https://via.placeholder.com/130",
+      profilePhoto: localStorage.getItem("profilePhoto") || "https://via.placeholder.com/130",
       followersCount: 0,
       followingCount: 0,
-      // 게시글 부분은 페이징으로 불러온 부분(각 페이지마다 일부 데이터)
+      // 게시글 관련 데이터
       postPhotos: [],
-      // postIds 리스트 (서버에서 받은 MyPostDto 객체 배열, 예: [{ postId: 1 }, { postId: 2 }])
       postIds: [],
-      // 전체 게시글 수 (백엔드에서 totalPost로 전달)
       totalPost: 0,
-
       // 페이징/무한 스크롤 관련 상태
-      pageSize: 6, // 한 번에 불러올 게시글 수
-      currentPage: 0, // 현재 페이지 번호
+      pageSize: 6,
+      currentPage: 0,
       isLoading: false,
       isLastPage: false,
-
       // 모달 관련 데이터
       showFollowersDialog: false,
       showFollowingDialog: false,
@@ -194,7 +189,7 @@ export default {
     // 프로필 및 팔로워/팔로잉 목록 로드
     await this.fetchFollowers();
     await this.fetchFollowing();
-    // 첫 페이지 게시글 로드 (postPhotos와 postIds 둘 다 채움)
+    // 첫 페이지 게시글 로드
     await this.loadData();
     // 스크롤 이벤트 등록
     window.addEventListener("scroll", this.scrollPagination);
@@ -211,31 +206,22 @@ export default {
           size: this.pageSize,
           page: this.currentPage
         };
-        const response = await axios.get(
-          `${process.env.VUE_APP_API_BASE_URL}/user/myPage`,
-          {
-            params,
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-            }
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/user/myPage`, {
+          params,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`
           }
-        );
+        });
         console.log(response);
-        // 백엔드에서 반환하는 response.data는 MypageRes 객체로,
-        // postPhotos: 해당 페이지의 게시글 사진 리스트, totalPost: 전체 게시글 수,
-        // nickName, email, 그리고 postIds: MyPostDto 객체 배열를 포함합니다.
         const additionalPhotos = response.data.postPhotos;
-        // 전체 게시글 수 업데이트 (첫 호출이든 이후 호출이든)
         this.totalPost = response.data.totalPost;
         this.userNickName = response.data.nickName;
         this.userEmail = response.data.email;
-        // postIds도 함께 병합 (서버가 전달한 postIds 리스트 사용)
         const additionalPostIds = response.data.postIds || [];
-
+  
         if (additionalPhotos && additionalPhotos.length > 0) {
           this.postPhotos = [...this.postPhotos, ...additionalPhotos];
           this.postIds = [...this.postIds, ...additionalPostIds];
-          // 반환된 데이터 수가 pageSize보다 작으면 마지막 페이지로 판단
           if (additionalPhotos.length < this.pageSize) {
             this.isLastPage = true;
             window.removeEventListener("scroll", this.scrollPagination);
@@ -251,14 +237,12 @@ export default {
       this.isLoading = false;
     },
     scrollPagination() {
-      const isBottom =
-        window.innerHeight + window.scrollY >= document.body.offsetHeight - 200;
+      const isBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 200;
       if (isBottom && !this.isLoading && !this.isLastPage) {
         this.loadData();
       }
     },
     goToPostDetail(index) {
-      // postIds 리스트의 해당 인덱스의 postId를 이용해 상세 페이지로 이동
       if (!this.postIds || this.postIds.length <= index) {
         console.error("postId를 찾을 수 없습니다.");
         return;
@@ -271,28 +255,39 @@ export default {
       this.$router.push(`/post/detail/${postId}`);
     },
     editProfile() {
-      alert("내 정보 수정 화면으로 이동합니다 (예시)");
+      this.$router.push("/user/update");
     },
-    goToPostCreate() {
-      this.$router.push("/post/create");
+    // 내 Vip 정보는 기존 구현대로
+    goToVipInfo() {
+      this.$router.push('/user/myVip');
     },
-    goToSettings() {
-      alert("설정 화면으로 이동합니다 (예시)");
+    // 새로 추가된 메뉴 항목
+    goToMileage() {
+      this.$router.push("/user/mileage");
+    },
+    goToReservation() {
+      this.$router.push("/user/reservation");
+    },
+    goToFavorite() {
+      this.$router.push("/user/favorite");
+    },
+    // 차단목록 메뉴 클릭 시 "/user/block"로 이동
+    goToBlockList() {
+      this.$router.push("/user/block");
+    },
+    withdrawAccount() {
+      this.$router.push("/user/withdraw");
     },
     logout() {
       alert("로그아웃 되었습니다 (예시)");
     },
     async fetchFollowers() {
       try {
-        const response = await axios.get(
-          `${process.env.VUE_APP_API_BASE_URL}/user/followerList`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-            }
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/user/followerList`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`
           }
-        );
-        console.log(response);
+        });
         this.followersList = response.data;
         this.followersCount = response.data.length;
       } catch (error) {
@@ -301,14 +296,11 @@ export default {
     },
     async fetchFollowing() {
       try {
-        const response = await axios.get(
-          `${process.env.VUE_APP_API_BASE_URL}/user/followingList`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-            }
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/user/followingList`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`
           }
-        );
+        });
         this.followingList = response.data;
         this.followingCount = response.data.length;
       } catch (error) {
@@ -375,5 +367,51 @@ export default {
 }
 .clickable-card:hover .post-image {
   opacity: 0.8;
+}
+.follow-dialog {
+  border-radius: 12px;
+  overflow: hidden;
+}
+.follow-list {
+  background-color: transparent;
+  padding: 0;
+}
+.follow-item {
+  border-radius: 8px;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+  padding: 12px;
+  background-color: #f8f9fa;
+}
+.follow-item:hover {
+  background-color: #f1f3f5;
+  transform: translateY(-1px);
+}
+.v-list-item-title {
+  color: #343a40;
+  font-size: 0.95rem !important;
+}
+.empty-state {
+  height: 120px;
+  color: #868e96;
+  font-size: 0.95rem;
+}
+.v-card-text {
+  max-height: 400px;
+  overflow-y: auto;
+}
+.v-card-text::-webkit-scrollbar {
+  width: 6px;
+}
+.v-card-text::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+.v-card-text::-webkit-scrollbar-thumb {
+  background: #dee2e6;
+  border-radius: 3px;
+}
+.v-card-text::-webkit-scrollbar-thumb:hover {
+  background: #ced4da;
 }
 </style>

@@ -123,6 +123,7 @@
 </template>
 
 <script>
+
 export default {
   data() {
     return {
@@ -149,6 +150,7 @@ export default {
       this.userName = localStorage.getItem("userName") || "";
       this.profilePhoto = localStorage.getItem("profilePhoto") || "";
     }
+    console.log(this.profilePhoto)
   },
   methods: {
     doLogout() {
