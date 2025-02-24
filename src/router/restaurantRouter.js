@@ -1,4 +1,5 @@
 import RestaurantListComponent from "@/components/RestaurantListComponent.vue";
+import ReservationCreatePage from "@/views/ReservationCreatePage.vue";
 import RestaurantCreate from "@/views/RestaurantCreate.vue";
 import RestaurantDetailHome from "@/views/RestaurantDetailHome.vue";
 import RestaurantDetailMain from "@/views/RestaurantDetailMain.vue";
@@ -35,6 +36,11 @@ export const RestaurantRouter = [
         path: '/restaurant/login',
         name: 'RestaurantLogin',
         component: RestaurantLogin
+    },
+    {
+        path: '/restaurant/reservation/:id',
+        name: 'ReservationCreatePage',
+        component: ReservationCreatePage
     },
 
 
