@@ -33,9 +33,10 @@
                   </div>
                 </div>
                 <div class="d-flex align-center">
-                  <v-btn
-                    small
-                    :color="isFollowing ? 'grey-lighten-3' : 'orange-darken-2'"
+                  <!-- 로그인한 유저와 작성자가 같으면 팔로우 버튼 숨김 -->
+                  <v-btn 
+                    v-if="loginUserNickName !== postDetail.userNickName && !iBlockedOwner"
+                    :color="isFollowing ? 'grey-lighten-3' : 'orange-darken-2'" 
                     :class="[ isFollowing ? 'grey-text' : 'white-text' ]"
                     class="mr-3"
                     @click="toggleFollow"
@@ -49,7 +50,8 @@
                       </v-btn>
                     </template>
                     <v-list>
-                      <v-list-item v-if="isFromMyPage" @click="deletePost">
+                      <!-- 로그인한 유저와 작성자가 같으면 게시글 삭제, 아니면 신고하기 -->
+                      <v-list-item v-if="loginUserNickName === postDetail.userNickName" @click="deletePost">
                         <template v-slot:prepend>
                           <v-icon color="error" class="mr-2">mdi-delete</v-icon>
                         </template>
@@ -269,9 +271,7 @@ export default {
         const response = await axios.get(
           `${process.env.VUE_APP_API_BASE_URL}/post/postDetail/${postId}`,
           {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-            }
+            headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
           }
         );
         this.postDetail = { ...this.postDetail, ...response.data };
@@ -290,9 +290,7 @@ export default {
           `${process.env.VUE_APP_API_BASE_URL}/post/writerInfo/${postId}`,
           null,
           {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-            }
+            headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
           }
         );
         const writerInfo = response.data;
@@ -309,9 +307,7 @@ export default {
           `${process.env.VUE_APP_API_BASE_URL}/post/getLike/${postId}`,
           {},
           {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-            }
+            headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
           }
         );
         this.isLiked = response.data.liked;
@@ -327,9 +323,7 @@ export default {
           `${process.env.VUE_APP_API_BASE_URL}/post/postLike/${postId}`,
           {},
           {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-            }
+            headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
           }
         );
         await this.fetchLikeData();
@@ -343,9 +337,7 @@ export default {
         const response = await axios.get(
           `${process.env.VUE_APP_API_BASE_URL}/post/getComments/${postId}`,
           {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-            }
+            headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
           }
         );
         this.comments = response.data;
@@ -382,18 +374,12 @@ export default {
       const postId = this.$route.params.postId;
       if (!confirm("정말 게시글을 삭제하시겠습니까?")) return;
       axios
-        .patch(
-          `${process.env.VUE_APP_API_BASE_URL}/post/delete/${postId}`,
-          null,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-            }
-          }
-        )
+        .patch(`${process.env.VUE_APP_API_BASE_URL}/post/delete/${postId}`, null, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
+        })
         .then(() => {
           alert("게시글이 삭제되었습니다.");
-          this.$router.push("/mypage");
+          this.$router.go(-1);
         })
         .catch(error => {
           console.error("게시글 삭제 실패:", error);
@@ -463,6 +449,7 @@ export default {
   }
 };
 </script>
+
 
 
 <style scoped>
