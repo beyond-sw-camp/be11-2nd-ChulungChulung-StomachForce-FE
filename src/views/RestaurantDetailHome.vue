@@ -20,6 +20,7 @@
         v-for="(image, index) in restaurant.imagePath"
         :key="index"
         :src="image"
+        lazy-src="/assets/loading-placeholder.jpg"
       ></v-carousel-item>
     </v-carousel>
 
@@ -169,9 +170,18 @@ formatTime(dateTime) {
         if (!this.restaurant.imagePath || this.restaurant.imagePath.length === 0) {
           this.restaurant.imagePath = ["/assets/noImage.jpg"];
         }
+        this.preloadImages(this.restaurant.imagePath);
       } catch (e) {
         console.error("레스토랑 상세 정보 로드 실패:", e);
       }
+      
+
+    },
+    preloadImages(images) {
+      images.forEach(src => {
+        const img = new Image();
+        img.src = src;
+      });
     },
     goToReservation() {
       // 해당 위치는 라우팅 변경 필요합니다.
