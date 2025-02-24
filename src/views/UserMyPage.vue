@@ -21,6 +21,10 @@
           <v-list-item @click="goToVipInfo">
             <v-list-item-title>내 Vip 정보</v-list-item-title>
           </v-list-item>
+          <!-- 게시글 작성 항목 추가 -->
+          <v-list-item @click="goToPostCreate">
+            <v-list-item-title>게시글 작성</v-list-item-title>
+          </v-list-item>
           <v-list-item @click="goToFavorite">
             <v-list-item-title>즐겨찾기</v-list-item-title>
           </v-list-item>
@@ -117,7 +121,9 @@
                   <v-img :src="follower.userProfile || placeholderProfile" alt="" cover></v-img>
                 </v-avatar>
               </template>
-              <v-list-item-title class="text-subtitle-1 font-weight-medium">{{ follower.userName }}</v-list-item-title>
+              <v-list-item-title class="text-subtitle-1 font-weight-medium">
+                {{ follower.userName }}
+              </v-list-item-title>
             </v-list-item>
           </v-list>
           <div v-else class="d-flex justify-center align-center empty-state">
@@ -145,7 +151,9 @@
                   <v-img :src="following.userProfile || placeholderProfile" alt="" cover></v-img>
                 </v-avatar>
               </template>
-              <v-list-item-title class="text-subtitle-1 font-weight-medium">{{ following.userName }}</v-list-item-title>
+              <v-list-item-title class="text-subtitle-1 font-weight-medium">
+                {{ following.userName }}
+              </v-list-item-title>
             </v-list-item>
           </v-list>
           <div v-else class="d-flex justify-center align-center empty-state">
@@ -252,7 +260,10 @@ export default {
         console.error(`postId가 올바르지 않습니다. index: ${index}`);
         return;
       }
-      this.$router.push(`/post/detail/${postId}`);
+      this.$router.push({
+        path: `/post/detail/${postId}`,
+        query: { from: 'mypage' }
+      });
     },
     editProfile() {
       this.$router.push("/user/update");
@@ -275,8 +286,29 @@ export default {
     goToBlockList() {
       this.$router.push("/user/block");
     },
+    // 회원 탈퇴: 확인 창 후 axios 요청을 보내고, 성공 시 localStorage 삭제 후 로그인 화면으로 이동하여 전체 페이지를 새로고침
     withdrawAccount() {
-      this.$router.push("/user/withdraw");
+      if (confirm("정말 회원탈퇴를 진행하시겠습니까?")) {
+        axios.patch(
+          `${process.env.VUE_APP_API_BASE_URL}/user/stop`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+            }
+          }
+        )
+        .then(() => {
+          alert("회원탈퇴가 완료되었습니다. 로그아웃 처리됩니다.");
+          localStorage.clear();
+          // 로그인 페이지로 이동한 후 전체 페이지를 리로드
+          window.location.href = "/login";
+        })
+        .catch(error => {
+          console.error("회원 탈퇴 실패:", error);
+          alert("회원 탈퇴에 실패했습니다.");
+        });
+      }
     },
     logout() {
       alert("로그아웃 되었습니다 (예시)");
@@ -312,6 +344,10 @@ export default {
     },
     async openFollowingDialog() {
       this.showFollowingDialog = true;
+    },
+    // 게시글 작성 메뉴 항목: "/post/create"로 이동
+    goToPostCreate() {
+      this.$router.push("/post/create");
     }
   }
 };
