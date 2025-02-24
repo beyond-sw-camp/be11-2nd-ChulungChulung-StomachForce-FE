@@ -18,7 +18,8 @@
             <!-- 작성자 정보 (writerInfo API로부터 받은 정보 사용) -->
             <div class="post-header pa-4">
               <div class="d-flex align-center justify-space-between">
-                <div class="d-flex align-center">
+                <!-- 프로필/닉네임 클릭 시 해당 유저 페이지로 이동 -->
+                <div class="d-flex align-center" @click="goToUserPage" style="cursor:pointer">
                   <v-avatar size="40" class="mr-3">
                     <v-img :src="postDetail.userProfile || placeholderProfile" />
                   </v-avatar>
@@ -35,10 +36,8 @@
                   <v-btn
                     small
                     :color="isFollowing ? 'grey-lighten-3' : 'orange-darken-2'"
-                    :class="[
-                      'follow-btn mr-3',
-                      isFollowing ? 'grey-text' : 'white-text'
-                    ]"
+                    :class="[ isFollowing ? 'grey-text' : 'white-text' ]"
+                    class="mr-3"
                     @click="toggleFollow"
                   >
                     {{ isFollowing ? "팔로우 취소" : "팔로우" }}
@@ -116,7 +115,13 @@
               <!-- 좋아요 및 상호작용 -->
               <div class="post-actions">
                 <div class="d-flex align-center">
-                  <v-btn icon variant="text" :color="isLiked ? 'error' : 'default'" class="like-btn mr-2" @click="toggleLike">
+                  <v-btn
+                    icon
+                    variant="text"
+                    :color="isLiked ? 'error' : 'default'"
+                    class="like-btn mr-2"
+                    @click="toggleLike"
+                  >
                     <v-icon :class="{ 'heart-active': isLiked }">
                       {{ isLiked ? 'mdi-heart' : 'mdi-heart-outline' }}
                     </v-icon>
@@ -134,7 +139,11 @@
               <v-divider class="my-4"></v-divider>
               <div v-if="comments.length > 0" class="comments-section mt-4">
                 <v-list class="comment-list">
-                  <v-list-item v-for="(comment, idx) in comments" :key="idx" class="comment-item mb-3">
+                  <v-list-item
+                    v-for="(comment, idx) in comments"
+                    :key="idx"
+                    class="comment-item mb-3"
+                  >
                     <template v-slot:prepend>
                       <v-avatar size="36" class="mr-3">
                         <v-img :src="comment.userProfile || placeholderProfile" />
@@ -142,8 +151,12 @@
                     </template>
                     <v-list-item-content>
                       <div class="comment-content">
-                        <span class="font-weight-medium comment-author">{{ comment.userNickname }}</span>
-                        <span class="comment-text ml-2">{{ comment.contents }}</span>
+                        <span class="font-weight-medium comment-author">
+                          {{ comment.userNickname }}
+                        </span>
+                        <span class="comment-text ml-2">
+                          {{ comment.contents }}
+                        </span>
                       </div>
                       <span class="text-caption text-medium-emphasis mt-1">
                         {{ comment.createdAt || '방금 전' }}
@@ -166,7 +179,15 @@
                       @keyup.enter="submitComment"
                     >
                       <template v-slot:append-inner>
-                        <v-btn icon variant="text" size="small" color="primary" class="submit-icon-btn" @click="submitComment" :disabled="!newComment.trim()">
+                        <v-btn
+                          icon
+                          variant="text"
+                          size="small"
+                          color="primary"
+                          class="submit-icon-btn"
+                          @click="submitComment"
+                          :disabled="!newComment.trim()"
+                        >
                           <v-icon>mdi-send</v-icon>
                         </v-btn>
                       </template>
@@ -204,12 +225,15 @@ export default {
       newComment: "",
       isLiked: null,
       isFollowing: false,
-      placeholderProfile: "https://via.placeholder.com/40"
+      placeholderProfile: "https://via.placeholder.com/40",
+      // 로그인한 유저 정보 (userInfo API)
+      loginUserNickName: ""
     };
   },
   created() {
     this.isFromMyPage = this.$route.query.from === "mypage";
     this.initializePage();
+    this.fetchUserInfo(); // 로그인한 유저 정보 불러오기
   },
   methods: {
     async initializePage() {
@@ -224,13 +248,30 @@ export default {
         this.loading = false;
       }
     },
+    async fetchUserInfo() {
+      try {
+        const response = await axios.get(
+          `${process.env.VUE_APP_API_BASE_URL}/user/userInfo`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+            }
+          }
+        );
+        this.loginUserNickName = response.data.userNickName;
+      } catch (error) {
+        console.error("로그인 유저 정보 조회 실패:", error);
+      }
+    },
     async fetchPostDetail() {
       const postId = this.$route.params.postId;
       try {
         const response = await axios.get(
           `${process.env.VUE_APP_API_BASE_URL}/post/postDetail/${postId}`,
           {
-            headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+            }
           }
         );
         this.postDetail = { ...this.postDetail, ...response.data };
@@ -249,10 +290,11 @@ export default {
           `${process.env.VUE_APP_API_BASE_URL}/post/writerInfo/${postId}`,
           null,
           {
-            headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+            }
           }
         );
-        // writerInfo API가 작성자 정보를 반환한다고 가정
         const writerInfo = response.data;
         this.postDetail.userNickName = writerInfo.userNickName;
         this.postDetail.userProfile = writerInfo.userProfile;
@@ -267,7 +309,9 @@ export default {
           `${process.env.VUE_APP_API_BASE_URL}/post/getLike/${postId}`,
           {},
           {
-            headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+            }
           }
         );
         this.isLiked = response.data.liked;
@@ -283,7 +327,9 @@ export default {
           `${process.env.VUE_APP_API_BASE_URL}/post/postLike/${postId}`,
           {},
           {
-            headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+            }
           }
         );
         await this.fetchLikeData();
@@ -297,7 +343,9 @@ export default {
         const response = await axios.get(
           `${process.env.VUE_APP_API_BASE_URL}/post/getComments/${postId}`,
           {
-            headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+            }
           }
         );
         this.comments = response.data;
@@ -334,9 +382,15 @@ export default {
       const postId = this.$route.params.postId;
       if (!confirm("정말 게시글을 삭제하시겠습니까?")) return;
       axios
-        .patch(`${process.env.VUE_APP_API_BASE_URL}/post/delete/${postId}`, null, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
-        })
+        .patch(
+          `${process.env.VUE_APP_API_BASE_URL}/post/delete/${postId}`,
+          null,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+            }
+          }
+        )
         .then(() => {
           alert("게시글이 삭제되었습니다.");
           this.$router.push("/mypage");
@@ -347,7 +401,6 @@ export default {
         });
     },
     async toggleFollow() {
-      // 사용자가 클릭하면 바로 UI 상태를 반전시킵니다.
       const previousState = this.isFollowing;
       this.isFollowing = !this.isFollowing;
       
@@ -364,7 +417,6 @@ export default {
           }
         );
         const result = response.data;
-        // 서버 응답에 따라 상태를 보정합니다.
         if (result === "팔로우가 취소되었습니다.") {
           this.isFollowing = false;
           alert("팔로우가 취소되었습니다.");
@@ -375,7 +427,6 @@ export default {
           console.log("응답:", result);
         }
       } catch (error) {
-        // 요청 실패 시 이전 상태로 롤백합니다.
         this.isFollowing = previousState;
         console.error("팔로우 요청 실패:", error);
       }
@@ -398,10 +449,21 @@ export default {
       } catch (error) {
         console.error("팔로우 상태 조회 실패:", error);
       }
+    },
+    // 작성자 정보를 클릭하면, 로그인한 유저와 작성자 정보 비교 후 페이지 이동
+    goToUserPage() {
+      if (this.loginUserNickName === this.postDetail.userNickName) {
+        // 로그인한 유저와 작성자가 같으면 마이페이지로 이동
+        this.$router.push({ path: "/user/mypage" });
+      } else {
+        // 다르면 yourPage로 이동 (쿼리 파라미터로 작성자 닉네임 전달)
+        this.$router.push({ path: "/user/yourpage", query: { nickName: this.postDetail.userNickName } });
+      }
     }
   }
 };
 </script>
+
 
 <style scoped>
 .post-detail-bg {
