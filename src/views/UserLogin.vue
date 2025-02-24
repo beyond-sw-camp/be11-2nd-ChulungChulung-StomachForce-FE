@@ -6,7 +6,7 @@
           <!-- 로고 영역 -->
           <div class="text-center pt-8">
             <v-avatar size="80" class="mb-4">
-              <v-img src="@/assets/logo.png" alt="로고"></v-img>
+              <v-img src="@/assets/stomach.png" alt="로고"></v-img>
             </v-avatar>
           </div>
 

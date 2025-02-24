@@ -15,7 +15,7 @@
       <v-main class="post-detail-bg">
         <v-container class="py-8">
           <v-card class="post-detail-card mx-auto" elevation="6" max-width="800">
-            <!-- 작성자 정보 (로컬스토리지 사용) -->
+            <!-- 작성자 정보 (API를 통해 받아온 사용자 정보 사용) -->
             <div class="post-header pa-4">
               <div class="d-flex align-center justify-space-between">
                 <div class="d-flex align-center">
@@ -34,7 +34,16 @@
                     </v-btn>
                   </template>
                   <v-list>
-                    <v-list-item @click="reportPost">
+                    <!-- MyPage에서 온 경우 게시글 삭제만 표시 -->
+                    <v-list-item v-if="isFromMyPage" @click="deletePost">
+                      <template v-slot:prepend>
+                        <v-icon color="error" class="mr-2">mdi-delete</v-icon>
+                      </template>
+                      <v-list-item-title class="text-error">게시글 삭제</v-list-item-title>
+                    </v-list-item>
+
+                    <!-- MyPage에서 오지 않은 경우 신고하기만 표시 -->
+                    <v-list-item v-else @click="reportPost">
                       <template v-slot:prepend>
                         <v-icon color="error" class="mr-2">mdi-alert-circle-outline</v-icon>
                       </template>
@@ -187,6 +196,7 @@ import axios from "axios";
 export default {
   data() {
     return {
+      isFromMyPage: false, // MyPage에서 왔는지 여부
       loading: true,
       postDetail: {
         contents: "",
@@ -199,19 +209,24 @@ export default {
       comments: [],
       newComment: "",
       isLiked: null, // 서버에서 받아온 좋아요 상태
-      placeholderProfile: "https://via.placeholder.com/40"
+      placeholderProfile: "https://via.placeholder.com/40",
+      // 사용자 정보 (userInfo API 결과)
+      userNickName: "",
+      profilePhoto: ""
     };
   },
   computed: {
     localUserName() {
-      return localStorage.getItem("userName") || "";
+      return this.userNickName; // API에서 받아온 사용자 닉네임 사용
     },
     localUserProfile() {
-      return localStorage.getItem("profilePhoto") || "https://cdn.vuetifyjs.com/images/john.jpg";
+      return this.profilePhoto; // API에서 받아온 프로필 사진 사용
     }
   },
   created() {
+    this.isFromMyPage = this.$route.query.from === 'mypage';
     this.initializePage();
+    this.fetchUserInfo(); // userInfo API 호출
   },
   methods: {
     async initializePage() {
@@ -222,6 +237,23 @@ export default {
         console.error("페이지 초기화 실패:", error);
       } finally {
         this.loading = false;
+      }
+    },
+    async fetchUserInfo() {
+      try {
+        const response = await axios.get(
+          `${process.env.VUE_APP_API_BASE_URL}/user/userInfo`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+            }
+          }
+        );
+        // 응답에서 userNickName과 profilePhoto를 data에 저장
+        this.userNickName = response.data.userNickName;
+        this.profilePhoto = response.data.profilePhoto;
+      } catch (error) {
+        console.error("사용자 정보 조회 실패:", error);
       }
     },
     async fetchPostDetail() {
@@ -245,7 +277,6 @@ export default {
         console.error("게시글 상세 정보 로드 실패:", error);
       }
     },
-    // /getLike/{postId} 엔드포인트를 호출하여 좋아요 데이터 업데이트
     async fetchLikeData() {
       const postId = this.$route.params.postId;
       try {
@@ -266,7 +297,6 @@ export default {
         console.error("좋아요 데이터 조회 실패:", error);
       }
     },
-    // 좋아요 버튼 클릭 시 /postLike/{postId} 호출 후, 최신 상태 업데이트
     async toggleLike() {
       const postId = this.$route.params.postId;
       try {
@@ -324,7 +354,24 @@ export default {
     },
     reportPost() {
       alert("신고가 접수되었습니다.");
-    }
+    },
+    deletePost() {
+      if (!confirm("정말 게시글을 삭제하시겠습니까?")) return;
+      const postId = this.$route.params.postId;
+      axios.patch(`${process.env.VUE_APP_API_BASE_URL}/post/delete/${postId}`, null, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+        }
+      })
+      .then(() => {
+        alert("게시글이 삭제되었습니다.");
+        this.$router.push('/mypage'); // 삭제 후 마이페이지로 이동
+      })
+      .catch(error => {
+        console.error("게시글 삭제 실패:", error);
+        alert("게시글 삭제에 실패했습니다.");
+      });
+    },
   }
 };
 </script>
