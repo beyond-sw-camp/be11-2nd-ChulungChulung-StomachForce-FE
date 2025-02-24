@@ -29,7 +29,8 @@
                   class="mb-4"
                   required
                   @keyup.enter="doLogin"
-                ></v-text-field>
+                  @input="formatRegistrationNumber"
+                />
   
                 <v-text-field
                   v-model="password"
@@ -172,6 +173,18 @@
       goToSignup() {
         this.$router.push("/restaurant/create");
       },
+      formatRegistrationNumber() {
+        let numbers = this.registrationNumber.replace(/\D/g, ""); // 숫자만 추출
+        if (numbers.length > 10) numbers = numbers.slice(0, 10); // 최대 10자리 제한
+
+        if (numbers.length <= 3) {
+          this.registrationNumber = numbers;
+        } else if (numbers.length <= 5) {
+          this.registrationNumber = `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
+        } else {
+          this.registrationNumber = `${numbers.slice(0, 3)}-${numbers.slice(3, 5)}-${numbers.slice(5)}`;
+        }
+      }
     },
   };
   </script>
