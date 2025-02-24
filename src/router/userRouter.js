@@ -1,7 +1,10 @@
 import FindUser from "@/views/FindUser.vue";
+import UserBlocked from "@/views/UserBlocked.vue";
 import UserCreate from "@/views/UserCreate.vue";
 import UserLogin from "@/views/UserLogin.vue";
 import UserMyPage from "@/views/UserMyPage.vue";
+import UserUpdate from "@/views/UserUpdate.vue";
+import UserVipBenefit from "@/views/UserVipBenefit.vue";
 import UserYourPage from "@/views/UserYourPage.vue";
 
 export const membereRouter = [
@@ -14,6 +17,11 @@ export const membereRouter = [
         path: '/user/create',
         name: 'UserCreate',
         component:UserCreate
+    },
+    {
+        path: '/user/update',
+        name: 'UserUpdate',
+        component:UserUpdate
     },
     {
         path: '/user/mypage',
@@ -29,5 +37,15 @@ export const membereRouter = [
         path: '/user/yourPage',
         name: 'UserYourPage',
         component:UserYourPage
+    },
+    {
+        path: '/user/myVip',
+        name: 'UserVipBenefit',
+        component:UserVipBenefit
+    },
+    {
+        path: '/user/block',
+        name: 'UserBlocked',
+        component:UserBlocked
     },
 ]
