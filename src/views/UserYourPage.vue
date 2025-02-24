@@ -136,6 +136,9 @@ export default {
     };
   },
   created() {
+    if (this.$route.query.nickName) {
+      this.userNickName = this.$route.query.nickName;
+    }
     this.loadUserPage();
     this.checkBlockStatus();
     window.addEventListener("scroll", this.scrollPagination);
