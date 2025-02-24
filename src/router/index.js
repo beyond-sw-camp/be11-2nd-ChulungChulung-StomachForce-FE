@@ -12,7 +12,7 @@ const routes = [
     ...membereRouter,
     ...postRouter,
     ...RestaurantRouter,
-    ...serviceRouter
+    ...serviceRouter,
     ...loginRouter,
     ...homeRouter,
     ...announcementRouter
