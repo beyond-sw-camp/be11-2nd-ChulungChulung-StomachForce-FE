@@ -13,15 +13,14 @@
                 </v-col>
 
                 <!-- 사업자등록번호 -->
-                <v-col cols="12" md="6">
-                  <v-text-field 
-                    label="사업자등록번호" 
-                    v-model="registrationNumber" 
-                    prepend-icon="mdi-card-account-details" 
-                    v-mask="'###-##-#####'"
-                    required 
-                  />
-                </v-col>
+                <v-text-field
+                label="사업자등록번호"
+                v-model="registrationNumber"
+                prepend-icon="mdi-card-account-details"
+                required
+                @input="formatRegistrationNumber"
+                maxlength="12"
+                />
 
                 <!-- 비밀번호 -->
                 <v-col cols="12" md="6">
@@ -312,6 +311,20 @@ export default {
     formatDateTime(time) {
       if (!time) return "";
       return `${new Date().toISOString().split("T")[0]}T${time}:00`; // 오늘 날짜 + 입력한 시간
+    },
+      //사업자등록증 숫자 자리 맞춰줌. 000-00-00000 이런 식으로
+
+    formatRegistrationNumber() {
+      let numbers = this.registrationNumber.replace(/\D/g, ""); // 숫자만 추출
+      if (numbers.length > 10) numbers = numbers.slice(0, 10); // 최대 10자리
+
+      if (numbers.length <= 3) {
+        this.registrationNumber = numbers;
+      } else if (numbers.length <= 5) {
+        this.registrationNumber = `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
+      } else {
+        this.registrationNumber = `${numbers.slice(0, 3)}-${numbers.slice(3, 5)}-${numbers.slice(5)}`;
+      }
     }
   }
 };
