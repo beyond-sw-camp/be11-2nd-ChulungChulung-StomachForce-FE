@@ -27,13 +27,13 @@ axios.interceptors.response.use(
             try{
                 const refreshToken = localStorage.getItem('refreshToken');
             localStorage.removeItem("token");
-            const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member/refresh-token`, {refreshToken});
+            const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/user/refresh-token`, {refreshToken});
             const token = response.data.token;
             localStorage.setItem("token", token)
             window.location.reload();
             }catch(e){
-                localStorage.clear();
-                window.location.href="/member/login"
+                // localStorage.clear();
+                // window.location.href="/user/login"
             }
 
         }
