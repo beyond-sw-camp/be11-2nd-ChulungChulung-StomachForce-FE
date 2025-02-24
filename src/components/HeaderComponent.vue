@@ -183,6 +183,13 @@ export default {
 </script>
 
 <style scoped>
+@font-face {
+    font-family: 'Cafe24Ssurround';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/Cafe24Ssurround.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
 .top-bar {
   border-bottom: 2px solid black;
 }
@@ -191,11 +198,12 @@ export default {
   height: 56px;
 }
 .menu-item {
+  font-family: 'Cafe24Ssurround', sans-serif;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 500;
   color: #424242;
   text-transform: none;
-  letter-spacing: 0;
+  letter-spacing: -0.5px;
   height: 56px;
   position: relative;
   transition: color 0.3s ease;
