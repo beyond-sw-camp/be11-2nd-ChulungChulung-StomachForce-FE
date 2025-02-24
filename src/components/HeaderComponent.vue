@@ -137,7 +137,7 @@ export default {
       menuItems: [
         { title: "공지사항", path: "/notice" },
         { title: "레스토랑", path: "/restaurant/list" },
-        { title: "인플루언서", path: "/influencer" },
+        { title: "오늘의 이야기", path: "/post/postList" },
         { title: "이벤트", path: "/event" },
         { title: "고객센터", path: "/service" }
       ]

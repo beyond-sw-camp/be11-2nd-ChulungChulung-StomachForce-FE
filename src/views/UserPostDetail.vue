@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <div v-if="loading">
-      <!-- 데이터 로드 중일 때 로딩 스피너 표시 -->
+      <!-- 로딩 중 -->
       <v-main>
         <v-container class="fill-height">
           <v-row align="center" justify="center">
@@ -11,46 +11,60 @@
       </v-main>
     </div>
     <div v-else>
-      <!-- 데이터가 모두 로드된 후 화면 렌더링 -->
+      <!-- 데이터 로드 후 화면 -->
       <v-main class="post-detail-bg">
         <v-container class="py-8">
           <v-card class="post-detail-card mx-auto" elevation="6" max-width="800">
-            <!-- 작성자 정보 (API를 통해 받아온 사용자 정보 사용) -->
+            <!-- 작성자 정보 (writerInfo API로부터 받은 정보 사용) -->
             <div class="post-header pa-4">
               <div class="d-flex align-center justify-space-between">
                 <div class="d-flex align-center">
                   <v-avatar size="40" class="mr-3">
-                    <v-img :src="localUserProfile" />
+                    <v-img :src="postDetail.userProfile || placeholderProfile" />
                   </v-avatar>
                   <div>
-                    <h3 class="text-subtitle-1 font-weight-bold mb-1">{{ localUserName }}</h3>
-                    <span class="text-caption text-medium-emphasis">{{ postDetail.createdAt }}</span>
+                    <h3 class="text-subtitle-1 font-weight-bold mb-1">
+                      {{ postDetail.userNickName }}
+                    </h3>
+                    <span class="text-caption text-medium-emphasis">
+                      {{ postDetail.createdAt }}
+                    </span>
                   </div>
                 </div>
-                <v-menu>
-                  <template v-slot:activator="{ props }">
-                    <v-btn icon v-bind="props" variant="text" class="menu-btn">
-                      <v-icon>mdi-dots-horizontal</v-icon>
-                    </v-btn>
-                  </template>
-                  <v-list>
-                    <!-- MyPage에서 온 경우 게시글 삭제만 표시 -->
-                    <v-list-item v-if="isFromMyPage" @click="deletePost">
-                      <template v-slot:prepend>
-                        <v-icon color="error" class="mr-2">mdi-delete</v-icon>
-                      </template>
-                      <v-list-item-title class="text-error">게시글 삭제</v-list-item-title>
-                    </v-list-item>
-
-                    <!-- MyPage에서 오지 않은 경우 신고하기만 표시 -->
-                    <v-list-item v-else @click="reportPost">
-                      <template v-slot:prepend>
-                        <v-icon color="error" class="mr-2">mdi-alert-circle-outline</v-icon>
-                      </template>
-                      <v-list-item-title class="text-error">신고하기</v-list-item-title>
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
+                <div class="d-flex align-center">
+                  <v-btn
+                    small
+                    :color="isFollowing ? 'grey-lighten-3' : 'orange-darken-2'"
+                    :class="[
+                      'follow-btn mr-3',
+                      isFollowing ? 'grey-text' : 'white-text'
+                    ]"
+                    @click="toggleFollow"
+                  >
+                    {{ isFollowing ? "팔로우 취소" : "팔로우" }}
+                  </v-btn>
+                  <v-menu>
+                    <template v-slot:activator="{ props }">
+                      <v-btn icon v-bind="props" variant="text" class="menu-btn">
+                        <v-icon>mdi-dots-horizontal</v-icon>
+                      </v-btn>
+                    </template>
+                    <v-list>
+                      <v-list-item v-if="isFromMyPage" @click="deletePost">
+                        <template v-slot:prepend>
+                          <v-icon color="error" class="mr-2">mdi-delete</v-icon>
+                        </template>
+                        <v-list-item-title class="text-error">게시글 삭제</v-list-item-title>
+                      </v-list-item>
+                      <v-list-item v-else @click="reportPost">
+                        <template v-slot:prepend>
+                          <v-icon color="error" class="mr-2">mdi-alert-circle-outline</v-icon>
+                        </template>
+                        <v-list-item-title class="text-error">신고하기</v-list-item-title>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+                </div>
               </div>
             </div>
 
@@ -86,7 +100,6 @@
               <div class="content-text mb-6">
                 {{ postDetail.contents }}
               </div>
-
               <!-- 해시태그 -->
               <div class="post-tags mb-6" v-if="postDetail.tags && postDetail.tags.length > 0">
                 <v-chip
@@ -100,17 +113,10 @@
                   #{{ tag }}
                 </v-chip>
               </div>
-
-              <!-- 좋아요 & 상호작용 -->
+              <!-- 좋아요 및 상호작용 -->
               <div class="post-actions">
                 <div class="d-flex align-center">
-                  <v-btn
-                    icon
-                    variant="text"
-                    :color="isLiked ? 'error' : 'default'"
-                    class="like-btn mr-2"
-                    @click="toggleLike"
-                  >
+                  <v-btn icon variant="text" :color="isLiked ? 'error' : 'default'" class="like-btn mr-2" @click="toggleLike">
                     <v-icon :class="{ 'heart-active': isLiked }">
                       {{ isLiked ? 'mdi-heart' : 'mdi-heart-outline' }}
                     </v-icon>
@@ -124,16 +130,11 @@
                   공유하기
                 </v-btn>
               </div>
-
               <!-- 댓글 섹션 -->
               <v-divider class="my-4"></v-divider>
               <div v-if="comments.length > 0" class="comments-section mt-4">
                 <v-list class="comment-list">
-                  <v-list-item
-                    v-for="(comment, idx) in comments"
-                    :key="idx"
-                    class="comment-item mb-3"
-                  >
+                  <v-list-item v-for="(comment, idx) in comments" :key="idx" class="comment-item mb-3">
                     <template v-slot:prepend>
                       <v-avatar size="36" class="mr-3">
                         <v-img :src="comment.userProfile || placeholderProfile" />
@@ -151,8 +152,7 @@
                   </v-list-item>
                 </v-list>
               </div>
-
-              <!-- 댓글 입력 (디자인 그대로 유지) -->
+              <!-- 댓글 입력 -->
               <div class="comment-input-section" :class="{ 'mt-4': comments.length > 0 }">
                 <v-row no-gutters align="center">
                   <v-col cols="12">
@@ -166,15 +166,7 @@
                       @keyup.enter="submitComment"
                     >
                       <template v-slot:append-inner>
-                        <v-btn
-                          icon
-                          variant="text"
-                          size="small"
-                          color="primary"
-                          class="submit-icon-btn"
-                          @click="submitComment"
-                          :disabled="!newComment.trim()"
-                        >
+                        <v-btn icon variant="text" size="small" color="primary" class="submit-icon-btn" @click="submitComment" :disabled="!newComment.trim()">
                           <v-icon>mdi-send</v-icon>
                         </v-btn>
                       </template>
@@ -192,68 +184,44 @@
 
 <script>
 import axios from "axios";
-
 export default {
   data() {
     return {
-      isFromMyPage: false, // MyPage에서 왔는지 여부
+      isFromMyPage: false,
       loading: true,
+      // postDetail에 작성자 정보 포함
       postDetail: {
         contents: "",
         likes: 0,
         tags: [],
         postPhotos: [],
         createdAt: "",
-        commentCount: 0
+        commentCount: 0,
+        userNickName: "",
+        userProfile: ""
       },
       comments: [],
       newComment: "",
-      isLiked: null, // 서버에서 받아온 좋아요 상태
-      placeholderProfile: "https://via.placeholder.com/40",
-      // 사용자 정보 (userInfo API 결과)
-      userNickName: "",
-      profilePhoto: ""
+      isLiked: null,
+      isFollowing: false,
+      placeholderProfile: "https://via.placeholder.com/40"
     };
   },
-  computed: {
-    localUserName() {
-      return this.userNickName; // API에서 받아온 사용자 닉네임 사용
-    },
-    localUserProfile() {
-      return this.profilePhoto; // API에서 받아온 프로필 사진 사용
-    }
-  },
   created() {
-    this.isFromMyPage = this.$route.query.from === 'mypage';
+    this.isFromMyPage = this.$route.query.from === "mypage";
     this.initializePage();
-    this.fetchUserInfo(); // userInfo API 호출
   },
   methods: {
     async initializePage() {
       try {
         await this.fetchPostDetail();
+        await this.fetchWriterInfo();
         await this.fetchComments();
+        await this.fetchFollowStatus();
       } catch (error) {
         console.error("페이지 초기화 실패:", error);
       } finally {
         this.loading = false;
-      }
-    },
-    async fetchUserInfo() {
-      try {
-        const response = await axios.get(
-          `${process.env.VUE_APP_API_BASE_URL}/user/userInfo`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-            }
-          }
-        );
-        // 응답에서 userNickName과 profilePhoto를 data에 저장
-        this.userNickName = response.data.userNickName;
-        this.profilePhoto = response.data.profilePhoto;
-      } catch (error) {
-        console.error("사용자 정보 조회 실패:", error);
       }
     },
     async fetchPostDetail() {
@@ -262,19 +230,34 @@ export default {
         const response = await axios.get(
           `${process.env.VUE_APP_API_BASE_URL}/post/postDetail/${postId}`,
           {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-            }
+            headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
           }
         );
-        this.postDetail = response.data;
+        this.postDetail = { ...this.postDetail, ...response.data };
         if (!this.postDetail.createdAt) {
           this.postDetail.createdAt = new Date().toLocaleDateString();
         }
-        // 좋아요 데이터 가져오기
         await this.fetchLikeData();
       } catch (error) {
         console.error("게시글 상세 정보 로드 실패:", error);
+      }
+    },
+    async fetchWriterInfo() {
+      const postId = this.$route.params.postId;
+      try {
+        const response = await axios.post(
+          `${process.env.VUE_APP_API_BASE_URL}/post/writerInfo/${postId}`,
+          null,
+          {
+            headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
+          }
+        );
+        // writerInfo API가 작성자 정보를 반환한다고 가정
+        const writerInfo = response.data;
+        this.postDetail.userNickName = writerInfo.userNickName;
+        this.postDetail.userProfile = writerInfo.userProfile;
+      } catch (error) {
+        console.error("작성자 정보 조회 실패:", error);
       }
     },
     async fetchLikeData() {
@@ -284,15 +267,11 @@ export default {
           `${process.env.VUE_APP_API_BASE_URL}/post/getLike/${postId}`,
           {},
           {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-            }
+            headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
           }
         );
-        console.log(response.data);
         this.isLiked = response.data.liked;
         this.postDetail.likes = response.data.likes;
-        console.log(this.isLiked);
       } catch (error) {
         console.error("좋아요 데이터 조회 실패:", error);
       }
@@ -304,9 +283,7 @@ export default {
           `${process.env.VUE_APP_API_BASE_URL}/post/postLike/${postId}`,
           {},
           {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-            }
+            headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
           }
         );
         await this.fetchLikeData();
@@ -320,9 +297,7 @@ export default {
         const response = await axios.get(
           `${process.env.VUE_APP_API_BASE_URL}/post/getComments/${postId}`,
           {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-            }
+            headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
           }
         );
         this.comments = response.data;
@@ -356,22 +331,74 @@ export default {
       alert("신고가 접수되었습니다.");
     },
     deletePost() {
-      if (!confirm("정말 게시글을 삭제하시겠습니까?")) return;
       const postId = this.$route.params.postId;
-      axios.patch(`${process.env.VUE_APP_API_BASE_URL}/post/delete/${postId}`, null, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-        }
-      })
-      .then(() => {
-        alert("게시글이 삭제되었습니다.");
-        this.$router.push('/mypage'); // 삭제 후 마이페이지로 이동
-      })
-      .catch(error => {
-        console.error("게시글 삭제 실패:", error);
-        alert("게시글 삭제에 실패했습니다.");
-      });
+      if (!confirm("정말 게시글을 삭제하시겠습니까?")) return;
+      axios
+        .patch(`${process.env.VUE_APP_API_BASE_URL}/post/delete/${postId}`, null, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
+        })
+        .then(() => {
+          alert("게시글이 삭제되었습니다.");
+          this.$router.push("/mypage");
+        })
+        .catch(error => {
+          console.error("게시글 삭제 실패:", error);
+          alert("게시글 삭제에 실패했습니다.");
+        });
     },
+    async toggleFollow() {
+      // 사용자가 클릭하면 바로 UI 상태를 반전시킵니다.
+      const previousState = this.isFollowing;
+      this.isFollowing = !this.isFollowing;
+      
+      try {
+        const payload = { nickName: this.postDetail.userNickName };
+        const response = await axios.post(
+          `${process.env.VUE_APP_API_BASE_URL}/user/follow`,
+          payload,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+            }
+          }
+        );
+        const result = response.data;
+        // 서버 응답에 따라 상태를 보정합니다.
+        if (result === "팔로우가 취소되었습니다.") {
+          this.isFollowing = false;
+          alert("팔로우가 취소되었습니다.");
+        } else if (result === "ok") {
+          this.isFollowing = true;
+          alert("팔로우하였습니다.");
+        } else {
+          console.log("응답:", result);
+        }
+      } catch (error) {
+        // 요청 실패 시 이전 상태로 롤백합니다.
+        this.isFollowing = previousState;
+        console.error("팔로우 요청 실패:", error);
+      }
+    },
+    async fetchFollowStatus() {
+      try {
+        const formData = new FormData();
+        formData.append("userNickName", this.postDetail.userNickName);
+        const response = await axios.post(
+          `${process.env.VUE_APP_API_BASE_URL}/user/isFollowing`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+            }
+          }
+        );
+        this.isFollowing = response.data;
+      } catch (error) {
+        console.error("팔로우 상태 조회 실패:", error);
+      }
+    }
   }
 };
 </script>
@@ -510,14 +537,28 @@ export default {
   animation: heart-burst 0.45s cubic-bezier(0.17, 0.89, 0.32, 1.49);
 }
 @keyframes heart-burst {
-  0% {
-    transform: scale(0);
-  }
-  50% {
-    transform: scale(1.4);
-  }
-  100% {
-    transform: scale(1);
-  }
+  0% { transform: scale(0); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+.follow-btn {
+  min-width: 80px;
+  height: 32px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0.3px;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+.follow-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+.grey-text {
+  color: rgba(0, 0, 0, 0.6) !important;
+}
+.white-text {
+  color: white !important;
 }
 </style>
