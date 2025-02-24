@@ -6,7 +6,7 @@ import { serviceRouter } from "./serviceRouter";
 import { loginRouter } from "./loginRouter";
 import { homeRouter } from "./homeRouter";
 import { announcementRouter } from "./announcementRouter";
-
+import { reportRouter } from "./reportRouter";
 
 const routes = [
     ...membereRouter,
@@ -15,7 +15,8 @@ const routes = [
     ...serviceRouter,
     ...loginRouter,
     ...homeRouter,
-    ...announcementRouter
+    ...announcementRouter,
+    ...reportRouter
 ]
 
 const router = createRouter({

@@ -41,17 +41,106 @@
                         수정하기
                     </v-btn>
                 </v-card-actions>
+                <v-card-actions v-if="isAuthor">
+                    <v-spacer></v-spacer>
+                    <v-btn color="primary" @click="deletePost">
+                        삭제하기
+                    </v-btn>
+                </v-card-actions>
             </v-card>
 
             <!-- 답변 표시 -->
             <v-card v-if="answer" class="mb-4">
-                <v-card-title>답변</v-card-title>
+                <v-card-title class="d-flex align-center">
+                    답변
+                    <!-- 관리자용 답변 수정 버튼 -->
+                    <v-spacer></v-spacer>
+                    <v-btn
+                        v-if="userRole === 'ADMIN'"
+                        color="primary"
+                        variant="text"
+                        :disabled="isEditingAnswer"
+                        @click="startEditAnswer"
+                    >
+                        수정하기
+                    </v-btn>
+                </v-card-title>
+                <v-card-title class="d-flex align-center">
+                    <!-- 관리자용 답변 삭제 버튼 -->
+                    <v-spacer></v-spacer>
+                    <v-btn
+                        v-if="userRole === 'ADMIN'"
+                        color="primary"
+                        variant="text"
+                        :disabled="isEditingAnswer"
+                        @click="deleteAnswer"
+                    >
+                        삭제하기
+                    </v-btn>
+                </v-card-title>
                 <v-card-subtitle>
                     답변일: {{ new Date(answer.createdAt).toLocaleDateString() }}
                 </v-card-subtitle>
                 <v-card-text>
-                    <div class="content-text">{{ answer.contents }}</div>
+                    <!-- 수정 모드일 때는 textarea 표시 -->
+                    <v-form v-if="isEditingAnswer" ref="editAnswerForm" v-model="isAnswerFormValid">
+                        <v-textarea
+                            v-model="editAnswerContents"
+                            label="답변 내용"
+                            :rules="answerRules"
+                            rows="5"
+                            auto-grow
+                            variant="outlined"
+                        ></v-textarea>
+                        <div class="d-flex justify-end gap-2">
+                            <v-btn
+                                color="error"
+                                variant="text"
+                                @click="cancelEditAnswer"
+                            >
+                                취소
+                            </v-btn>
+                            <v-btn
+                                color="primary"
+                                :loading="answerLoading"
+                                :disabled="!isAnswerFormValid"
+                                @click="updateAnswer"
+                            >
+                                저장
+                            </v-btn>
+                        </div>
+                    </v-form>
+                    <!-- 일반 모드일 때는 텍스트 표시 -->
+                    <div v-else class="content-text">{{ answer.contents }}</div>
                 </v-card-text>
+            </v-card>
+
+            <!-- 관리자용 답변 등록 폼 -->
+            <v-card v-else-if="userRole === 'ADMIN'" class="mb-4">
+                <v-card-title>답변 등록</v-card-title>
+                <v-card-text>
+                    <v-form ref="answerForm" v-model="isAnswerFormValid">
+                        <v-textarea
+                            v-model="answerContents"
+                            label="답변 내용"
+                            :rules="answerRules"
+                            rows="5"
+                            auto-grow
+                            variant="outlined"
+                        ></v-textarea>
+                    </v-form>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                        color="primary"
+                        :loading="answerLoading"
+                        :disabled="!isAnswerFormValid"
+                        @click="submitAnswer"
+                    >
+                        답변 등록
+                    </v-btn>
+                </v-card-actions>
             </v-card>
 
             <!-- 이미지 다이얼로그 -->
@@ -93,7 +182,16 @@ export default {
             userRole: null,
             loading: true,
             imageDialog: false,
-            selectedImage: null
+            selectedImage: null,
+            answerContents: '',
+            isAnswerFormValid: false,
+            answerLoading: false,
+            isEditingAnswer: false,
+            editAnswerContents: '',
+            answerRules: [
+                v => !!v || '답변 내용을 입력해주세요',
+                v => v.length >= 10 || '답변은 최소 10자 이상 입력해주세요'
+            ]
         };
     },
     computed: {
@@ -211,6 +309,158 @@ export default {
         },
         editPost() {
             this.$router.push(`/service/post/update/${this.post.id}`);
+        },
+        async submitAnswer() {
+            if (!this.$refs.answerForm.validate()) return;
+            
+            this.answerLoading = true;
+            try {
+                const response = await axios.post(
+                    `${process.env.VUE_APP_API_BASE_URL}/service/answer/create`,
+                    {
+                        postId: this.post.id,
+                        contents: this.answerContents
+                    },
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    }
+                );
+
+                // 답변 등록 성공 시 답변 데이터 업데이트
+                this.answer = response.data;
+                this.answerContents = '';
+                this.$refs.answerForm.reset();
+
+                // 성공 메시지 표시
+                this.$emit('show-message', {
+                    color: 'success',
+                    text: '답변이 성공적으로 등록되었습니다.'
+                });
+            } catch (error) {
+                console.error('답변 등록 실패:', error);
+                this.$emit('show-message', {
+                    color: 'error',
+                    text: '답변 등록에 실패했습니다.'
+                });
+            } finally {
+                this.answerLoading = false;
+            }
+        },
+        startEditAnswer() {
+            this.editAnswerContents = this.answer.contents;
+            this.isEditingAnswer = true;
+        },
+        cancelEditAnswer() {
+            this.editAnswerContents = '';
+            this.isEditingAnswer = false;
+        },
+        async updateAnswer() {
+            if (!this.$refs.editAnswerForm.validate()) return;
+            
+            this.answerLoading = true;
+            try {
+                const response = await axios.patch(
+                    `${process.env.VUE_APP_API_BASE_URL}/service/answer/update/${this.answer.id}`,
+                    {
+                        contents: this.editAnswerContents
+                    },
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    }
+                );
+
+                // 답변 수정 성공 시 데이터 업데이트
+                this.answer = response.data;
+                this.isEditingAnswer = false;
+                this.editAnswerContents = '';
+
+                // 성공 메시지 표시
+                this.$emit('show-message', {
+                    color: 'success',
+                    text: '답변이 성공적으로 수정되었습니다.'
+                });
+            } catch (error) {
+                console.error('답변 수정 실패:', error);
+                this.$emit('show-message', {
+                    color: 'error',
+                    text: '답변 수정에 실패했습니다.'
+                });
+            } finally {
+                this.answerLoading = false;
+            }
+        },
+        async deletePost() {
+            try {
+                // 먼저 답변 삭제
+                if (this.answer) {
+                    await axios.delete(
+                        `${process.env.VUE_APP_API_BASE_URL}/service/answer/delete/${this.answer.id}`,
+                        {
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                            }
+                        }
+                    );
+                }
+
+                // 그 다음 게시글 삭제
+                await axios.delete(
+                    `${process.env.VUE_APP_API_BASE_URL}/service/post/delete/${this.post.id}`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    }
+                );
+
+                // 성공 메시지 표시
+                this.$emit('show-message', {
+                    color: 'success',
+                    text: '게시글이 성공적으로 삭제되었습니다.'
+                });
+
+                // 목록 페이지로 이동
+                this.$router.push('/service/list');
+
+            } catch (error) {
+                console.error('게시글 삭제 실패:', error);
+                this.$emit('show-message', {
+                    color: 'error',
+                    text: '게시글 삭제에 실패했습니다.'
+                });
+            }
+        },
+        async deleteAnswer() {
+            try {
+                await axios.delete(
+                    `${process.env.VUE_APP_API_BASE_URL}/service/answer/delete/${this.answer.id}`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    }
+                );
+
+                // 답변 상태 초기화
+                this.answer = null;
+
+                // 성공 메시지 표시
+                this.$emit('show-message', {
+                    color: 'success',
+                    text: '답변이 성공적으로 삭제되었습니다.'
+                });
+
+            } catch (error) {
+                console.error('답변 삭제 실패:', error);
+                this.$emit('show-message', {
+                    color: 'error',
+                    text: '답변 삭제에 실패했습니다.'
+                });
+            }
         }
     },
     async mounted() {
@@ -245,6 +495,14 @@ export default {
 /* 제목과 상태 칩 정렬을 위한 스타일 */
 .v-card-title {
     flex-wrap: wrap;
+    gap: 8px;
+}
+
+.v-textarea {
+    margin-bottom: 16px;
+}
+
+.gap-2 {
     gap: 8px;
 }
 </style>

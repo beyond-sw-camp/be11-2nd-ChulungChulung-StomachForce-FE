@@ -139,7 +139,7 @@ export default {
         { title: "레스토랑", path: "/restaurant/list" },
         { title: "인플루언서", path: "/influencer" },
         { title: "이벤트", path: "/event" },
-        { title: "고객센터", path: "/service/list" }
+        { title: "고객센터", path: "/service" }
       ]
     };
   },

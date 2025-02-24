@@ -2,6 +2,7 @@ import ServicePost from "@/views/ServicePost.vue";
 import ServicePostCreate from "@/views/ServicePostCreate.vue";
 import ServicePostList from "@/views/ServicePostList.vue";
 import ServicePostUpdate from "@/views/ServicePostUpdate.vue";
+import ServiceAndReportList from '@/views/ServiceAndReportList.vue'
 
 export const serviceRouter = [
     {
@@ -25,5 +26,10 @@ export const serviceRouter = [
         name: 'ServicePost',
         component: ServicePost,
         props: route => ({ id: Number(route.params.id) })
+    },
+    {
+        path: '/service',
+        name: 'ServiceAndReportList',
+        component: ServiceAndReportList
     }
 ];

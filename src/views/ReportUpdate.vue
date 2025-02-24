@@ -2,11 +2,30 @@
     <v-container>
         <v-card class="mx-auto" max-width="800">
             <v-card-title class="text-h5 font-weight-bold">
-                문의글 수정
+                신고 내용 수정
             </v-card-title>
 
             <v-card-text>
                 <v-form ref="form" v-model="isFormValid">
+                    <v-select
+                        v-model="reportClass"
+                        :items="reportClassOptions"
+                        label="신고 유형"
+                        variant="outlined"
+                        required
+                        class="mb-4"
+                    ></v-select>
+
+                    <v-textarea
+                        v-model="contents"
+                        label="신고 내용"
+                        :rules="contentsRules"
+                        required
+                        variant="outlined"
+                        rows="10"
+                        auto-grow
+                    ></v-textarea>
+
                     <v-file-input
                         v-model="photos"
                         label="사진 첨부"
@@ -19,24 +38,6 @@
                         hint="최대 5장까지 첨부 가능합니다"
                         :rules="[v => !v || v.length <= 5 || '최대 5장까지만 첨부할 수 있습니다']"
                     ></v-file-input>
-                    <v-text-field
-                        v-model="title"
-                        label="제목"
-                        :rules="titleRules"
-                        required
-                        variant="outlined"
-                        class="mb-4"
-                    ></v-text-field>
-
-                    <v-textarea
-                        v-model="contents"
-                        label="내용"
-                        :rules="contentsRules"
-                        required
-                        variant="outlined"
-                        rows="10"
-                        auto-grow
-                    ></v-textarea>
 
                     <div class="d-flex justify-end gap-2 mt-4">
                         <v-btn
@@ -75,41 +76,40 @@
 import axios from 'axios';
 
 export default {
+    name: 'ReportUpdate',
     data() {
         return {
-            title: '',
+            reportClass: '',
             contents: '',
-            category: '',
-            visibility: true,
+            photos: [],
             isFormValid: false,
             loading: false,
             showError: false,
             errorMessage: '',
-            titleRules: [
-                v => !!v || '제목을 입력해주세요',
-                v => v.length <= 100 || '제목은 100자 이하여야 합니다'
+            reportClassOptions: [
+                { title: '스팸', value: 'SPAM' },
+                { title: '욕설/비방', value: 'ABUSE' },
+                { title: '도배', value: 'FLOODING' },
+                { title: '기타', value: 'OTHER' }
             ],
             contentsRules: [
                 v => !!v || '내용을 입력해주세요',
                 v => v.length <= 2000 || '내용은 2000자 이하여야 합니다'
-            ],
-            photos: [],
+            ]
         }
     },
     async created() {
         try {
             const response = await axios.get(
-                `${process.env.VUE_APP_API_BASE_URL}/service/post/${this.$route.params.id}`
+                `${process.env.VUE_APP_API_BASE_URL}/report/${this.$route.params.id}`
             );
-            this.title = response.data.title;
+            this.reportClass = response.data.reportClass;
             this.contents = response.data.contents;
-            this.category = response.data.category;
-            this.visibility = response.data.visibility;
         } catch (error) {
-            console.error('게시글 불러오기 실패:', error);
-            this.errorMessage = '게시글을 불러오는데 실패했습니다.';
+            console.error('신고글 불러오기 실패:', error);
+            this.errorMessage = '신고글을 불러오는데 실패했습니다.';
             this.showError = true;
-            this.$router.push('/service/list');
+            this.$router.push('/report/list');
         }
     },
     methods: {
@@ -119,14 +119,17 @@ export default {
             this.loading = true;
             try {
                 const formData = new FormData();
-                formData.append('title', this.title);
+                formData.append('reportClass', this.reportClass);
                 formData.append('contents', this.contents);
-                formData.append('category', this.category);
-                formData.append('visibility', this.visibility);
 
+                if (this.photos && this.photos.length > 0) {
+                    this.photos.forEach(photo => {
+                        formData.append('photos', photo);
+                    });
+                }
 
                 await axios.patch(
-                    `${process.env.VUE_APP_API_BASE_URL}/service/post/update/${this.$route.params.id}`,
+                    `${process.env.VUE_APP_API_BASE_URL}/report/update/${this.$route.params.id}`,
                     formData,
                     {
                         headers: {
@@ -136,13 +139,13 @@ export default {
                     }
                 );
 
-                this.$router.push(`/service/post/${this.$route.params.id}`);
+                this.$router.push(`/report/${this.$route.params.id}`);
             } catch (error) {
-                console.error('게시글 수정 실패:', error);
+                console.error('신고글 수정 실패:', error);
                 if (error.response?.status === 403) {
-                    this.errorMessage = '해당 게시글을 수정할 권한이 없습니다.';
+                    this.errorMessage = '해당 신고글을 수정할 권한이 없습니다.';
                 } else {
-                    this.errorMessage = '게시글 수정에 실패했습니다.';
+                    this.errorMessage = '신고글 수정에 실패했습니다.';
                 }
                 this.showError = true;
             } finally {
