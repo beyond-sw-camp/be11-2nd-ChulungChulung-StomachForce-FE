@@ -270,11 +270,11 @@ export default {
         }
 
         // 시간 관련 필드 변환 (YYYY-MM-DDTHH:mm:ss)
-        formData.append("openingTime", this.formatDateTime(this.openingTime));
-        formData.append("closingTime", this.formatDateTime(this.closingTime));
-        formData.append("breakTimeStart", this.formatDateTime(this.breakTimeStart));
-        formData.append("breakTimeEnd", this.formatDateTime(this.breakTimeEnd));
-        formData.append("lastOrder", this.formatDateTime(this.lastOrder));
+        formData.append("openingTime", this.formatTime(this.openingTime));
+        formData.append("closingTime", this.formatTime(this.closingTime));
+        formData.append("breakTimeStart", this.formatTime(this.breakTimeStart));
+        formData.append("breakTimeEnd", this.formatTime(this.breakTimeEnd));
+        formData.append("lastOrder", this.formatTime(this.lastOrder));
 
         formData.append("holiday", this.holiday);
         formData.append("capacity", this.capacity);
@@ -311,6 +311,10 @@ export default {
     formatDateTime(time) {
       if (!time) return "";
       return `${new Date().toISOString().split("T")[0]}T${time}:00`; // 오늘 날짜 + 입력한 시간
+    },
+    formatTime(time) {
+      if (!time) return "";
+      return `${time}:00`;
     },
       //사업자등록증 숫자 자리 맞춰줌. 000-00-00000 이런 식으로
 

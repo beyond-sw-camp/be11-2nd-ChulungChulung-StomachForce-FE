@@ -139,7 +139,7 @@
           };
   
           const response = await axios.post(
-            `${process.env.VUE_APP_API_BASE_URL}/restaurant/doLogin`,
+            `${process.env.VUE_APP_API_BASE_URL}/restaurant/login`,
             loginData
           );
   
