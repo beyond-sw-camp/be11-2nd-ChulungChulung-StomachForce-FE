@@ -1,4 +1,5 @@
 import FindUser from "@/views/FindUser.vue";
+import InfluencerListPage from "@/views/InfluencerListPage.vue";
 import ReservationDetailPage from "@/views/ReservationDetailPage.vue";
 import ReservationList from "@/views/ReservationList.vue";
 import UserBlocked from "@/views/UserBlocked.vue";
@@ -60,6 +61,13 @@ export const membereRouter = [
                 name: 'ReservationDetailPage',
                 component: ReservationDetailPage
             },
+
+            
+    {
+        path: '/influencer/list',
+        name: 'InfluencerListPage',
+        component:InfluencerListPage
+    }
 
     
 ]

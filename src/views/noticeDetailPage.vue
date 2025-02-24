@@ -28,8 +28,19 @@
       <!-- 이미지가 있는 경우에만 표시 -->
       <div v-if="announcement.images && announcement.images.length > 0" class="mt-4">
         <v-row>
-          <v-col v-for="(image, index) in announcement.images" :key="index" cols="12" sm="6" md="4">
-            <v-img :src="image.imagePath" aspect-ratio="1" cover></v-img>
+          <v-col
+            v-for="(image, index) in announcement.images"
+            :key="index"
+            cols="12"
+            :sm="announcement.announcementType === 'EVENT' ? 12 : 6"
+            :md="announcement.announcementType === 'EVENT' ? 8 : 4"
+          >
+            <v-img 
+              :src="image.imagePath" 
+              aspect-ratio="1"
+              cover
+              :class="{ 'event-image': announcement.announcementType === 'EVENT' }"
+            ></v-img>
           </v-col>
         </v-row>
       </div>
@@ -65,6 +76,14 @@
   line-height: 1.6;
   color: #333;
   white-space: pre-line;
+}
+
+/* 🔹 이벤트 이미지 크기 조절 */
+.event-image {
+  width: 100%;
+  height: auto;
+  max-height: 500px; /* 최대 높이 설정 */
+  object-fit: cover;
 }
 </style>
 
