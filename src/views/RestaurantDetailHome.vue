@@ -9,20 +9,44 @@
       <v-tab :to="`/restaurant/detail/${restaurantId}/reservation`">예약하기</v-tab>
     </v-tabs>
 
-    <!-- 매장명 -->
-    <v-card class="title-card">
-      <v-card-title class="text-h4 text-center">{{ restaurant.name }}</v-card-title>
+    <!-- 매장명 (상대 위치를 주어 리뷰작성 버튼 배치) -->
+    <v-card class="title-card" style="position: relative;">
+      <v-btn
+        class="review-button"
+        color="primary"
+        small
+        style="position: absolute; top: 10px; right: 10px;"
+        @click="reviewDialog = true"
+      >
+        리뷰작성
+      </v-btn>
+      <v-card-title class="text-h4 text-center">
+        {{ restaurant.name }}
+      </v-card-title>
     </v-card>
 
-    <!-- 매장 사진 (v-carousel 적용) -->
-    <v-carousel cycle hide-delimiters>
-      <v-carousel-item
-        v-for="(image, index) in restaurant.imagePath"
-        :key="index"
-        :src="image"
-        lazy-src="/assets/loading-placeholder.jpg"
-      ></v-carousel-item>
-    </v-carousel>
+    <!-- 매장 사진 (수동 무한 넘기기) -->
+    <v-row justify="center" v-if="restaurant.imagePath.length">
+      <v-col cols="12" md="8">
+        <v-card>
+          <v-img
+            :src="restaurant.imagePath[currentIndex]"
+            lazy-src="/assets/loading-placeholder.jpg"
+            height="300px"
+            contain
+          />
+          <v-card-actions class="d-flex justify-center">
+            <v-btn icon @click="prevImage">
+              <v-icon>mdi-chevron-left</v-icon>
+            </v-btn>
+            <span>{{ currentIndex + 1 }} / {{ restaurant.imagePath.length }}</span>
+            <v-btn icon @click="nextImage">
+              <v-icon>mdi-chevron-right</v-icon>
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-col>
+    </v-row>
 
     <!-- 매장 기본 정보 -->
     <v-row class="info-section">
@@ -53,13 +77,7 @@
     <v-card class="menu-section">
       <v-card-title class="text-h5">🍔 대표 메뉴</v-card-title>
       <v-row>
-        <v-col
-          v-for="(menu, index) in restaurant.menus"
-          :key="index"
-          cols="12"
-          sm="6"
-          md="4"
-        >
+        <v-col v-for="(menu, index) in restaurant.menus" :key="index" cols="12" sm="6" md="4">
           <v-card>
             <v-img :src="menu.image" height="150px"></v-img>
             <v-card-title>{{ menu.name }}</v-card-title>
@@ -83,6 +101,52 @@
     <v-btn class="reservation-btn" color="red" block @click="goToReservation">
       예약하기
     </v-btn>
+
+    <!-- 리뷰 작성 다이얼로그 -->
+    <v-dialog v-model="reviewDialog" max-width="600">
+      <v-card>
+        <v-card-title class="headline">리뷰 작성</v-card-title>
+        <v-divider></v-divider>
+        <v-card-text>
+          <v-form ref="reviewFormRef" @submit.prevent="submitReview">
+            <v-row align="center">
+              <v-col cols="12">
+                <v-rating
+                  v-model="reviewForm.rating"
+                  length="5"
+                  color="amber"
+                  background-color="grey lighten-3"
+                  large
+                ></v-rating>
+              </v-col>
+            </v-row>
+            <v-textarea
+              v-model="reviewForm.contents"
+              label="리뷰 내용"
+              required
+              rows="5"
+              class="mt-4"
+            ></v-textarea>
+            <v-file-input
+              v-model="reviewForm.reviewImages"
+              label="리뷰 이미지 첨부"
+              multiple
+              accept="image/*"
+              prepend-icon="mdi-camera"
+              class="mt-4"
+              :rules="[v => !v || v.length <= 5 || '최대 5장까지만 첨부할 수 있습니다']"
+              hint="최대 5장까지 첨부 가능합니다"
+              show-size
+            ></v-file-input>
+          </v-form>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="reviewDialog = false">취소</v-btn>
+          <v-btn color="blue darken-1" text @click="submitReview" :loading="reviewLoading">등록하기</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -132,41 +196,47 @@ export default {
         phoneNumber: "",
         averageRating: "",
         bookmarkCount: "",
-        openingTime: String,
-        closingTime: String,
-        lastOrder: String,
-        breakTimeStart: String,
-        breakTimeEnd: String,
+        openingTime: "",
+        closingTime: "",
+        lastOrder: "",
+        breakTimeStart: "",
+        breakTimeEnd: "",
         imagePath: [],
         menus: [],
       },
-      restaurantId: this.$route.params.id, // URL에서 id 가져오기
-
+      restaurantId: this.$route.params.id,
+      currentIndex: 0,
+      // 리뷰 작성 다이얼로그 관련 데이터
+      reviewDialog: false,
+      reviewForm: {
+        contents: "",
+        rating: 5,
+        reviewImages: [],
+      },
+      reviewLoading: false,
     };
   },
   created() {
     this.loadRestaurantDetail();
   },
   methods: {
-formatTime(dateTime) {
-      if (!dateTime) return "없음"; // 값이 없을 경우 대비
+    formatTime(dateTime) {
+      if (!dateTime) return "없음";
       return new Date(dateTime).toLocaleTimeString("ko-KR", {
         hour: "2-digit",
         minute: "2-digit",
-        hour12: false, // 24시간 형식
+        hour12: false,
       });
     },
 
     async loadRestaurantDetail() {
-      const restaurantId = this.$route.params.id;
       try {
         const response = await axios.get(
-          `${process.env.VUE_APP_API_BASE_URL}/restaurant/detail/${restaurantId}`
+          `${process.env.VUE_APP_API_BASE_URL}/restaurant/detail/${this.restaurantId}`
         );
         console.log("API 응답 데이터:", response.data);
         this.restaurant = response.data;
 
-        // 기본 이미지 처리
         if (!this.restaurant.imagePath || this.restaurant.imagePath.length === 0) {
           this.restaurant.imagePath = ["/assets/noImage.jpg"];
         }
@@ -174,22 +244,75 @@ formatTime(dateTime) {
       } catch (e) {
         console.error("레스토랑 상세 정보 로드 실패:", e);
       }
-      
-
     },
+
     preloadImages(images) {
-      images.forEach(src => {
+      images.forEach((src) => {
         const img = new Image();
         img.src = src;
       });
     },
+
+    prevImage() {
+      this.currentIndex =
+        this.currentIndex === 0
+          ? this.restaurant.imagePath.length - 1
+          : this.currentIndex - 1;
+    },
+
+    nextImage() {
+      this.currentIndex =
+        this.currentIndex === this.restaurant.imagePath.length - 1
+          ? 0
+          : this.currentIndex + 1;
+    },
+
     goToReservation() {
-      // 해당 위치는 라우팅 변경 필요합니다.
       this.$router.push(`/restaurant/reservation/${this.restaurant.id}`);
     },
-    reload(){
+
+    reload() {
       window.location.reload();
-    }
+    },
+
+    async submitReview() {
+      // 간단한 폼 검증 (필요에 따라 확장 가능)
+      if (!this.reviewForm.contents) {
+        alert("리뷰 내용을 입력해주세요.");
+        return;
+      }
+      this.reviewLoading = true;
+      try {
+        const formData = new FormData();
+        formData.append("contents", this.reviewForm.contents);
+        formData.append("rating", this.reviewForm.rating);
+        if (this.reviewForm.reviewImages && this.reviewForm.reviewImages.length > 0) {
+          this.reviewForm.reviewImages.forEach((file) => {
+            formData.append("reviewImage", file);
+          });
+        }
+        await axios.post(
+          `${process.env.VUE_APP_API_BASE_URL}/restaurant/${this.restaurantId}/review/create`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        // 성공 후 다이얼로그 닫기 및 폼 초기화
+        this.reviewDialog = false;
+        this.reviewForm = { contents: "", rating: 5, reviewImages: [] };
+        // 필요 시 리뷰 목록 새로고침 등의 추가 처리 가능
+        alert("리뷰 등록 완료");
+      } catch (error) {
+        console.error("리뷰 작성 실패:", error);
+        alert("리뷰 작성에 실패했습니다. 다시 시도해주세요.");
+      } finally {
+        this.reviewLoading = false;
+      }
+    },
   },
 };
 </script>
