@@ -37,7 +37,7 @@
           <v-btn text to="/restaurant" class="menu-item">레스토랑</v-btn>
           <v-btn text to="/influencer" class="menu-item">인플루언서</v-btn>
           <v-btn text to="/event" class="menu-item">이벤트</v-btn>
-          <v-btn text to="/customer" class="menu-item">고객센터</v-btn>
+          <v-btn text to="/service/list" class="menu-item">고객센터</v-btn>
         </v-row>
       </v-container>
     </v-app-bar>
