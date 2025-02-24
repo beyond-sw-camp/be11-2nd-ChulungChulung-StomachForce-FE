@@ -1,4 +1,6 @@
 import FindUser from "@/views/FindUser.vue";
+import ReservationDetailPage from "@/views/ReservationDetailPage.vue";
+import ReservationList from "@/views/ReservationList.vue";
 import UserBlocked from "@/views/UserBlocked.vue";
 import UserCreate from "@/views/UserCreate.vue";
 import UserLogin from "@/views/UserLogin.vue";
@@ -48,4 +50,16 @@ export const membereRouter = [
         name: 'UserBlocked',
         component:UserBlocked
     },
+    {
+            path: '/user/reservation',
+            name: 'ReservationList',
+            component: ReservationList
+        },
+            {
+                path: '/user/reservation/detail/:id',
+                name: 'ReservationDetailPage',
+                component: ReservationDetailPage
+            },
+
+    
 ]

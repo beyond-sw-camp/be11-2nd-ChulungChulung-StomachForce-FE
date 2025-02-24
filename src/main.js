@@ -32,8 +32,8 @@ axios.interceptors.response.use(
             localStorage.setItem("token", token)
             window.location.reload();
             }catch(e){
-                // localStorage.clear();
-                // window.location.href="/user/login"
+                localStorage.clear();
+                window.location.href="/user/login"
             }
 
         }
