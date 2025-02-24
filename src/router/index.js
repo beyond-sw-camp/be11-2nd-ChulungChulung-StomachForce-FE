@@ -3,12 +3,16 @@ import { membereRouter } from "./userRouter";
 import { postRouter } from "./postRouter";
 import { RestaurantRouter } from "./restaurantRouter";
 import { loginRouter } from "./loginRouter";
+import { homeRouter } from "./homeRouter";
+import { announcementRouter } from "./announcementRouter";
 
 const routes = [
     ...membereRouter,
     ...postRouter,
     ...RestaurantRouter,
-    ...loginRouter
+    ...loginRouter,
+    ...homeRouter,
+    ...announcementRouter
 ]
 
 const router = createRouter({
