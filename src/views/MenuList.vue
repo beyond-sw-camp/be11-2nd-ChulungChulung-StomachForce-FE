@@ -3,17 +3,17 @@
         <h1 class="text-3xl font-bold text-center mb-8">{{ restaurantName }}</h1>
 
         <!-- 메뉴 등록 버튼 -->
-        <div class="text-center mb-4">
+        <div class="text-right mb-4">
             <button 
                 v-if="isLoggedIn && isRestaurantOwner" 
-                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                class="bg-red text-white px-4 py-2 rounded hover:bg-blue-700"
                 @click="navigateToMenuRegistration"
             >
                 메뉴 등록
             </button>
         </div>
         
-        <div class="grid grid-cols-3 gap-6">
+        <div class="grid grid-cols-4 gap-6">
             <div
                 v-for="menu in menuList"
                 :key="menu.id"
@@ -57,6 +57,24 @@
                             </span>
                         </span>
                         <span v-else>해당없음</span>
+                    </div>
+
+                    <!-- 수정 및 삭제 버튼 -->
+                    <div class="flex text-right mt-4">
+                        <button 
+                            v-if="isLoggedIn && isRestaurantOwner" 
+                            class="bg-blue text-white px-2 py-1 rounded hover:bg-yellow-600"
+                            @click="navigateToMenuUpdate(menu.id)"
+                        >
+                            수정
+                        </button>
+                        <button 
+                            v-if="isLoggedIn && isRestaurantOwner" 
+                            class="bg-yellow text-white px-2 py-1 rounded hover:bg-red-600"
+                            @click="deleteMenu(menu.id)"
+                        >
+                            삭제
+                        </button>
                     </div>
                 </div>
             </div>
@@ -137,9 +155,22 @@ export default {
         navigateToMenuRegistration() {
             this.$router.push('/menu/create');
         },
+        navigateToMenuUpdate(menuId) {
+            this.$router.push(`/menu/update/${menuId}`);
+        },
+        async deleteMenu(menuId) {
+            if (confirm('정말로 이 메뉴를 삭제하시겠습니까?')) {
+                try {
+                    await axios.delete(`${process.env.VUE_APP_API_BASE_URL}/menu/delete/${menuId}`);
+                    this.menuList = this.menuList.filter(menu => menu.id !== menuId);
+                } catch (error) {
+                    console.error('메뉴 삭제 실패:', error);
+                }
+            }
+        },
         checkUserStatus() {
             this.isLoggedIn = true;
-            this.restaurantId = this.$route.params.id;
+            this.restaurantId = localStorage.getItem('restaurantId');
         }
     },
     computed: {

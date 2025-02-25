@@ -57,9 +57,10 @@ export const RestaurantRouter = [
         component: MenuCreate
     },
     {
-        path: '/menu/update/:id',
+        path: '/menu/update/:menuId',
         name: 'MenuUpdate',
-        component: MenuUpdate
+        component: MenuUpdate,
+        props: true
     },
     {
         path: '/restaurant/mypage',
