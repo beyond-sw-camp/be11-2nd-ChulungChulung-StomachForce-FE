@@ -112,11 +112,11 @@ export default {
       errorMessage: "",
       identifyRules: [
         v => !!v || '아이디를 입력해주세요',
-        v => v.length >= 4 || '아이디는 최소 4자 이상이어야 합니다'
+        v => v.length >= 8 || '아이디를 다시입력해주세요.'
       ],
       passwordRules: [
         v => !!v || '비밀번호를 입력해주세요',
-        v => v.length >= 6 || '비밀번호는 최소 6자 이상이어야 합니다'
+        v => v.length >= 8 || '영어,숫자, 특수문자 중 2가지를 포함해 최소 8자 이상이어야 합니다'
       ]
     }
   },

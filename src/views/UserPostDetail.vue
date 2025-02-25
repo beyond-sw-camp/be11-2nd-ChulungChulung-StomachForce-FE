@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app @click="closeContextMenu">
     <div v-if="loading">
       <!-- 로딩 중 -->
       <v-main>
@@ -15,7 +15,7 @@
       <v-main class="post-detail-bg">
         <v-container class="py-6">
           <v-card class="post-detail-card mx-auto" elevation="6" max-width="600">
-            <!-- 작성자 정보 (writerInfo API로부터 받은 정보 사용) -->
+            <!-- 작성자 정보 -->
             <div class="post-header pa-4">
               <div class="d-flex align-center justify-space-between">
                 <!-- 프로필/닉네임 클릭 시 해당 유저 페이지로 이동 -->
@@ -28,12 +28,12 @@
                       {{ postDetail.userNickName }}
                     </h3>
                     <span class="text-caption text-medium-emphasis">
-                      {{ postDetail.createdAt }}
+                      {{ formatDate(postDetail.createdTime) }}
                     </span>
                   </div>
                 </div>
                 <div class="d-flex align-center">
-                  <!-- 로그인한 유저와 작성자가 같으면 팔로우 버튼 숨김 -->
+                  <!-- 로그인한 유저와 작성자가 같지 않으면 팔로우 버튼 -->
                   <v-btn 
                     v-if="loginUserNickName !== postDetail.userNickName && !iBlockedOwner"
                     :color="isFollowing ? 'grey-lighten-3' : 'orange-darken-2'" 
@@ -43,6 +43,7 @@
                   >
                     {{ isFollowing ? "팔로우 취소" : "팔로우" }}
                   </v-btn>
+                  <!-- 게시글 메뉴 (게시글 삭제/신고) -->
                   <v-menu>
                     <template v-slot:activator="{ props }">
                       <v-btn icon v-bind="props" variant="text" class="menu-btn">
@@ -50,7 +51,6 @@
                       </v-btn>
                     </template>
                     <v-list>
-                      <!-- 로그인한 유저와 작성자가 같으면 게시글 삭제, 아니면 신고하기 -->
                       <v-list-item v-if="loginUserNickName === postDetail.userNickName" @click="deletePost">
                         <template v-slot:prepend>
                           <v-icon color="error" class="mr-2">mdi-delete</v-icon>
@@ -80,8 +80,8 @@
                 height="400"
               >
                 <v-carousel-item
-                  v-for="(photo, idx) in postDetail.postPhotos"
-                  :key="idx"
+                  v-for="photo in postDetail.postPhotos"
+                  :key="photo"
                   :src="photo"
                   cover
                 >
@@ -138,9 +138,6 @@
                 >
                   댓글 {{ postDetail.commentCount || comments.length }}
                 </v-btn>
-                <v-btn variant="text" prepend-icon="mdi-share-variant-outline" class="interaction-btn">
-                  공유하기
-                </v-btn>
               </div>
 
               <!-- 댓글 섹션 -->
@@ -150,9 +147,10 @@
                   <div v-if="comments.length > 0" class="comments-section mt-4">
                     <v-list class="comment-list">
                       <v-list-item
-                        v-for="(comment, idx) in comments"
-                        :key="idx"
+                        v-for="comment in comments"
+                        :key="comment.id"
                         class="comment-item mb-3"
+                        @contextmenu.prevent="openContextMenu($event, comment)"
                       >
                         <template v-slot:prepend>
                           <v-avatar size="36" class="mr-3">
@@ -164,13 +162,36 @@
                             <span class="font-weight-medium comment-author">
                               {{ comment.userNickname }}
                             </span>
-                            <span class="comment-text ml-2">
-                              {{ comment.contents }}
+                            <template v-if="editingCommentId === comment.id">
+                              <!-- 수정 모드: 댓글 아래에 펼쳐지는 텍스트 필드 -->
+                              <v-text-field 
+                                v-model="editingCommentContent"
+                                dense
+                                hide-details
+                                variant="filled"
+                                class="edit-input"
+                                placeholder="수정할 내용을 입력하세요..."
+                              />
+                              <div class="edit-buttons">
+                                <v-btn small class="edit-btn" @click="saveUpdatedComment(comment.id)">
+                                  저장
+                                </v-btn>
+                                <v-btn small text class="cancel-btn" @click="cancelEdit">
+                                  취소
+                                </v-btn>
+                              </div>
+                            </template>
+                            <template v-else>
+                              <span class="comment-text ml-2">
+                                {{ comment.contents }}
+                              </span>
+                            </template>
+                          </div>
+                          <div class="update-row">
+                            <span class="text-caption text-medium-emphasis">
+                              {{ formatTime(comment.updatedTime) }}
                             </span>
                           </div>
-                          <span class="text-caption text-medium-emphasis mt-1">
-                            {{ comment.createdAt || '방금 전' }}
-                          </span>
                         </v-list-item-content>
                       </v-list-item>
                     </v-list>
@@ -212,6 +233,23 @@
         </v-container>
       </v-main>
     </div>
+
+    <!-- 컨텍스트 메뉴: 내 댓글에 우클릭 시 표시 -->
+    <div
+      v-if="contextMenu.visible"
+      :style="{ top: contextMenu.y + 'px', left: contextMenu.x + 'px' }"
+      class="context-menu"
+      @click.stop
+    >
+      <v-list>
+        <v-list-item @click="startEdit(contextMenu.comment)">
+          <v-list-item-title>수정</v-list-item-title>
+        </v-list-item>
+        <v-list-item @click="confirmDeleteComment(contextMenu.comment.id)">
+          <v-list-item-title class="text-error">삭제</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </div>
   </v-app>
 </template>
 
@@ -222,7 +260,6 @@ export default {
     return {
       isFromMyPage: false,
       loading: true,
-      // postDetail에 작성자 정보 포함
       postDetail: {
         contents: "",
         likes: 0,
@@ -238,15 +275,23 @@ export default {
       isLiked: null,
       isFollowing: false,
       placeholderProfile: "https://via.placeholder.com/40",
-      // 로그인한 유저 정보 (userInfo API)
       loginUserNickName: "",
       showComments: false,
+      editingCommentId: null,
+      editingCommentContent: "",
+      // 컨텍스트 메뉴 상태
+      contextMenu: {
+        visible: false,
+        x: 0,
+        y: 0,
+        comment: null
+      }
     };
   },
   created() {
     this.isFromMyPage = this.$route.query.from === "mypage";
     this.initializePage();
-    this.fetchUserInfo(); // 로그인한 유저 정보 불러오기
+    this.fetchUserInfo();
   },
   methods: {
     async initializePage() {
@@ -266,9 +311,7 @@ export default {
         const response = await axios.get(
           `${process.env.VUE_APP_API_BASE_URL}/user/userInfo`,
           {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-            }
+            headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
           }
         );
         this.loginUserNickName = response.data.userNickName;
@@ -300,9 +343,7 @@ export default {
         const response = await axios.post(
           `${process.env.VUE_APP_API_BASE_URL}/post/writerInfo/${postId}`,
           null,
-          {
-            headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
-          }
+          { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } }
         );
         const writerInfo = response.data;
         this.postDetail.userNickName = writerInfo.userNickName;
@@ -317,9 +358,7 @@ export default {
         const response = await axios.post(
           `${process.env.VUE_APP_API_BASE_URL}/post/getLike/${postId}`,
           {},
-          {
-            headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
-          }
+          { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } }
         );
         this.isLiked = response.data.liked;
         this.postDetail.likes = response.data.likes;
@@ -333,9 +372,7 @@ export default {
         await axios.post(
           `${process.env.VUE_APP_API_BASE_URL}/post/postLike/${postId}`,
           {},
-          {
-            headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
-          }
+          { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } }
         );
         await this.fetchLikeData();
       } catch (error) {
@@ -347,9 +384,7 @@ export default {
       try {
         const response = await axios.get(
           `${process.env.VUE_APP_API_BASE_URL}/post/getComments/${postId}`,
-          {
-            headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
-          }
+          { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } }
         );
         this.comments = response.data;
       } catch (error) {
@@ -400,7 +435,6 @@ export default {
     async toggleFollow() {
       const previousState = this.isFollowing;
       this.isFollowing = !this.isFollowing;
-      
       try {
         const payload = { nickName: this.postDetail.userNickName };
         const response = await axios.post(
@@ -447,13 +481,10 @@ export default {
         console.error("팔로우 상태 조회 실패:", error);
       }
     },
-    // 작성자 정보를 클릭하면, 로그인한 유저와 작성자 정보 비교 후 페이지 이동
     goToUserPage() {
       if (this.loginUserNickName === this.postDetail.userNickName) {
-        // 로그인한 유저와 작성자가 같으면 마이페이지로 이동
         this.$router.push({ path: "/user/mypage" });
       } else {
-        // 다르면 yourPage로 이동 (쿼리 파라미터로 작성자 닉네임 전달)
         this.$router.push({ path: "/user/yourpage", query: { nickName: this.postDetail.userNickName } });
       }
     },
@@ -462,10 +493,93 @@ export default {
       if (this.showComments && !this.comments.length) {
         this.fetchComments();
       }
+    },
+    // 댓글 수정 관련 메서드
+    startEdit(comment) {
+      this.editingCommentId = comment.id;
+      this.editingCommentContent = comment.contents;
+      this.closeContextMenu();
+    },
+    cancelEdit() {
+      this.editingCommentId = null;
+      this.editingCommentContent = "";
+    },
+    async saveUpdatedComment(commentId) {
+      if (!this.editingCommentContent.trim()) return;
+      try {
+        const payload = { commentId, contents: this.editingCommentContent };
+        const response = await axios.post(
+          `${process.env.VUE_APP_API_BASE_URL}/post/updateComment`,
+          payload,
+          { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } }
+        );
+        const updatedComment = response.data;
+        const index = this.comments.findIndex(c => c.id === commentId);
+        if (index !== -1) {
+          this.comments.splice(index, 1, updatedComment);
+        }
+        this.cancelEdit();
+      } catch (error) {
+        console.error("댓글 수정 실패:", error);
+      }
+    },
+    // 댓글 삭제 메서드
+    async confirmDeleteComment(commentId) {
+      if (confirm("정말 댓글을 삭제하시겠습니까?")) {
+        try {
+          const payload = { commentId };
+          const response = await axios.post(
+            `${process.env.VUE_APP_API_BASE_URL}/post/deleteComment`,
+            payload,
+            { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } }
+          );
+          alert(response.data);
+          this.comments = this.comments.filter(comment => comment.id !== commentId);
+          this.closeContextMenu();
+        } catch (error) {
+          console.error("댓글 삭제 실패:", error);
+        }
+      }
+    },
+    // createdTime이 일주일 이내이면 "x일 전", 그 이상이면 "YYYY년 M월 D일" 형식으로 반환
+    formatDate(createdTime) {
+      if (!createdTime) return "";
+      const now = new Date();
+      const created = new Date(createdTime);
+      const diffDays = Math.floor((now - created) / (1000 * 60 * 60 * 24));
+      if (diffDays < 7) {
+        return diffDays === 0 ? "오늘" : `${diffDays}일 전`;
+      } else {
+        return `${created.getFullYear()}년 ${created.getMonth() + 1}월 ${created.getDate()}일`;
+      }
+    },
+    // 기존 formatTime 메서 (댓글 수정 시 업데이트된 시간 표시용)
+    formatTime(timeStr) {
+      const now = new Date();
+      const commentTime = new Date(timeStr);
+      const diffMs = now - commentTime;
+      const diffMins = Math.floor(diffMs / 60000);
+      if (diffMins < 1) return "방금 전";
+      if (diffMins < 60) return `${diffMins}분 전`;
+      const diffHours = Math.floor(diffMins / 60);
+      if (diffHours < 24) return `${diffHours}시간 전`;
+      const diffDays = Math.floor(diffHours / 24);
+      return `${diffDays}일 전`;
+    },
+    // 컨텍스트 메뉴 열기 (우클릭 이벤트)
+    openContextMenu(e, comment) {
+      if (this.loginUserNickName !== comment.userNickname) return;
+      this.contextMenu.visible = true;
+      this.contextMenu.x = e.clientX;
+      this.contextMenu.y = e.clientY;
+      this.contextMenu.comment = comment;
+    },
+    closeContextMenu() {
+      this.contextMenu.visible = false;
+      this.contextMenu.comment = null;
     }
   },
   mounted() {
-    // 페이지 로드 시 맨 위로 스크롤
     window.scrollTo(0, 0);
   }
 };
@@ -571,6 +685,76 @@ export default {
   font-size: 0.95rem;
   word-break: break-word;
 }
+.edit-input {
+  max-width: 80%;
+  margin-top: 4px;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0;
+  padding: 0;
+}
+.edit-input .v-field__outline {
+  border-bottom: 2px solid #FFB74D !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+}
+.edit-input .v-field--focused .v-field__outline {
+  border-bottom: 2px solid #FFB74D !important;
+  box-shadow: none !important;
+}
+.edit-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+.edit-btn {
+  background: linear-gradient(90deg, #ff9800, #f57c00);
+  color: white !important;
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  text-transform: none;
+  transition: opacity 0.2s ease;
+}
+.edit-btn:hover {
+  opacity: 0.9;
+}
+.cancel-btn {
+  color: #f57c00;
+  font-size: 0.8rem;
+  text-transform: none;
+  border: 1px solid #f57c00;
+  border-radius: 20px;
+  padding: 4px 12px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.cancel-btn:hover {
+  background: #f57c00;
+  color: white !important;
+}
+.update-row {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: #888;
+}
+.context-menu {
+  position: fixed;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+}
+.context-menu .v-list {
+  padding: 0;
+}
+.context-menu .v-list-item {
+  cursor: pointer;
+}
+.context-menu .v-list-item:hover {
+  background-color: #f5f5f5;
+}
 .comment-input-section {
   background-color: #fff;
   border-radius: 12px;
@@ -631,39 +815,33 @@ export default {
 .white-text {
   color: white !important;
 }
-.comments-section {
-  max-height: 500px;
-  overflow-y: auto;
-}
-
-/* 트랜지션 애니메이션 */
-.v-expand-transition-enter-active,
-.v-expand-transition-leave-active {
-  transition: all 0.3s ease;
-}
-
-.v-expand-transition-enter-from,
-.v-expand-transition-leave-to {
-  opacity: 0;
-  transform: translateY(-20px);
-}
-
-/* 모바일 대응 */
 @media (max-width: 600px) {
   .post-detail-card {
     margin: 0 12px;
   }
-
   .post-images :deep(.v-carousel) {
     height: 300px !important;
   }
-
   .post-header {
     padding: 12px !important;
   }
-
   .post-content {
     padding: 16px !important;
+  }
+  .comment-menu-btn {
+    min-width: 0;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+  .comment-menu-btn .v-icon {
+    font-size: 20px;
+    color: #555;
+  }
+  .comment-menu-content {
+    position: absolute !important;
+    margin-top: 4px;
+    z-index: 10;
   }
 }
 </style>
