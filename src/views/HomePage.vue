@@ -667,6 +667,7 @@ export default {
     async fetchTopRestaurants() {
       try {
         const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/restaurant/top-favorites`);
+        console.log("✅ 레스토랑 데이터:", response.data); 
         this.topRestaurants = response.data;
       } catch (error) {
         console.error("레스토랑 데이터를 가져오는 중 오류 발생", error);
