@@ -144,7 +144,11 @@
             loginData
           );
   
-          const { token, refreshToken } = response.data;
+          const { id, name, email, userType, token, refreshToken } = response.data;
+          localStorage.setItem("restaurantId", id);
+          localStorage.setItem("restaurantName", name);
+          localStorage.setItem("restaurantEmail", email);
+          localStorage.setItem("userType", userType);
           localStorage.setItem("token", token);
           localStorage.setItem("refreshToken", refreshToken);
   
