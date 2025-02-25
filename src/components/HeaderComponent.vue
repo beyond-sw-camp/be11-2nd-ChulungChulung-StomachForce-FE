@@ -74,7 +74,7 @@
         <v-col cols="auto" class="d-flex align-center">
           <template v-if="!isLogin">
             <v-btn 
-              :to="{ path: '/user/create' }"
+              @click="doCreate"
               class="mr-4"
               variant="text"
               color="black"
@@ -158,7 +158,10 @@ export default {
       window.location.href = "/";
     },
     doLogin() {
-      window.location.href = "/user/login";
+      window.location.href = "/login";
+    },
+    doCreate() {
+      window.location.href = "/selectCreate";
     },
     myPage() {
       window.location.href = "/user/mypage";

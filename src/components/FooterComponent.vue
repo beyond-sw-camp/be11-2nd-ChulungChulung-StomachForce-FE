@@ -55,7 +55,7 @@
 .footer-container {
     background-color: white !important;
     color: #666;
-    padding: 40px 0;
+    padding: 0px 0;
     border-top: 1px solid #eee;
 }
 
@@ -63,7 +63,7 @@
     font-size: 24px;
     font-weight: bold;
     color: #333;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 }
 
 .copyright, .rights {
