@@ -99,6 +99,9 @@ export default {
                    (!this.photos || this.photos.length <= 5);
         }
     },
+    mounted() {
+        window.scrollTo(0, 0);
+    },
     methods: {
         async submitPost() {
             try {
