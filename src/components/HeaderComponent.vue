@@ -4,8 +4,8 @@
       <v-row align="center">
         <!-- 로고 & 검색창 & 로그인 버튼 -->
         <v-col cols="auto" class="d-flex align-center">
-          <img src="@/assets/stomach.png" style="object-fit: contain; max-height: 60px; max-width: 60px;" class="mr-2" alt="stomach logo">
-          <v-btn text class="text-h5 font-weight-bold logo-text" to="/">뱃살력</v-btn>
+          <img src="@/assets/stomach.png" style="object-fit: contain; max-height: 60px; max-width: 60px;" class="" alt="stomach logo">
+          <v-btn variant="plain" text class="text-h5 font-weight-bold logo-text no-active-bg" to="/">뱃살력</v-btn>
         </v-col>
         
         <v-col cols="4">
@@ -74,7 +74,7 @@
         <v-col cols="auto" class="d-flex align-center">
           <template v-if="!isLogin">
             <v-btn 
-              :to="{ path: '/user/create' }"
+              @click="doCreate"
               class="mr-4"
               variant="text"
               color="black"
@@ -158,7 +158,10 @@ export default {
       window.location.href = "/";
     },
     doLogin() {
-      window.location.href = "/user/login";
+      window.location.href = "/login";
+    },
+    doCreate() {
+      window.location.href = "/selectCreate";
     },
     myPage() {
       window.location.href = "/user/mypage";
@@ -183,6 +186,24 @@ export default {
 </script>
 
 <style scoped>
+@font-face {
+    font-family: 'Cafe24Ssurround';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/Cafe24Ssurround.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+.no-active-bg {
+  background-color: transparent !important;
+}
+
+/* Vuetify가 active 상태일 때 배경색이 들어가는 걸 방지 */
+.no-active-bg:active, 
+.no-active-bg:focus, 
+.no-active-bg:hover {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
 .top-bar {
   border-bottom: 2px solid black;
 }
@@ -191,11 +212,12 @@ export default {
   height: 56px;
 }
 .menu-item {
+  font-family: 'Cafe24Ssurround', sans-serif;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 500;
   color: #424242;
   text-transform: none;
-  letter-spacing: 0;
+  letter-spacing: -0.5px;
   height: 56px;
   position: relative;
   transition: color 0.3s ease;
@@ -245,7 +267,10 @@ export default {
   box-shadow: 0 4px 25px 0 rgba(0, 0, 0, 0.1);
 }
 .logo-text {
-  color: #F04E23;
+  color: #F04E23 !important; /* 항상 진한 색 유지 */
+  font-weight: bold !important; /* 항상 굵게 */
+  opacity: 1 !important; /* 흐려지지 않도록 */
+  text-transform: none; /* Vuetify 기본 스타일 제거 */
 }
 .login-btn {
   text-transform: none;

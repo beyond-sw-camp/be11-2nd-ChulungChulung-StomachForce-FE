@@ -2,7 +2,7 @@
     <v-container>
         <v-card class="mx-auto my-4" max-width="800">
             <v-card-title class="text-h4 pa-4">
-                문의글 등록
+                {{ pageTitle }}
             </v-card-title>
 
             <v-divider></v-divider>
@@ -92,6 +92,7 @@ import axios from 'axios';
 export default {
     data() {
         return { 
+            pageTitle: '문의글 등록',  // 기본 제목
             title: '',
             contents: '',
             category: 'INQUIRY',
@@ -113,6 +114,20 @@ export default {
                    this.visibility &&
                    (!this.photos || this.photos.length <= 5);
         }
+    },
+    mounted() {
+        // URL 쿼리에서 category 값을 받아오면 설정
+        if (this.$route.query.category) {
+            this.category = this.$route.query.category;
+        }
+        if (this.$route.query.title) {
+            this.title = this.$route.query.title;
+        }
+        // `fromEvent` 값이 존재하면 제목을 "이벤트 배너 신청"으로 변경
+        if (this.$route.query.fromEvent) {
+            this.pageTitle = '이벤트 배너 신청';
+        }
+        window.scrollTo(0, 0);
     },
     methods: {
         async submitPost() {
