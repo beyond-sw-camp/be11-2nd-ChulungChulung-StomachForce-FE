@@ -134,7 +134,7 @@
             >
               <div 
                 class="influencer-item mx-2"
-                @click="viewInfluencerProfile(influencer.userId)"
+                @click="goToUserPage(influencer.nickname)"
               >
                 <div class="influencer-image-wrapper">
                   <v-img 
@@ -192,18 +192,6 @@
                   ></v-img>
                 </div>
                 <div class="post-info">
-                  <div class="post-tags" v-if="post.tags && post.tags.length > 0">
-                    <v-chip
-                      v-for="(tag, index) in post.tags"
-                      :key="index"
-                      class="mr-1 mb-1"
-                      color="orange-lighten-4"
-                      variant="flat"
-                      size="x-small"
-                    >
-                      #{{ tag }}
-                    </v-chip>
-                  </div>
                   <div class="post-stats">
                     <span class="stat-item" :class="post.isLiked ? 'text-orange-darken-2' : 'text-grey'">
                       <v-icon small :color="post.isLiked ? 'orange-darken-2' : 'grey'">
@@ -229,7 +217,25 @@
           </div>
           
           <v-row justify="center" align="center">
-            <v-col cols="12" sm="6" class="text-center">
+            <v-col cols="12" sm="4" class="text-center">
+              <v-img
+                :src="require('@/assets/등업이미지.png')"
+                class="help-image mx-auto"
+                max-width="400"
+                @click="$router.push({ 
+    path: '/service/post/create', 
+    query: { category: 'REQUEST', title: '등업 신청합니다.', fromEvent2: 'true' } 
+  })"
+                style="cursor: pointer"
+              >
+                <template v-slot:placeholder>
+                  <v-row align="center" justify="center">
+                    <v-progress-circular indeterminate color="orange"></v-progress-circular>
+                  </v-row>
+                </template>
+              </v-img>
+            </v-col>
+            <v-col cols="12" sm="4" class="text-center">
               <v-img
                 :src="require('@/assets/신청이미지.png')"
                 class="help-image mx-auto"
@@ -248,7 +254,7 @@
               </v-img>
             </v-col>
             
-            <v-col cols="12" sm="6" class="text-center">
+            <v-col cols="12" sm="4" class="text-center">
               <v-img
                 :src="require('@/assets/신고이미지.png')"
                 class="help-image mx-auto"
@@ -263,8 +269,11 @@
                 </template>
               </v-img>
             </v-col>
+
+            
           </v-row>
         </v-col>
+        
       </v-row>
     </v-container>
   </div>
@@ -637,6 +646,7 @@ export default {
         { text: '양식', image: '양식.png' , route:'/post/postList' }
       ],
       posts: [],
+      loginUserNickName: ""
     };
   },
   computed: {
@@ -662,8 +672,17 @@ export default {
     await this.fetchOngoingEvents();
     await this.fetchCategories();
     await this.fetchPosts();
+    await this.fetchUserInfo();
   },
   methods: {
+    goToUserPage(nickname) {
+    const loginUserNickName = this.loginUserNickName;  // 로그인한 사용자 닉네임
+    if (loginUserNickName === nickname) {
+      this.$router.push({ path: "/user/mypage" });
+    } else {
+      this.$router.push({ path: "/user/yourpage", query: { nickName: nickname } });
+    }
+  },
     async fetchTopRestaurants() {
       try {
         const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/restaurant/top-favorites`);
@@ -691,7 +710,21 @@ export default {
         console.error("이벤트 데이터를 가져오는 중 오류 발생", error);
       }
     },
-
+    async fetchUserInfo() {
+      try {
+        const response = await axios.get(
+          `${process.env.VUE_APP_API_BASE_URL}/user/userInfo`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+            }
+          }
+        );
+        this.loginUserNickName = response.data.userNickName;
+      } catch (error) {
+        console.error("로그인 유저 정보 조회 실패:", error);
+      }
+    },
     async fetchCategories() {
       try {
         const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/restaurant/categories`);
@@ -783,6 +816,7 @@ export default {
   },
   beforeUnmount() {
     this.stopAutoSlide();
-  }
+  },
+  
 };
 </script>

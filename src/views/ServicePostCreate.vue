@@ -127,6 +127,9 @@ export default {
         if (this.$route.query.fromEvent) {
             this.pageTitle = '이벤트 배너 신청';
         }
+        if (this.$route.query.fromEvent2) {
+            this.pageTitle = '등업 신청';
+        }
         window.scrollTo(0, 0);
     },
     methods: {

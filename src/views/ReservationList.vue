@@ -9,6 +9,7 @@
                 <th class="text-left">예약번호</th>
                 <th class="text-left">식당명</th>
                 <th class="text-left">예약 상세</th>
+                <th class="text-left">리뷰쓰러가기</th>
                 <th class="text-left">예약 취소</th>
               </tr>
             </thead>
@@ -19,6 +20,11 @@
                 <td>
                   <v-btn color="primary" @click="goToReservationDetail(reservation.id)">
                     상세보기
+                  </v-btn>
+                </td>
+                <td>
+                  <v-btn color="success" @click="loadRestaurantDetail(reservation.restaurantId)">
+                    리뷰 작성
                   </v-btn>
                 </td>
                 <td>
@@ -49,13 +55,20 @@
       return {
         reservations: [],
         currentPage: 1,
-        totalPages: 1,
+        totalPages: 1
       };
     },
     mounted() {
       this.fetchReservations();
     },
     methods: {
+      async loadRestaurantDetail(restaurantId) {
+      try {
+        this.$router.push(`/restaurant/detail/${restaurantId}`);
+      } catch (e) {
+        console.error("레스토랑 상세 정보 로드 실패:", e);
+      }
+    },
       async fetchReservations() {
         try {
           const userId = localStorage.getItem("userId"); // 유저 ID 가져오기
