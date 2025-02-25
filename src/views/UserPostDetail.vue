@@ -13,8 +13,8 @@
     <div v-else>
       <!-- 데이터 로드 후 화면 -->
       <v-main class="post-detail-bg">
-        <v-container class="py-8">
-          <v-card class="post-detail-card mx-auto" elevation="6" max-width="800">
+        <v-container class="py-6">
+          <v-card class="post-detail-card mx-auto" elevation="6" max-width="600">
             <!-- 작성자 정보 (writerInfo API로부터 받은 정보 사용) -->
             <div class="post-header pa-4">
               <div class="d-flex align-center justify-space-between">
@@ -77,7 +77,7 @@
                 v-if="postDetail.postPhotos && postDetail.postPhotos.length > 0"
                 hide-delimiter-background
                 show-arrows="hover"
-                height="500"
+                height="400"
               >
                 <v-carousel-item
                   v-for="(photo, idx) in postDetail.postPhotos"
@@ -130,73 +130,83 @@
                   </v-btn>
                   <span class="text-body-2">{{ postDetail.likes }}</span>
                 </div>
-                <v-btn variant="text" prepend-icon="mdi-comment-outline" class="interaction-btn">
+                <v-btn 
+                  variant="text" 
+                  prepend-icon="mdi-comment-outline" 
+                  class="interaction-btn"
+                  @click="toggleComments"
+                >
                   댓글 {{ postDetail.commentCount || comments.length }}
                 </v-btn>
                 <v-btn variant="text" prepend-icon="mdi-share-variant-outline" class="interaction-btn">
                   공유하기
                 </v-btn>
               </div>
+
               <!-- 댓글 섹션 -->
-              <v-divider class="my-4"></v-divider>
-              <div v-if="comments.length > 0" class="comments-section mt-4">
-                <v-list class="comment-list">
-                  <v-list-item
-                    v-for="(comment, idx) in comments"
-                    :key="idx"
-                    class="comment-item mb-3"
-                  >
-                    <template v-slot:prepend>
-                      <v-avatar size="36" class="mr-3">
-                        <v-img :src="comment.userProfile || placeholderProfile" />
-                      </v-avatar>
-                    </template>
-                    <v-list-item-content>
-                      <div class="comment-content">
-                        <span class="font-weight-medium comment-author">
-                          {{ comment.userNickname }}
-                        </span>
-                        <span class="comment-text ml-2">
-                          {{ comment.contents }}
-                        </span>
-                      </div>
-                      <span class="text-caption text-medium-emphasis mt-1">
-                        {{ comment.createdAt || '방금 전' }}
-                      </span>
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list>
-              </div>
-              <!-- 댓글 입력 -->
-              <div class="comment-input-section" :class="{ 'mt-4': comments.length > 0 }">
-                <v-row no-gutters align="center">
-                  <v-col cols="12">
-                    <v-text-field
-                      v-model="newComment"
-                      placeholder="댓글을 입력하세요..."
-                      variant="outlined"
-                      density="comfortable"
-                      hide-details
-                      class="comment-input"
-                      @keyup.enter="submitComment"
-                    >
-                      <template v-slot:append-inner>
-                        <v-btn
-                          icon
-                          variant="text"
-                          size="small"
-                          color="primary"
-                          class="submit-icon-btn"
-                          @click="submitComment"
-                          :disabled="!newComment.trim()"
+              <v-expand-transition>
+                <div v-show="showComments">
+                  <v-divider class="my-4"></v-divider>
+                  <div v-if="comments.length > 0" class="comments-section mt-4">
+                    <v-list class="comment-list">
+                      <v-list-item
+                        v-for="(comment, idx) in comments"
+                        :key="idx"
+                        class="comment-item mb-3"
+                      >
+                        <template v-slot:prepend>
+                          <v-avatar size="36" class="mr-3">
+                            <v-img :src="comment.userProfile || placeholderProfile" />
+                          </v-avatar>
+                        </template>
+                        <v-list-item-content>
+                          <div class="comment-content">
+                            <span class="font-weight-medium comment-author">
+                              {{ comment.userNickname }}
+                            </span>
+                            <span class="comment-text ml-2">
+                              {{ comment.contents }}
+                            </span>
+                          </div>
+                          <span class="text-caption text-medium-emphasis mt-1">
+                            {{ comment.createdAt || '방금 전' }}
+                          </span>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </v-list>
+                  </div>
+                  <!-- 댓글 입력 -->
+                  <div class="comment-input-section" :class="{ 'mt-4': comments.length > 0 }">
+                    <v-row no-gutters align="center">
+                      <v-col cols="12">
+                        <v-text-field
+                          v-model="newComment"
+                          placeholder="댓글을 입력하세요..."
+                          variant="outlined"
+                          density="comfortable"
+                          hide-details
+                          class="comment-input"
+                          @keyup.enter="submitComment"
                         >
-                          <v-icon>mdi-send</v-icon>
-                        </v-btn>
-                      </template>
-                    </v-text-field>
-                  </v-col>
-                </v-row>
-              </div>
+                          <template v-slot:append-inner>
+                            <v-btn
+                              icon
+                              variant="text"
+                              size="small"
+                              color="primary"
+                              class="submit-icon-btn"
+                              @click="submitComment"
+                              :disabled="!newComment.trim()"
+                            >
+                              <v-icon>mdi-send</v-icon>
+                            </v-btn>
+                          </template>
+                        </v-text-field>
+                      </v-col>
+                    </v-row>
+                  </div>
+                </div>
+              </v-expand-transition>
             </v-card-text>
           </v-card>
         </v-container>
@@ -229,7 +239,8 @@ export default {
       isFollowing: false,
       placeholderProfile: "https://via.placeholder.com/40",
       // 로그인한 유저 정보 (userInfo API)
-      loginUserNickName: ""
+      loginUserNickName: "",
+      showComments: false,
     };
   },
   created() {
@@ -445,12 +456,20 @@ export default {
         // 다르면 yourPage로 이동 (쿼리 파라미터로 작성자 닉네임 전달)
         this.$router.push({ path: "/user/yourpage", query: { nickName: this.postDetail.userNickName } });
       }
+    },
+    toggleComments() {
+      this.showComments = !this.showComments;
+      if (this.showComments && !this.comments.length) {
+        this.fetchComments();
+      }
     }
+  },
+  mounted() {
+    // 페이지 로드 시 맨 위로 스크롤
+    window.scrollTo(0, 0);
   }
 };
 </script>
-
-
 
 <style scoped>
 .post-detail-bg {
@@ -458,8 +477,8 @@ export default {
   min-height: 100vh;
 }
 .post-detail-card {
-  max-width: 800px;
-  border-radius: 20px;
+  max-width: 600px;
+  border-radius: 16px;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(10px);
@@ -468,16 +487,18 @@ export default {
 .post-header {
   background: white;
   border-bottom: 1px solid rgba(255, 87, 34, 0.1);
+  padding: 16px !important;
 }
 .post-images {
   background: #fff8f6;
 }
 .post-images :deep(.v-carousel) {
   box-shadow: 0 4px 12px rgba(255, 87, 34, 0.1);
+  height: 400px !important;
 }
 .content-text {
-  font-size: 1.1rem;
-  line-height: 1.8;
+  font-size: 1rem;
+  line-height: 1.6;
   color: #37474f;
   white-space: pre-wrap;
 }
@@ -609,5 +630,40 @@ export default {
 }
 .white-text {
   color: white !important;
+}
+.comments-section {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+/* 트랜지션 애니메이션 */
+.v-expand-transition-enter-active,
+.v-expand-transition-leave-active {
+  transition: all 0.3s ease;
+}
+
+.v-expand-transition-enter-from,
+.v-expand-transition-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+/* 모바일 대응 */
+@media (max-width: 600px) {
+  .post-detail-card {
+    margin: 0 12px;
+  }
+
+  .post-images :deep(.v-carousel) {
+    height: 300px !important;
+  }
+
+  .post-header {
+    padding: 12px !important;
+  }
+
+  .post-content {
+    padding: 16px !important;
+  }
 }
 </style>

@@ -4,7 +4,6 @@
       <v-col cols="12" sm="8" md="4" lg="4">
         <v-card elevation="8" class="login-card">
 
-
           <v-card-title class="text-h4 text-center font-weight-bold mb-2">
             Welcome Back
           </v-card-title>
