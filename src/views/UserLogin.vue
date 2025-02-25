@@ -3,12 +3,7 @@
     <v-row align="center" justify="center" class="fill-height">
       <v-col cols="12" sm="8" md="4" lg="4">
         <v-card elevation="8" class="login-card">
-          <!-- 로고 영역 -->
-          <div class="text-center pt-8">
-            <v-avatar size="80" class="mb-4">
-              <v-img src="@/assets/stomach.png" alt="로고"></v-img>
-            </v-avatar>
-          </div>
+
 
           <v-card-title class="text-h4 text-center font-weight-bold mb-2">
             Welcome Back
