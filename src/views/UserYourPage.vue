@@ -13,7 +13,6 @@
           <v-list-item @click="reportUser">
             <v-list-item-title>신고하기</v-list-item-title>
           </v-list-item>
-          <!-- 내가 해당 페이지 주인을 차단했는지 여부에 따라 버튼 텍스트 표시 -->
           <v-list-item v-if="!iBlockedOwner" @click="blockUser">
             <v-list-item-title>차단하기</v-list-item-title>
           </v-list-item>
@@ -24,7 +23,7 @@
       </v-menu>
     </v-app-bar>
 
-    <!-- 만약 페이지 주인이 현재 방문자를 차단한 경우 -->
+    <!-- 페이지 주인이 현재 방문자를 차단한 경우 -->
     <v-main v-if="isBlockedByOwner">
       <v-container class="pa-12" style="text-align: center;">
         <h2>비공개 계정입니다.</h2>
@@ -43,7 +42,17 @@
             </v-avatar>
           </v-col>
           <v-col cols="12" sm="6" class="user-info text-left">
-            <h2 class="user-name">{{ userNickName }}</h2>
+            <h2 class="user-name">
+              {{ userNickName }}
+              <!-- influencer가 Y일 때만 아이콘 표시 -->
+              <v-icon 
+                v-if="influencer === 'Y'" 
+                class="ml-1 gold-icon" 
+                size="30"
+              >
+                mdi-silverware-variant
+              </v-icon>
+            </h2>
             <p class="user-email">{{ userEmail }}</p>
             <v-row class="stats mt-2" justify="left">
               <v-col cols="auto" class="stat-item text-center">
@@ -119,6 +128,7 @@ export default {
       userNickName: "",
       userEmail: "",
       profilePhoto: "https://via.placeholder.com/130",
+      influencer: "N", // 서버로부터 받은 influencer 상태 (기본값)
       followersCount: 0,
       followingCount: 0,
       totalPost: 0,
@@ -173,6 +183,7 @@ export default {
           this.followingCount = data.followings;
           this.totalPost = data.totalPost;
           this.isFollowing = data.isFollowing || false;
+          this.influencer = data.influencer; // influencer 상태 설정
           this.postPhotos = data.postPhotos || [];
           this.postIds = data.postIds || [];
         } else {
@@ -254,7 +265,6 @@ export default {
     reportUser() {
       alert("신고하기 기능 실행 (예시)");
     },
-    // 페이지 주인을 차단하는 기능: this.$route.query.nickName 사용
     async blockUser() {
       const payload = {
         blockedUserNickName: this.$route.query.nickName
@@ -273,7 +283,6 @@ export default {
         alert("차단 요청에 실패했습니다.");
       }
     },
-    // 페이지 주인의 차단 해제 기능: this.$route.query.nickName 사용
     async unblockUser() {
       const payload = {
         blockedUserNickName: this.$route.query.nickName
@@ -292,7 +301,6 @@ export default {
         alert("차단 해제 요청에 실패했습니다.");
       }
     },
-    // 차단 여부 확인: POST 요청 사용, this.$route.query.nickName 사용
     async checkBlockStatus() {
       try {
         const payload = {
@@ -308,8 +316,6 @@ export default {
             }
           }
         );
-        // response.data[0]: 페이지 주인이 방문자를 차단했는지 여부
-        // response.data[1]: 내가 페이지 주인을 차단했는지 여부
         this.isBlockedByOwner = response.data[0];
         this.iBlockedOwner = response.data[1];
       } catch (error) {
@@ -370,5 +376,8 @@ export default {
 }
 .clickable-card:hover .post-image {
   opacity: 0.8;
+}
+.gold-icon {
+  color: #FFD700 !important; /* 순수한 금색 */
 }
 </style>
