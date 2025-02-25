@@ -234,7 +234,10 @@
                 :src="require('@/assets/신청이미지.png')"
                 class="help-image mx-auto"
                 max-width="400"
-                @click="$router.push('/service/post/create')"
+                @click="$router.push({ 
+    path: '/service/post/create', 
+    query: { category: 'REQUEST', title: '이벤트 배너 신청합니다.', fromEvent: 'true' } 
+  })"
                 style="cursor: pointer"
               >
                 <template v-slot:placeholder>
@@ -730,40 +733,45 @@ export default {
       this.$router.push(`/influencer/${userId}`);
     },
     async fetchPosts() {
-      try {
-        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/post/postList`, {
-          params: { page: 0, size: 10 },
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-          }
-        });
-        
-        this.posts = response.data.content;
-        
-        // 각 포스트의 좋아요 상태 가져오기
-        await Promise.all(this.posts.map(post => this.fetchLikeData(post)));
-      } catch (error) {
-        console.error("포스트 데이터를 가져오는 중 오류 발생", error);
-      }
-    },
+  try {
+    const token = localStorage.getItem("accessToken");
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+    const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/post/postList`, {
+      params: { page: 0, size: 10 },
+      headers
+    });
+
+    this.posts = response.data.content;
+
+    // 각 포스트의 좋아요 상태 가져오기 (로그인한 경우만 실행)
+    if (token) {
+      await Promise.all(this.posts.map(post => this.fetchLikeData(post)));
+    }
+  } catch (error) {
+    console.error("포스트 데이터를 가져오는 중 오류 발생", error);
+  }
+},
 
     async fetchLikeData(post) {
-      try {
-        const response = await axios.post(
-          `${process.env.VUE_APP_API_BASE_URL}/post/getLike/${post.postId}`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-            }
-          }
-        );
-        post.isLiked = response.data.liked;
-        post.likes = response.data.likes;
-      } catch (error) {
-        console.error(`좋아요 상태 가져오기 실패 (postId: ${post.postId})`, error);
+  try {
+    const token = localStorage.getItem("accessToken");
+    if (!token) return; // 로그인하지 않았으면 실행하지 않음
+
+    const response = await axios.post(
+      `${process.env.VUE_APP_API_BASE_URL}/post/getLike/${post.postId}`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${token}` }
       }
-    },
+    );
+
+    post.isLiked = response.data.liked;
+    post.likes = response.data.likes;
+  } catch (error) {
+    console.error(`좋아요 상태 가져오기 실패 (postId: ${post.postId})`, error);
+  }
+},
 
     goToPostDetail(postId) {
       this.$router.push({ name: "UserPostDetail", params: { postId } });

@@ -4,6 +4,7 @@ import RestaurantCreate from "@/views/RestaurantCreate.vue";
 import RestaurantDetailHome from "@/views/RestaurantDetailHome.vue";
 import RestaurantDetailMain from "@/views/RestaurantDetailMain.vue";
 import RestaurantLogin from "@/views/RestaurantLogin.vue";
+import RestaurantMypage from "@/views/RestaurantMypage.vue";
 import RestaurantReviewAll from "@/views/RestaurantReviewAll.vue";
 import MenuList from "@/views/MenuList.vue";
 import MenuCreate from "@/views/MenuCreate.vue";
@@ -59,6 +60,11 @@ export const RestaurantRouter = [
         path: '/menu/update/:id',
         name: 'MenuUpdate',
         component: MenuUpdate
+    },
+    {
+        path: '/restaurant/mypage',
+        name: 'RestaurantMypage',
+        component: RestaurantMypage
     },
 
 

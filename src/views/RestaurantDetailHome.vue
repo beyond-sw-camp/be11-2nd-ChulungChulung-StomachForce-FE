@@ -24,7 +24,7 @@
         {{ restaurant.name }}
       </v-card-title>
     </v-card>
-
+    
     <!-- 매장 사진 (수동 무한 넘기기) -->
     <v-row justify="center" v-if="restaurant.imagePath.length">
       <v-col cols="12" md="8">
@@ -34,8 +34,8 @@
             lazy-src="/assets/loading-placeholder.jpg"
             height="300px"
             contain
-          />
-          <v-card-actions class="d-flex justify-center">
+            />
+            <v-card-actions class="d-flex justify-center">
             <v-btn icon @click="prevImage">
               <v-icon>mdi-chevron-left</v-icon>
             </v-btn>
@@ -47,7 +47,21 @@
         </v-card>
       </v-col>
     </v-row>
-
+    
+    <!-- 대표 메뉴 -->
+    <v-card class="menu-section">
+      <v-card-title class="text-h5">🍔 대표 메뉴</v-card-title>
+      <v-row>
+        <v-col v-for="(menu, index) in restaurant.menus" :key="index" cols="12" sm="6" md="4">
+          <v-card>
+            <v-img :src="menu.image" height="150px"></v-img>
+            <v-card-title>{{ menu.name }}</v-card-title>
+            <v-card-subtitle>{{ menu.price }}원</v-card-subtitle>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-card>
+    
     <!-- 매장 기본 정보 -->
     <v-row class="info-section">
       <v-col cols="12" md="6">
@@ -73,25 +87,12 @@
       </v-col>
     </v-row>
 
-    <!-- 대표 메뉴 -->
-    <v-card class="menu-section">
-      <v-card-title class="text-h5">🍔 대표 메뉴</v-card-title>
-      <v-row>
-        <v-col v-for="(menu, index) in restaurant.menus" :key="index" cols="12" sm="6" md="4">
-          <v-card>
-            <v-img :src="menu.image" height="150px"></v-img>
-            <v-card-title>{{ menu.name }}</v-card-title>
-            <v-card-subtitle>{{ menu.price }}원</v-card-subtitle>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-card>
 
     <!-- 영업시간 -->
     <v-card class="time-section">
       <v-card-title class="text-h5">⏰ 영업시간</v-card-title>
       <v-card-text>
-        <p>🕒 운영 시간: {{ formatTime(restaurant.openingTime) }} ~ {{ formatTime(restaurant.closingTime) }}</p>
+        <p>🕒 운영 시간: {{ restaurant.openingTime }} ~ {{ formatTime(restaurant.closingTime) }}</p>
         <p>🍽️ 라스트 오더: {{ formatTime(restaurant.lastOrder) }}</p>
         <p>☕ 브레이크 타임: {{ formatTime(restaurant.breakTimeStart) }} ~ {{ formatTime(restaurant.breakTimeEnd) }}</p>
       </v-card-text>
@@ -220,13 +221,16 @@ export default {
     this.loadRestaurantDetail();
   },
   methods: {
-    formatTime(dateTime) {
-      if (!dateTime) return "없음";
-      return new Date(dateTime).toLocaleTimeString("ko-KR", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      });
+    formatTime(timeString) {
+      if (!timeString) return "없음";
+
+      // timeString이 "HH:MM:SS" 형식으로 올 경우, 초(:SS) 제거
+      const timeParts = timeString.split(":");
+      if (timeParts.length >= 2) {
+        return `${timeParts[0]}:${timeParts[1]}`; // "HH:MM" 형식으로 반환
+      }
+
+      return "없음"; // 예상치 못한 형식일 경우 대비
     },
 
     async loadRestaurantDetail() {
