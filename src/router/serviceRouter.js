@@ -3,6 +3,7 @@ import ServicePostCreate from "@/views/ServicePostCreate.vue";
 import ServicePostList from "@/views/ServicePostList.vue";
 import ServicePostUpdate from "@/views/ServicePostUpdate.vue";
 import ServiceAndReportList from '@/views/ServiceAndReportList.vue'
+import UserList from '@/views/UserList.vue'
 
 export const serviceRouter = [
     {
@@ -31,5 +32,10 @@ export const serviceRouter = [
         path: '/service',
         name: 'ServiceAndReportList',
         component: ServiceAndReportList
+    },
+    {
+        path: '/user/list',
+        name: 'UserList',
+        component: UserList
     }
 ];
