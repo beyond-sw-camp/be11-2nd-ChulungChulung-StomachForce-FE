@@ -1,5 +1,17 @@
 <template>
     <v-container>
+        <!-- 목록으로 돌아가기 버튼 추가 -->
+        <div class="mb-4">
+            <v-btn
+                color="primary"
+                variant="outlined"
+                @click="goToList"
+                prepend-icon="mdi-arrow-left"
+            >
+                목록으로 돌아가기
+            </v-btn>
+        </div>
+
         <v-card class="mx-auto" max-width="800">
             <v-card-title class="d-flex align-center">
                 신고 내용
@@ -18,6 +30,17 @@
                     {{ answer ? '답변완료' : '답변대기' }}
                 </v-chip>
             </v-card-title>
+
+            <v-card-subtitle class="pt-2">
+                <div class="d-flex align-center mb-2">
+                    <span class="font-weight-medium">신고자:</span>
+                    <span class="ml-2">{{ reporterNickname }}</span>
+                </div>
+                <div class="d-flex align-center">
+                    <span class="font-weight-medium">신고 대상자:</span>
+                    <span class="ml-2">{{ reportedNickname }}</span>
+                </div>
+            </v-card-subtitle>
 
             <v-card-subtitle v-if="report">
                 작성일: {{ new Date(report.createdAt).toLocaleDateString() }}
@@ -156,6 +179,9 @@ export default {
             isAnswerFormValid: false,
             currentUser: null,
             userRole: null,
+            reporterNickname: '',
+            reportedNickname: '',
+            users: [], // 사용자 목록 저장
             answerRules: [
                 v => !!v || '답변 내용을 입력해주세요',
                 v => v.length <= 2000 || '답변은 2000자 이하여야 합니다'
@@ -221,6 +247,19 @@ export default {
                 console.error('답변 조회 실패:', error);
                 this.answer = null;
             }
+
+            // 사용자 목록 조회
+            const usersResponse = await axios.get(
+                `${process.env.VUE_APP_API_BASE_URL}/user/list`
+            );
+            this.users = usersResponse.data;
+
+            // 신고자와 신고 대상자의 닉네임 찾기
+            const reporter = this.users.find(user => user.userId === this.report.reporterId);
+            const reported = this.users.find(user => user.userId === this.report.reportedId);
+
+            this.reporterNickname = reporter ? reporter.nickName : '알 수 없음';
+            this.reportedNickname = reported ? reported.nickName : '알 수 없음';
 
         } catch (error) {
             console.error('신고글 조회 실패:', error);
@@ -345,6 +384,9 @@ export default {
                 console.error('답변 삭제 실패:', error);
                 alert('답변 삭제에 실패했습니다.');
             }
+        },
+        goToList() {
+            this.$router.push('/report/list');
         }
     }
 }

@@ -26,9 +26,24 @@
                         auto-grow
                     ></v-textarea>
 
+                    <!-- 현재 첨부된 사진 표시 -->
+                    <div v-if="currentPhotos && currentPhotos.length > 0" class="mb-4">
+                        <div class="text-subtitle-1 mb-2">현재 첨부된 사진:</div>
+                        <v-row>
+                            <v-col v-for="(photo, index) in currentPhotos" :key="index" cols="4">
+                                <v-img
+                                    :src="photo"
+                                    aspect-ratio="1"
+                                    cover
+                                    class="bg-grey-lighten-2"
+                                ></v-img>
+                            </v-col>
+                        </v-row>
+                    </div>
+
                     <v-file-input
                         v-model="photos"
-                        label="사진 첨부"
+                        label="새로운 사진 첨부"
                         variant="outlined"
                         multiple
                         accept="image/*"
@@ -51,7 +66,7 @@
                             color="primary"
                             :loading="loading"
                             :disabled="!isFormValid"
-                            @click="updatePost"
+                            @click="updateReport"
                         >
                             수정
                         </v-btn>
@@ -81,7 +96,8 @@ export default {
         return {
             reportClass: '',
             contents: '',
-            photos: [],
+            photos: [], // 새로 선택한 사진
+            currentPhotos: [], // 현재 첨부된 사진 URL 배열
             isFormValid: false,
             loading: false,
             showError: false,
@@ -105,6 +121,7 @@ export default {
             );
             this.reportClass = response.data.reportClass;
             this.contents = response.data.contents;
+            this.currentPhotos = response.data.photos || []; // 현재 첨부된 사진 URL 저장
         } catch (error) {
             console.error('신고글 불러오기 실패:', error);
             this.errorMessage = '신고글을 불러오는데 실패했습니다.';
@@ -113,7 +130,7 @@ export default {
         }
     },
     methods: {
-        async updatePost() {
+        async updateReport() {
             if (!this.$refs.form.validate()) return;
 
             this.loading = true;
@@ -122,11 +139,13 @@ export default {
                 formData.append('reportClass', this.reportClass);
                 formData.append('contents', this.contents);
 
+                // 새로운 사진이 선택된 경우에만 photos 필드 추가
                 if (this.photos && this.photos.length > 0) {
                     this.photos.forEach(photo => {
                         formData.append('photos', photo);
                     });
                 }
+                // 새로운 사진이 없는 경우 photos 필드를 전송하지 않음 (기존 사진 유지)
 
                 await axios.patch(
                     `${process.env.VUE_APP_API_BASE_URL}/report/update/${this.$route.params.id}`,
@@ -141,11 +160,10 @@ export default {
 
                 this.$router.push(`/report/${this.$route.params.id}`);
             } catch (error) {
-                console.error('신고글 수정 실패:', error);
                 if (error.response?.status === 403) {
-                    this.errorMessage = '해당 신고글을 수정할 권한이 없습니다.';
+                    this.errorMessage = '해당 신고를 수정할 권한이 없습니다.';
                 } else {
-                    this.errorMessage = '신고글 수정에 실패했습니다.';
+                    this.errorMessage = '신고 수정에 실패했습니다.';
                 }
                 this.showError = true;
             } finally {

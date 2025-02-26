@@ -35,10 +35,10 @@
               <v-icon size="22">mdi-magnify</v-icon>
             </v-btn>
           </div>
+
         </v-col>
-
+  
         <v-spacer></v-spacer>
-
         <!-- 로그인 & MyPage 버튼 -->
         <v-col cols="auto" class="d-flex align-center">
           <template v-if="!isLogin">
@@ -62,7 +62,7 @@
   <v-app-bar color="grey-lighten-4" flat class="menu-bar">
     <v-container>
       <v-row justify="center" no-gutters>
-        <v-col cols="auto" v-for="item in filteredMenuItems" :key="item.title">
+        <v-col cols="auto" v-for="(item, index) in menuItems" :key="index">
           <v-btn :to="item.path" class="menu-item mx-8" variant="text" :ripple="false">
             {{ item.title }}
           </v-btn>
@@ -71,16 +71,17 @@
     </v-container>
   </v-app-bar>
 </template>
-
+  
 <script>
-import axios from "axios";
 export default {
   data() {
     return {
       isLogin: false,
-      userRole: "",
+      isRestaurant: false,
       userName: "",
       profilePhoto: "",
+      userRole: "",
+      showSearch: false,
       selectedCategory: "회원", // ✅ 기본값을 "회원"으로 설정
       searchQuery: "",
       categories: [
@@ -93,7 +94,6 @@ export default {
         { title: "오늘의 이야기", path: "/post/postList" },
         { title: "이벤트", path: "/event" },
         { title: "고객센터", path: "/service" },
-        { title: "회원 관리", path: "/user/list", adminOnly: true }
       ]
     };
   },
@@ -103,12 +103,25 @@ export default {
     }
   },
   created() {
-    
-    const token = localStorage.getItem("token");
-    if (token) {
+    const restaurantId = localStorage.getItem("restaurantId");
+    if (restaurantId) {
+      this.isRestaurant = true;
       this.isLogin = true;
-      this.userName = localStorage.getItem("userName") || "";
-      this.profilePhoto = localStorage.getItem("profilePhoto") || "";
+      this.userName = localStorage.getItem("restaurantName") || "";
+      this.profilePhoto = localStorage.getItem("restaurantProfilePhoto") || "";
+    } else {
+      // 일반 회원 로그인 확인
+      const token = localStorage.getItem("token");
+      if (token) {
+        this.isLogin = true;
+        this.userName = localStorage.getItem("userName") || "";
+        this.profilePhoto = localStorage.getItem("profilePhoto") || "";
+        this.userRole = localStorage.getItem("userRole") || "";
+        
+        if (this.userRole === "ADMIN") {
+          this.menuItems.push({ title: "회원 관리", path: "/user/list" });
+        }
+      }
     }
   },
   async beforeMount() {
@@ -152,7 +165,12 @@ export default {
       window.location.href = "/selectCreate";
     },
     myPage() {
-      window.location.href = "/user/mypage";
+      // localStorage에 저장된 정보로 isRestaurant 값을 확인하여 라우팅 결정
+      if (this.isRestaurant) {
+        window.location.href = "/restaurant/mypage";
+      } else {
+        window.location.href = "/user/mypage";
+      }
     },
     search() {
       const token = localStorage.getItem("token");
@@ -171,19 +189,19 @@ export default {
       } else if (this.selectedCategory === "레스토랑") {
         this.$router.push({ path: "/restaurant/list", query: { name: this.searchQuery } });
       }
+      this.showSearch = false;
       this.searchQuery = "";
     }
   }
 };
 </script>
-
+  
 <style scoped>
 /* 🔹 기본 스타일 */
 @font-face {
   font-family: 'Cafe24Ssurround';
   src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/Cafe24Ssurround.woff') format('woff');
 }
-
 .top-bar {
   border-bottom: 2px solid black;
 }

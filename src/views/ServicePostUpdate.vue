@@ -7,18 +7,6 @@
 
             <v-card-text>
                 <v-form ref="form" v-model="isFormValid">
-                    <v-file-input
-                        v-model="photos"
-                        label="사진 첨부"
-                        variant="outlined"
-                        multiple
-                        accept="image/*"
-                        prepend-icon="mdi-camera"
-                        class="mb-4"
-                        :show-size="true"
-                        hint="최대 5장까지 첨부 가능합니다"
-                        :rules="[v => !v || v.length <= 5 || '최대 5장까지만 첨부할 수 있습니다']"
-                    ></v-file-input>
                     <v-text-field
                         v-model="title"
                         label="제목"
@@ -37,6 +25,58 @@
                         rows="10"
                         auto-grow
                     ></v-textarea>
+
+                    <v-select
+                        v-model="category"
+                        :items="['REQUEST', 'INQUIRY', 'COMPLAINT']"
+                        label="카테고리"
+                        variant="outlined"
+                        :rules="[v => !!v || '카테고리를 선택해주세요']"
+                        required
+                        class="mb-4"
+                    ></v-select>
+
+                    <v-select
+                        v-model="visibility"
+                        :items="[
+                            { title: '공개', value: 'Y' },
+                            { title: '비공개', value: 'N' }
+                        ]"
+                        item-title="title"
+                        item-value="value"
+                        label="공개 여부"
+                        variant="outlined"
+                        required
+                        class="mb-4"
+                    ></v-select>
+
+                    <!-- 현재 첨부된 사진 표시 -->
+                    <div v-if="currentPhotos && currentPhotos.length > 0" class="mb-4">
+                        <div class="text-subtitle-1 mb-2">현재 첨부된 사진:</div>
+                        <v-row>
+                            <v-col v-for="(photo, index) in currentPhotos" :key="index" cols="4">
+                                <v-img
+                                    :src="photo"
+                                    aspect-ratio="1"
+                                    cover
+                                    class="bg-grey-lighten-2"
+                                ></v-img>
+                            </v-col>
+                        </v-row>
+                    </div>
+
+                    <v-file-input
+                        v-model="photos"
+                        label="새로운 사진 첨부"
+                        variant="outlined"
+                        multiple
+                        accept="image/*"
+                        prepend-icon="mdi-camera"
+                        class="mb-4"
+                        :show-size="true"
+                        hint="최대 5장까지 첨부 가능합니다"
+                        :rules="[v => !v || v.length <= 5 || '최대 5장까지만 첨부할 수 있습니다']"
+                    ></v-file-input>
 
                     <div class="d-flex justify-end gap-2 mt-4">
                         <v-btn
@@ -80,7 +120,9 @@ export default {
             title: '',
             contents: '',
             category: '',
-            visibility: true,
+            visibility: 'Y',
+            photos: [], // 새로 선택한 사진
+            currentPhotos: [], // 현재 첨부된 사진 URL 배열
             isFormValid: false,
             loading: false,
             showError: false,
@@ -93,7 +135,6 @@ export default {
                 v => !!v || '내용을 입력해주세요',
                 v => v.length <= 2000 || '내용은 2000자 이하여야 합니다'
             ],
-            photos: [],
         }
     },
     async created() {
@@ -105,6 +146,7 @@ export default {
             this.contents = response.data.contents;
             this.category = response.data.category;
             this.visibility = response.data.visibility;
+            this.currentPhotos = response.data.photos || []; // 현재 첨부된 사진 URL 저장
         } catch (error) {
             console.error('게시글 불러오기 실패:', error);
             this.errorMessage = '게시글을 불러오는데 실패했습니다.';
@@ -124,8 +166,26 @@ export default {
                 formData.append('category', this.category);
                 formData.append('visibility', this.visibility);
 
+                // FormData 내용 확인
+                console.log('현재 사진:', this.currentPhotos);
+                console.log('새로운 사진:', this.photos);
 
-                await axios.patch(
+                // 새로운 사진이 선택된 경우에만 photos 필드 추가
+                if (this.photos && this.photos.length > 0) {
+                    this.photos.forEach(photo => {
+                        formData.append('photos', photo);
+                    });
+                    console.log('새로운 사진 추가됨');
+                } else {
+                    console.log('새로운 사진 없음, 기존 사진 유지');
+                }
+
+                // FormData 내용 확인
+                for (let [key, value] of formData.entries()) {
+                    console.log(`${key}:`, value);
+                }
+
+                const response = await axios.patch(
                     `${process.env.VUE_APP_API_BASE_URL}/service/post/update/${this.$route.params.id}`,
                     formData,
                     {
@@ -136,9 +196,10 @@ export default {
                     }
                 );
 
+                console.log('서버 응답:', response.data);
                 this.$router.push(`/service/post/${this.$route.params.id}`);
             } catch (error) {
-                console.error('게시글 수정 실패:', error);
+                console.error('업데이트 실패:', error);
                 if (error.response?.status === 403) {
                     this.errorMessage = '해당 게시글을 수정할 권한이 없습니다.';
                 } else {
