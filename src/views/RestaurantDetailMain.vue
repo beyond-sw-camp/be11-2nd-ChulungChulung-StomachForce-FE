@@ -2,8 +2,8 @@
   <v-container>
     <!-- 네비게이션 바 -->
     <v-tabs v-model="tab">
-      <v-tab @click="reload()">레스토랑 홈</v-tab>
-      <v-tab :to="`/restaurant/detail/${restaurantId}/main`">상세정보</v-tab>
+      <v-tab :to="`/restaurant/detail/${restaurantId}`">레스토랑 홈</v-tab>
+      <v-tab @click="reload()">상세정보</v-tab>
       <v-tab :to="`/menu/list/${restaurantId}`">메뉴</v-tab>
       <v-tab :to="`/restaurant/detail/${restaurantId}/reviews`">리뷰</v-tab>
       <v-tab :to="`/restaurant/detail/${restaurantId}/reservation`">예약하기</v-tab>
@@ -13,8 +13,8 @@
 
     <!-- 기본 정보 -->
     <div class="info-container">
-      <p>📍 주소: {{ restaurant.address }}</p>
-      <p>📞 전화번호: {{ restaurant.phoneNumber || '정보 없음' }}</p>
+      <p>📍 주소: <span v-if="isOwner"><input v-model="restaurant.address"/></span><span v-else>{{ restaurant.address }}</span></p>
+      <p>📞 전화번호: <span v-if="isOwner"><input v-model="restaurant.phoneNumber"/></span><span v-else>{{ restaurant.phoneNumber || '정보 없음' }}</span></p>
       <p>⭐ 평점: {{ restaurant.averageRating }}</p>
       <p>📌 즐겨찾기: {{ restaurant.bookmarkCount }}</p>
 
@@ -29,14 +29,34 @@
     <div class="notice-container">
       <h3>공지사항</h3>
       <ul>
-        <li v-for="info in restaurantInfos" :key="info.id">{{ info.informationText }}</li>
+        <li v-for="(info, index) in restaurantInfos" :key="info.id">
+          <span v-if="isOwner">
+            <input v-model="restaurantInfos[index].informationText" />
+            <v-btn @click="updateNotice(info.id, index)">수정</v-btn>
+            <v-btn @click="deleteNotice(info.id)">삭제</v-btn>
+          </span>
+          <span v-else>{{ info.informationText }}</span>
+        </li>
       </ul>
+      <div v-if="isOwner">
+        <input v-model="newNoticeText" placeholder="새 공지사항 입력" />
+        <v-btn @click="addNotice">추가</v-btn>
+      </div>
     </div>
 
     <!-- 레스토랑 설명 -->
     <div class="description-box">
-      <p>{{ restaurant.description }}</p>
+      <p v-if="!isOwner">{{ restaurant.description }}</p>
+      <textarea v-else v-model="restaurant.description"></textarea>
     </div>
+
+    <!-- 현재 비밀번호 입력 -->
+    <div v-if="isOwner" class="password-box">
+      <label>현재 비밀번호 입력 (정보 변경 시 필요)</label>
+      <input v-model="currentPassword" type="password" />
+    </div>
+    <v-btn v-if="isOwner" block color="black" @click="updateRestaurant">저장하기</v-btn>
+    <v-btn block color="black" class="reserve-button">예약하기</v-btn>
 
     <!-- 매장 사진 (한 줄에 4장 & 한 장씩 넘기기 & 무한 루프) -->
     <v-container v-if="restaurant.imagePath.length"> 
@@ -142,8 +162,11 @@ export default {
         description: '',
         imagePath: [], // 이미지 배열
       },
+      restaurantInfos: [],
+      newNoticeText: "",
+      isOwner: false,
+      currentPassword: "", // 사용자가 입력한 현재 비밀번호
       restaurantId: this.$route.params.id,
-      restaurantInfos: [], // 공지사항 데이터
       currentIndex: 0, // 현재 표시되는 첫 번째 이미지 인덱스
       imagesPerPage: 4, // 한 번에 보여줄 이미지 개수
     };
@@ -168,24 +191,51 @@ export default {
   created() {
     this.loadRestaurantDetail();
     this.loadRestaurantInfo();
+    this.checkOwnership();
   },
   methods: {
     async loadRestaurantDetail() {
-      const restaurantId = this.$route.params.id;
       try {
-        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/restaurant/detail/${restaurantId}`);
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/restaurant/detail/${this.restaurantId}`);
         this.restaurant = response.data;
       } catch (e) {
         console.error("레스토랑 상세 정보 로드 실패:", e);
       }
     },
     async loadRestaurantInfo() {
-      const restaurantId = this.$route.params.id;
       try {
-        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/restaurant/info/${restaurantId}`);
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/restaurant/info/list/${this.restaurantId}`);
         this.restaurantInfos = response.data;
       } catch (e) {
         console.error("공지사항 로드 실패:", e);
+      }
+    },
+    async checkOwnership() {
+      try {
+        const userResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/user/me`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        this.isOwner = userResponse.data.userId === this.restaurant.id;
+      } catch (e) {
+        console.error("사용자 정보 로드 실패:", e);
+      }
+    },
+    async updateRestaurant() {
+      if (!this.currentPassword) {
+        alert("현재 비밀번호를 입력하세요.");
+        return;
+      }
+
+      try {
+        await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/restaurant/update/${this.restaurantId}`, {
+          ...this.restaurant,
+          currentPassword: this.currentPassword, // 현재 비밀번호 추가
+        }, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        alert("수정이 완료되었습니다.");
+      } catch (e) {
+        console.error("레스토랑 정보 업데이트 실패:", e);
       }
     },
     openNaverMap() {
