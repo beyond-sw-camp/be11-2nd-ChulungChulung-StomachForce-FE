@@ -22,7 +22,9 @@
                     </v-chip>
                 </v-card-title>
                 <v-card-subtitle>
-                    작성자: {{ authorNickname }} | 작성일: {{ new Date(post.createdAt).toLocaleDateString() }}
+                    작성자: {{ authorNickname }} <br>
+                    작성일: {{ new Date(post.createdTime).toLocaleDateString() }} {{ new Date(post.createdTime).toLocaleTimeString() }} <br>
+                    수정일: {{ new Date(post.updatedTime).toLocaleDateString() }} {{ new Date(post.updatedTime).toLocaleTimeString() }}
                 </v-card-subtitle>
                 <v-card-text>
                     <div class="content-text">{{ post.contents }}</div>
@@ -86,7 +88,8 @@
                     </v-btn>
                 </v-card-title>
                 <v-card-subtitle>
-                    답변일: {{ new Date(answer.createdAt).toLocaleDateString() }}
+                    작성일: {{ new Date(answer.createdTime).toLocaleDateString() }} {{ new Date(answer.createdTime).toLocaleTimeString() }} <br>
+                    수정일: {{ new Date(answer.updatedTime).toLocaleDateString() }} {{ new Date(answer.updatedTime).toLocaleTimeString() }}
                 </v-card-subtitle>
                 <v-card-text>
                     <!-- 수정 모드일 때는 textarea 표시 -->
@@ -279,6 +282,7 @@ export default {
                     `${process.env.VUE_APP_API_BASE_URL}/service/post/${postId}`
                 );
                 this.post = response.data;
+                console.log(response.data);
 
                 // 작성자 닉네임 찾기
                 const author = this.users.find(user => Number(user.userId) === Number(this.post.userId));
