@@ -49,13 +49,30 @@
     
     <!-- 대표 메뉴 -->
     <v-card class="menu-section">
-      <v-card-title class="text-h5">🍔 대표 메뉴</v-card-title>
+      <div class="d-flex justify-space-between align-center mb-4">
+        <v-card-title class="text-h5">🍔 대표 메뉴</v-card-title>
+        <v-btn
+          variant="text"
+          color="#FB8C00"
+          class="more-menu-btn"
+          @click="goToMenuList"
+        >
+          <v-icon left class="mr-1">mdi-menu</v-icon>
+          메뉴 더보기
+        </v-btn>
+      </div>
       <v-row>
-        <v-col v-for="(menu, index) in restaurant.menus" :key="index" cols="12" sm="6" md="4">
-          <v-card>
-            <v-img :src="menu.image" height="150px"></v-img>
-            <v-card-title>{{ menu.name }}</v-card-title>
-            <v-card-subtitle>{{ menu.price }}원</v-card-subtitle>
+        <v-col v-for="menu in topMenus" :key="menu.id" cols="12" sm="6" md="3">
+          <v-card class="menu-card" elevation="2">
+            <v-img 
+              :src="menu.menuPhoto || '/assets/noImage.jpg'" 
+              height="180"
+              contain
+              class="menu-image"
+              style="background-color: #f5f5f5;"
+            ></v-img>
+            <v-card-title class="pt-2 text-subtitle-1">{{ menu.name }}</v-card-title>
+            <v-card-subtitle class="pb-2">{{ numberWithCommas(menu.price) }}원</v-card-subtitle>
           </v-card>
         </v-col>
       </v-row>
@@ -168,7 +185,7 @@
 
 .menu-section {
   margin-top: 20px;
-  padding: 15px;
+  padding: 20px;
 }
 
 .time-section {
@@ -180,6 +197,39 @@
   margin-top: 20px;
   font-size: 20px;
   padding: 15px;
+}
+
+.menu-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-image {
+  border-radius: 8px 8px 0 0;
+}
+
+.v-card-title {
+  font-size: 1.1rem !important;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.v-card-subtitle {
+  color: #FB8C00 !important;
+  font-weight: 600;
+}
+
+.more-menu-btn {
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  text-transform: none;
+}
+
+.more-menu-btn:hover {
+  opacity: 0.8;
 }
 </style>
 
@@ -214,10 +264,12 @@ export default {
         reviewImages: [],
       },
       reviewLoading: false,
+      topMenus: [],
     };
   },
   created() {
     this.loadRestaurantDetail();
+    this.loadTopMenus();
   },
   methods: {
     formatTime(timeString) {
@@ -316,6 +368,28 @@ export default {
         this.reviewLoading = false;
       }
     },
+
+    async loadTopMenus() {
+      try {
+        const response = await axios.get(
+          `${process.env.VUE_APP_API_BASE_URL}/menu/list/${this.restaurantId}`
+        );
+        // 메뉴 ID 순으로 정렬하고 처음 4개만 선택
+        this.topMenus = response.data
+          .sort((a, b) => a.id - b.id)
+          .slice(0, 4);
+      } catch (error) {
+        console.error("메뉴 로드 실패:", error);
+      }
+    },
+
+    numberWithCommas(x) {
+      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+
+    goToMenuList() {
+      this.$router.push(`/menu/list/${this.restaurantId}`);
+    }
   },
 };
 </script>
