@@ -4,7 +4,7 @@
     <v-tabs v-model="tab">
       <v-tab @click="reload()">레스토랑 홈</v-tab>
       <v-tab :to="`/restaurant/detail/${restaurantId}/main`">상세정보</v-tab>
-      <v-tab :to="`/restaurant/detail/${restaurantId}/menu`">메뉴</v-tab>
+      <v-tab :to="`/menu/list/${restaurantId}`">메뉴</v-tab>
       <v-tab :to="`/restaurant/detail/${restaurantId}/reviews`">리뷰</v-tab>
       <v-tab :to="`/restaurant/detail/${restaurantId}/reservation`">예약하기</v-tab>
     </v-tabs>

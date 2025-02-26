@@ -1,5 +1,14 @@
 <template>
     <div class="container mx-auto p-4">
+        <!-- 상단 네비게이션 탭 추가 -->
+        <v-tabs v-model="tab">
+            <v-tab :to="`/restaurant/detail/${restaurantId}/home`">레스토랑 홈</v-tab>
+            <v-tab :to="`/restaurant/detail/${restaurantId}/main`">상세정보</v-tab>
+            <v-tab :to="`/menu/list/${restaurantId}`">메뉴</v-tab>
+            <v-tab :to="`/restaurant/detail/${restaurantId}/reviews`">리뷰</v-tab>
+            <v-tab :to="`/restaurant/detail/${restaurantId}/reservation`">예약하기</v-tab>
+        </v-tabs>
+
         <h1 class="text-3xl font-bold text-center mb-8">{{ restaurantName }}</h1>
 
         <!-- 메뉴 등록 버튼 -->
@@ -104,7 +113,8 @@ export default {
                 shellfish: '조개류'
             },
             isLoggedIn: false,
-            restaurantId: null
+            restaurantId: null,
+            tab: null
         }
     },
     async created() {

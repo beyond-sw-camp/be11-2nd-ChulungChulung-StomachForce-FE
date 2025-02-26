@@ -169,6 +169,7 @@ export default {
         localStorage.setItem("userName", response.data.userName);
         localStorage.setItem("profilePhoto", response.data.profilePhoto);
         localStorage.setItem("userId",response.data.userId);
+        localStorage.setItem("userRole", response.data.role);
       } catch (error) {
         console.error("유저 정보 불러오기 실패:", error);
       }

@@ -130,6 +130,7 @@ export default {
       isLogin: false,
       userName: "",
       profilePhoto: "",
+      userRole: "",
       showSearch: false,
       selectedCategory: "",
       searchQuery: "",
@@ -140,7 +141,6 @@ export default {
         { title: "오늘의 이야기", path: "/post/postList" },
         { title: "이벤트", path: "/event" },
         { title: "고객센터", path: "/service" },
-        { title: "회원 관리", path: "/user/list" }
       ]
     };
   },
@@ -150,8 +150,14 @@ export default {
       this.isLogin = true;
       this.userName = localStorage.getItem("userName") || "";
       this.profilePhoto = localStorage.getItem("profilePhoto") || "";
+      this.userRole = localStorage.getItem("userRole") || "";
+      
+      if (this.userRole === "ADMIN") {
+        this.menuItems.push({ title: "회원 관리", path: "/user/list" });
+      }
     }
     console.log(this.profilePhoto)
+    console.log(this.userRole)
   },
   methods: {
     doLogout() {
