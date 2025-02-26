@@ -6,17 +6,27 @@
       <v-tab @click="reload()">상세정보</v-tab>
       <v-tab :to="`/menu/list/${restaurantId}`">메뉴</v-tab>
       <v-tab :to="`/restaurant/detail/${restaurantId}/reviews`">리뷰</v-tab>
-      <v-tab :to="`/restaurant/detail/${restaurantId}/reservation`">예약하기</v-tab>
     </v-tabs>
 
-    <h2 class="text-center title-box">{{ restaurant.name }}</h2>
+    <h2 class="text-center title-box">{{ restaurant.name || "로딩 중..." }}</h2>
 
     <!-- 기본 정보 -->
     <div class="info-container">
-      <p>📍 주소: <span v-if="isOwner"><input v-model="restaurant.address"/></span><span v-else>{{ restaurant.address }}</span></p>
-      <p>📞 전화번호: <span v-if="isOwner"><input v-model="restaurant.phoneNumber"/></span><span v-else>{{ restaurant.phoneNumber || '정보 없음' }}</span></p>
-      <p>⭐ 평점: {{ restaurant.averageRating }}</p>
-      <p>📌 즐겨찾기: {{ restaurant.bookmarkCount }}</p>
+      <p>📍 주소: 
+        <span v-if="isOwner">
+          <input v-model="restaurant.addressCity"/> 
+          <input v-model="restaurant.addressStreet"/>
+        </span>
+        <span v-else>{{ restaurant.addressCity || "주소 없음" }} {{ restaurant.addressStreet || "" }}</span>
+      </p>
+      <p>📞 전화번호: 
+        <span v-if="isOwner">
+          <input v-model="restaurant.phoneNumber"/>
+        </span>
+        <span v-else>{{ restaurant.phoneNumber || '정보 없음' }}</span>
+      </p>
+      <p>⭐ 평점: {{ restaurant.averageRating || "0" }}</p>
+      <p>📌 즐겨찾기: {{ restaurant.bookmarkCount || 0 }}</p>
 
       <!-- 지도 버튼 -->
       <div class="map-buttons">
@@ -46,7 +56,7 @@
 
     <!-- 레스토랑 설명 -->
     <div class="description-box">
-      <p v-if="!isOwner">{{ restaurant.description }}</p>
+      <p v-if="!isOwner">{{ restaurant.description || "설명 없음" }}</p>
       <textarea v-else v-model="restaurant.description"></textarea>
     </div>
 
@@ -64,7 +74,6 @@
         매장 사진
       </div><br>
       <v-row class="image-slider" justify="center" align="center">
-        <!-- 5장 이상일 때만 버튼 활성화 -->
         <v-btn icon @click="prevImage" :disabled="restaurant.imagePath.length <= 4">
           <v-icon>mdi-chevron-left</v-icon>
         </v-btn>
@@ -134,7 +143,7 @@
 }
 
 .store-image {
-  width: 200px; /* 4개가 한 줄에 표시되도록 크기 조정 */
+  width: 200px;
   height: 200px;
   object-fit: cover;
   border-radius: 10px;
@@ -155,7 +164,8 @@ export default {
       tab: null,
       restaurant: {
         name: '',
-        address: '',
+        addressCity: '',
+        addressStreet: '',
         phoneNumber: '',
         averageRating: '',
         bookmarkCount: '',
@@ -211,13 +221,23 @@ export default {
       }
     },
     async checkOwnership() {
+      const token = localStorage.getItem("token");
+
+      // ✅ 토큰이 없으면 API 요청을 보내지 않음
+      if (!token) {
+        console.warn("🚨 로그인 안 됨 - 소유자 확인 건너뜀");
+        return;
+      }
+
       try {
         const userResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/user/me`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          headers: { Authorization: `Bearer ${token}` },
         });
+
         this.isOwner = userResponse.data.userId === this.restaurant.id;
       } catch (e) {
-        console.error("사용자 정보 로드 실패:", e);
+        console.error("❌ 사용자 정보 로드 실패:", e);
+        this.isOwner = false; // 요청 실패 시 기본값 설정
       }
     },
     async updateRestaurant() {

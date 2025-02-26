@@ -42,8 +42,8 @@ axios.interceptors.response.use(
                 }
                 
             }catch(e){
-                localStorage.clear();
-                window.location.href="/user/login"
+                // localStorage.clear();
+                // window.location.href="/"
             }
 
         }

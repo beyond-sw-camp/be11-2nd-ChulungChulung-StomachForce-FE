@@ -6,7 +6,6 @@
       <v-tab :to="`/restaurant/detail/${restaurantId}/main`">상세정보</v-tab>
       <v-tab :to="`/menu/list/${restaurantId}`">메뉴</v-tab>
       <v-tab :to="`/restaurant/detail/${restaurantId}/reviews`">리뷰</v-tab>
-      <v-tab :to="`/restaurant/detail/${restaurantId}/reservation`">예약하기</v-tab>
     </v-tabs>
 
     <!-- 매장명 (상대 위치를 주어 리뷰작성 버튼 배치) -->
@@ -67,7 +66,7 @@
       <v-col cols="12" md="6">
         <v-card class="info-card">
           <v-card-title>📍 주소</v-card-title>
-          <v-card-text>{{ restaurant.address }}</v-card-text>
+          <v-card-text>{{ restaurant.addressCity }}  {{ restaurant.addressStreet }}</v-card-text>
         </v-card>
         <v-card class="info-card">
           <v-card-title>📞 전화번호</v-card-title>
@@ -193,7 +192,8 @@ export default {
       tab: null,
       restaurant: {
         name: "",
-        address: "",
+        addressCity: "",
+        addressStreet: "",
         phoneNumber: "",
         averageRating: "",
         bookmarkCount: "",

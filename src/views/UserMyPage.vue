@@ -377,7 +377,7 @@ export default {
       this.$router.push("/user/reservation");
     },
     goToFavorite() {
-      this.$router.push("/user/favorite");
+      this.$router.push("/user/myBookMark");
     },
     goToBlockList() {
       this.$router.push("/user/block");
