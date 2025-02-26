@@ -13,7 +13,7 @@
         </div>
       </v-col>
 
-      <!-- 중앙 피드 -->
+      <!-- 중앙 피드 영역 -->
       <v-col cols="12" lg="6">
         <div class="post-list hide-scrollbar">
           <v-card
@@ -31,7 +31,7 @@
             }"
             @click="goToPostDetail(post.postId)"
           >
-            <!-- 작성자 정보: 프로필과 닉네임은 좌측, 작성일은 닉네임 아래에 작게 표시 -->
+            <!-- 작성자 정보 -->
             <v-card-title class="post-user-info pa-4">
               <div class="d-flex align-center">
                 <v-avatar size="40" class="mr-3">
@@ -108,15 +108,60 @@
         </v-row>
       </v-col>
 
-      <!-- 오른쪽 광고 배너 -->
-      <v-col cols="2" class="d-none d-lg-block pr-4">
-        <div class="ad-banner">
-          <v-img
-            :src="require('@/assets/advertisement2.webp')"
-            height="800"
-            class="rounded-lg ad-image"
-            cover
-          ></v-img>
+      <!-- 오른쪽 인플루언서 랭킹 영역 -->
+      <v-col cols="auto" lg="auto" class="d-none d-lg-block pr-4" style="min-width: 280px; max-width: 350px;">
+        <div class="ranking-container">
+          <v-card class="influencer-ranking">
+            <!-- 헤더 부분 -->
+            <div class="ranking-header pa-4 text-center">
+              <div class="d-flex align-center justify-center">
+                <v-icon color="amber-darken-2" size="24" class="mr-2">mdi-crown</v-icon>
+                <span class="text-h6">인플루언서 랭킹</span>
+              </div>
+            </div>
+
+            <!-- 랭킹 리스트 -->
+            <div class="ranking-list pa-2">
+              <div
+                v-for="(user, index) in influencerRanking"
+                :key="user.userId"
+                class="ranking-item mb-2 pa-2"
+                @click="goToUserPage(user)"
+              >
+                <div class="d-flex align-center justify-center">
+                  <!-- 순위 표시 -->
+                  <div class="rank-wrapper mr-2">
+                    <div class="rank-number" :class="{
+                      'rank-gold': index === 0,
+                      'rank-silver': index === 1,
+                      'rank-bronze': index === 2,
+                      'rank-four': index === 3,
+                      'rank-five': index === 4,
+                      'rank-normal': index > 4
+                    }">
+                      {{ index + 1 }}
+                    </div>
+                  </div>
+
+                  <!-- 프로필 이미지와 사용자 정보 -->
+                  <div class="profile-container d-flex align-center">
+                    <v-avatar size="36" class="mr-2">
+                      <v-img :src="user.profileImage" cover />
+                    </v-avatar>
+
+                    <div class="user-info">
+                      <div class="text-subtitle-2 font-weight-medium text-truncate mb-0">
+                        {{ user.nickname }}
+                      </div>
+                      <div class="text-caption text-grey">
+                        팔로워 {{ user.followersCount }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </v-card>
         </div>
       </v-col>
     </v-row>
@@ -127,19 +172,39 @@
 import axios from "axios";
 
 export default {
+  name: "PostList",
   data() {
     return {
-      posts: [], // 게시글 목록
-      page: 0, // 현재 페이지
-      size: 5, // 한 번에 가져올 개수
-      isLastPage: false, // 마지막 페이지 여부
-      isLoading: false // 로딩 상태
+      posts: [],           // 게시글 목록
+      page: 0,             // 현재 페이지 번호
+      size: 5,             // 한 번에 불러올 게시글 수
+      isLastPage: false,   // 마지막 페이지 여부
+      isLoading: false,    // 로딩 상태
+      influencerRanking: [], // 인플루언서 랭킹 데이터
+      loginUserNickName: "" // 로그인한 유저의 닉네임 (서버에서 받아옴)
     };
   },
   async created() {
+    // 로그인한 유저 정보를 먼저 받아와서 loginUserNickName에 저장
+    await this.fetchLoginUserInfo();
     await this.loadPosts({ done: () => {} });
+    this.loadInfluencers();
   },
   methods: {
+    async fetchLoginUserInfo() {
+      try {
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/user/userInfo`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+          }
+        });
+        console.log(response);
+        // response.data에 userNickName이 포함되어 있다고 가정
+        this.loginUserNickName = response.data.userNickName;
+      } catch (error) {
+        console.error("로그인 유저 정보 불러오기 실패:", error);
+      }
+    },
     async loadPosts({ done }) {
       if (this.isLoading || this.isLastPage) return;
       this.isLoading = true;
@@ -207,7 +272,17 @@ export default {
     goToPostDetail(postId) {
       this.$router.push({ name: "UserPostDetail", params: { postId } });
     },
-    // createdTime이 일주일 이내이면 "x일 전", 그 외는 "YYYY년 M월 D일" 형식으로 반환
+    // 인플루언서 랭킹 클릭 시, 로그인한 유저의 닉네임과 비교하여 라우팅 처리
+    goToUserPage(user) {
+      if (user.nickname === this.loginUserNickName) {
+        // 로그인한 유저와 인플루언서의 닉네임이 같으면 마이페이지로 이동
+        this.$router.push("/user/MyPage");
+      } else {
+        // 다르면 타 유저 페이지로 이동 (쿼리 파라미터로 닉네임 전달)
+        this.$router.push({ path: "/user/yourPage", query: { nickName: user.nickname } });
+      }
+    },
+    // 날짜 형식: 일주일 이내면 "x일 전", 그 이상이면 "YYYY년 M월 D일" 형태로 표시
     formatDate(createdTime) {
       if (!createdTime) return "";
       const now = new Date();
@@ -218,29 +293,52 @@ export default {
       } else {
         return `${created.getFullYear()}년 ${created.getMonth() + 1}월 ${created.getDate()}일`;
       }
+    },
+    async loadInfluencers() {
+      try {
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/user/top-influencers`, {
+          params: { limit: 5 }
+        });
+        this.influencerRanking = response.data;
+      } catch (error) {
+        console.error("인플루언서 불러오기 실패:", error);
+      }
     }
   }
 };
 </script>
 
 <style scoped>
+/* 광고 배너 및 랭킹 영역 스타일 */
+.ranking-container,
 .ad-banner {
   position: sticky;
-  top: 20px;
-  width: 100%;
+  top: 84px;
+  height: fit-content;
+  padding-top: 16px;
+  margin-top: -16px;
+  background: transparent;
+  z-index: 1;
 }
 
+/* 인플루언서 랭킹 카드 스타일 */
+.influencer-ranking {
+  border-radius: 16px;
+  overflow: hidden;
+  background: white;
+}
+
+/* 광고 이미지 스타일 */
 .ad-image {
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
 }
 
-.post-container {
-  background-color: #fafafa;
-  min-height: 100vh;
-}
+/* 피드 영역 */
+.post-list {}
 
+/* 게시글 카드 스타일 */
 .post-card {
   border-radius: 20px;
   overflow: hidden;
@@ -259,12 +357,14 @@ export default {
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1) !important;
 }
 
+/* 게시글 내용 스타일 */
 .post-content {
   line-height: 1.6;
   color: #333;
   font-size: 1.1rem;
 }
 
+/* 좋아요 버튼 애니메이션 */
 .like-btn {
   transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
@@ -273,9 +373,11 @@ export default {
   transform: scale(1.2);
 }
 
+/* 사용자 정보 */
 .user-info {
-  display: flex;
-  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  padding-right: 8px;
 }
 
 .post-user-name {
@@ -288,7 +390,7 @@ export default {
   color: #888;
 }
 
-/* 스크롤바 숨기기 */
+/* 스크롤바 숨김 */
 .hide-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -297,72 +399,115 @@ export default {
   display: none;
 }
 
-/* 헤더 섹션 */
-.header-section {
-  position: relative;
-  height: 300px;
-  margin-bottom: 4rem;
+/* 랭킹 리스트 스크롤바 스타일 */
+.ranking-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.ranking-item {
+  width: 100%;
+  padding: 8px 12px;
+  text-align: center;
+}
+
+.profile-container {
+  flex: 1;
+  justify-content: flex-start;
+  padding-left: 4px;
+}
+
+.text-truncate {
+  max-width: 100%;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.header-background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80');
-  background-size: cover;
-  background-position: center;
-  transform: scale(1.1);
-  filter: blur(3px);
+.rank-wrapper {
+  margin-right: 12px;
 }
 
-.header-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.4));
-}
-
-.header-content {
-  position: relative;
-  height: 100%;
-  z-index: 2;
-}
-
-.header-inner {
-  height: 100%;
+.rank-number {
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
 }
 
-.header-title {
+.rank-gold {
+  background: linear-gradient(135deg, #FFD700, #FFA000);
   color: white;
-  font-size: 3rem;
-  font-weight: 600;
-  letter-spacing: -0.5px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  box-shadow: 0 4px 12px rgba(255, 160, 0, 0.3);
+  border: 2px solid #FFD700;
 }
 
-.header-subtitle {
+.rank-silver {
+  background: linear-gradient(135deg, #E8E8E8, #B0B0B0);
   color: white;
-  font-size: 1.25rem;
-  font-weight: 300;
-  letter-spacing: 0.5px;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  box-shadow: 0 4px 12px rgba(176, 176, 176, 0.3);
+  border: 2px solid #E8E8E8;
 }
 
-.content-container {
-  margin-top: 2rem;
-  position: relative;
-  z-index: 1;
+.rank-bronze {
+  background: linear-gradient(135deg, #CD7F32, #A0522D);
+  color: white;
+  box-shadow: 0 4px 12px rgba(160, 82, 45, 0.3);
+  border: 2px solid #CD7F32;
 }
 
-/* 반응형 디자인 (모바일 고려 안함) */
+.rank-four {
+  background: linear-gradient(135deg, #4A90E2, #357ABD);
+  color: white;
+  box-shadow: 0 4px 12px rgba(53, 122, 189, 0.3);
+  border: 2px solid #4A90E2;
+}
+
+.rank-five {
+  background: linear-gradient(135deg, #9B59B6, #8E44AD);
+  color: white;
+  box-shadow: 0 4px 12px rgba(142, 68, 173, 0.3);
+  border: 2px solid #9B59B6;
+}
+
+.rank-normal {
+  background: #F5F5F5;
+  color: #757575;
+  border: 2px solid #EEEEEE;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.ranking-item:hover .rank-number {
+  transform: scale(1.05);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* 랭킹 리스트 스크롤바 커스터마이징 */
+.ranking-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ranking-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ranking-list::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.ranking-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.ranking-header {
+  background: linear-gradient(to right, #FFF8E1, #FFECB3);
+  border-bottom: 1px solid #FFE0B2;
+  text-align: center;
+}
 </style>
