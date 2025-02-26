@@ -6,7 +6,6 @@
       <v-tab @click="reload()">상세정보</v-tab>
       <v-tab :to="`/menu/list/${restaurantId}`">메뉴</v-tab>
       <v-tab :to="`/restaurant/detail/${restaurantId}/reviews`">리뷰</v-tab>
-      <v-tab :to="`/restaurant/detail/${restaurantId}/reservation`">예약하기</v-tab>
     </v-tabs>
 
     <h2 class="text-center title-box">{{ restaurant.name }}</h2>
