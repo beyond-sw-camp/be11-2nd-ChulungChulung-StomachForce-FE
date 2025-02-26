@@ -1,5 +1,13 @@
 <template>
   <v-container>
+        <!-- 네비게이션 바 -->
+        <v-tabs v-model="tab">
+      <v-tab :to="`/restaurant/detail/${restaurantId}`">레스토랑 홈</v-tab>
+      <v-tab :to="`/restaurant/detail/${restaurantId}/main`">상세정보</v-tab>
+      <v-tab :to="`/menu/list/${restaurantId}`">메뉴</v-tab>
+      <v-tab @click="reload()">리뷰</v-tab>
+      <v-tab :to="`/restaurant/detail/${restaurantId}/reservation`">예약하기</v-tab>
+    </v-tabs>
     <h2 class="text-center title-box">리뷰</h2>
 
     <v-row>
@@ -156,6 +164,7 @@ export default {
       reviews: [],
       imageDialog: false, // 모달 상태
       selectedImage: "", // 선택된 이미지
+      restaurantId: this.$route.params.id,
     };
   },
   created() {
@@ -174,6 +183,9 @@ export default {
       } catch (e) {
         console.error("❌ 리뷰 데이터 로드 실패:", e);
       }
+    },
+    reload() {
+      window.location.reload();
     },
     // 이미지 클릭 시 확대 모달 열기
     openImage(imageUrl) {

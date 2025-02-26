@@ -4,16 +4,12 @@
       <v-row align="center">
         <!-- 로고 & 검색창 & 로그인 버튼 -->
         <v-col cols="auto" class="d-flex align-center">
-          <img src="@/assets/stomach.png" style="object-fit: contain; max-height: 60px; max-width: 60px;" class="" alt="stomach logo">
+          <img src="@/assets/stomach.png" style="object-fit: contain; max-height: 60px; max-width: 60px;" alt="stomach logo">
           <v-btn variant="plain" text class="text-h5 font-weight-bold logo-text no-active-bg" to="/">뱃살력</v-btn>
         </v-col>
         
         <v-col cols="4">
-          <v-menu
-            v-model="showSearch"
-            :close-on-content-click="false"
-            location="bottom"
-          >
+          <v-menu v-model="showSearch" :close-on-content-click="false" location="bottom">
             <template v-slot:activator="{ props }">
               <v-text-field
                 v-bind="props"
@@ -28,7 +24,6 @@
                 @click="showSearch = true"
               ></v-text-field>
             </template>
-
             <v-card min-width="600" class="pa-4">
               <v-row no-gutters align="center">
                 <v-col cols="3" class="pr-3">
@@ -42,7 +37,6 @@
                     class="category-select"
                   ></v-select>
                 </v-col>
-                
                 <v-col cols="7" class="pr-3">
                   <v-text-field
                     v-model="searchQuery"
@@ -54,13 +48,8 @@
                     @keyup.enter="search"
                   ></v-text-field>
                 </v-col>
-
                 <v-col cols="2">
-                  <v-btn
-                    color="primary"
-                    @click="search"
-                    block
-                  >
+                  <v-btn color="primary" @click="search" block>
                     검색
                   </v-btn>
                 </v-col>
@@ -68,25 +57,15 @@
             </v-card>
           </v-menu>
         </v-col>
-
+  
         <v-spacer></v-spacer>
-
+  
         <v-col cols="auto" class="d-flex align-center">
           <template v-if="!isLogin">
-            <v-btn 
-              @click="doCreate"
-              class="mr-4"
-              variant="text"
-              color="black"
-            >
+            <v-btn @click="doCreate" class="mr-4" variant="text" color="black">
               회원가입
             </v-btn>
-            <v-btn 
-              @click="doLogin"
-              variant="text"
-              class="login-btn font-weight-bold"
-              color="black"
-            >
+            <v-btn @click="doLogin" variant="text" class="login-btn font-weight-bold" color="black">
               로그인
             </v-btn>
           </template>
@@ -108,12 +87,7 @@
     <v-container>
       <v-row justify="center" no-gutters>
         <v-col cols="auto" v-for="(item, index) in menuItems" :key="index">
-          <v-btn 
-            :to="item.path"
-            class="menu-item mx-8"
-            variant="text"
-            :ripple="false"
-          >
+          <v-btn :to="item.path" class="menu-item mx-8" variant="text" :ripple="false">
             {{ item.title }}
           </v-btn>
         </v-col>
@@ -121,13 +95,13 @@
     </v-container>
   </v-app-bar>
 </template>
-
+  
 <script>
-
 export default {
   data() {
     return {
       isLogin: false,
+      isRestaurant: false,
       userName: "",
       profilePhoto: "",
       showSearch: false,
@@ -145,13 +119,22 @@ export default {
     };
   },
   created() {
-    const token = localStorage.getItem("token");
-    if (token) {
+    // localStorage에 저장된 사업자 정보가 있으면 사업자 로그인으로 간주
+    const restaurantId = localStorage.getItem("restaurantId");
+    if (restaurantId) {
+      this.isRestaurant = true;
       this.isLogin = true;
-      this.userName = localStorage.getItem("userName") || "";
-      this.profilePhoto = localStorage.getItem("profilePhoto") || "";
+      this.userName = localStorage.getItem("restaurantName") || "";
+      this.profilePhoto = localStorage.getItem("restaurantProfilePhoto") || "";
+    } else {
+      // 일반 회원 로그인 확인
+      const token = localStorage.getItem("token");
+      if (token) {
+        this.isLogin = true;
+        this.userName = localStorage.getItem("userName") || "";
+        this.profilePhoto = localStorage.getItem("profilePhoto") || "";
+      }
     }
-    console.log(this.profilePhoto)
   },
   methods: {
     doLogout() {
@@ -165,46 +148,40 @@ export default {
       window.location.href = "/selectCreate";
     },
     myPage() {
-      window.location.href = "/user/mypage";
+      // localStorage에 저장된 정보로 isRestaurant 값을 확인하여 라우팅 결정
+      if (this.isRestaurant) {
+        window.location.href = "/restaurant/mypage";
+      } else {
+        window.location.href = "/user/mypage";
+      }
     },
     search() {
       if (!this.selectedCategory) {
         alert("카테고리를 선택해주세요.");
         return;
       }
-      // "회원" 선택 시 페이지 전체 리로드로 이동
       if (this.selectedCategory === "회원") {
         window.location.href = "/user/findUser?nickName=" + encodeURIComponent(this.searchQuery);
       } else if (this.selectedCategory === "레스토랑") {
         window.location.href = "/restaurant/findRestaurant";
       }
-      // 검색 후 검색창 초기화
       this.showSearch = false;
       this.searchQuery = "";
     }
   }
 };
 </script>
-
+  
 <style scoped>
-@font-face {
-    font-family: 'Cafe24Ssurround';
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/Cafe24Ssurround.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-}
 .no-active-bg {
   background-color: transparent !important;
 }
-
-/* Vuetify가 active 상태일 때 배경색이 들어가는 걸 방지 */
-.no-active-bg:active, 
-.no-active-bg:focus, 
+.no-active-bg:active,
+.no-active-bg:focus,
 .no-active-bg:hover {
   background-color: transparent !important;
   box-shadow: none !important;
 }
-
 .top-bar {
   border-bottom: 2px solid black;
 }
@@ -268,10 +245,10 @@ export default {
   box-shadow: 0 4px 25px 0 rgba(0, 0, 0, 0.1);
 }
 .logo-text {
-  color: #F04E23 !important; /* 항상 진한 색 유지 */
-  font-weight: bold !important; /* 항상 굵게 */
-  opacity: 1 !important; /* 흐려지지 않도록 */
-  text-transform: none; /* Vuetify 기본 스타일 제거 */
+  color: #F04E23 !important;
+  font-weight: bold !important;
+  opacity: 1 !important;
+  text-transform: none;
 }
 .login-btn {
   text-transform: none;
