@@ -5,6 +5,7 @@ import ReservationList from "@/views/ReservationList.vue";
 import UserBlocked from "@/views/UserBlocked.vue";
 import UserCreate from "@/views/UserCreate.vue";
 import UserLogin from "@/views/UserLogin.vue";
+import UserMyBookMark from "@/views/UserMyBookMark.vue";
 import UserMyPage from "@/views/UserMyPage.vue";
 import UserUpdate from "@/views/UserUpdate.vue";
 import UserVipBenefit from "@/views/UserVipBenefit.vue";
@@ -67,6 +68,11 @@ export const membereRouter = [
         path: '/influencer/list',
         name: 'InfluencerListPage',
         component:InfluencerListPage
+    },
+    {
+        path: '/user/myBookMark',
+        name: 'userMyBookMark',
+        component:UserMyBookMark
     }
 
     
