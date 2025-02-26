@@ -85,6 +85,17 @@
                     회원가입
                   </v-btn>
                 </div>
+                <div class="text-center">
+                  <span class="text-body-2">일반유저신가요? </span>
+                  <v-btn
+                    variant="text"
+                    color="primary"
+                    class="text-caption"
+                    @click="goToUserLogin"
+                  >
+                    로그인하러가기
+                  </v-btn>
+                </div>
               </v-form>
             </v-card-text>
           </v-card>
@@ -176,6 +187,9 @@
       },
       goToSignup() {
         this.$router.push("/restaurant/create");
+      },
+      goToUserLogin(){
+        this.$router.push("/user/login");
       },
       formatRegistrationNumber() {
         let numbers = this.registrationNumber.replace(/\D/g, ""); // 숫자만 추출
