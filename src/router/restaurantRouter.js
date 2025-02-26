@@ -10,6 +10,7 @@ import MenuList from "@/views/MenuList.vue";
 import MenuCreate from "@/views/MenuCreate.vue";
 import MenuUpdate from "@/views/MenuUpdate.vue";
 
+
 export const RestaurantRouter = [
     {
         path: '/restaurant/create',
@@ -67,7 +68,5 @@ export const RestaurantRouter = [
         name: 'RestaurantMypage',
         component: RestaurantMypage
     },
-
-
 
 ]
