@@ -126,18 +126,20 @@ export default {
         };
     },
     computed: {
-        // 라우트 변경 시 자동으로 반영되도록 설정
         restaurantId() {
             return this.$route.params.id;
         },
         isRestaurantOwner() {
-            return this.isLoggedIn && this.restaurantId === this.$route.params.id;
+            const userRestaurantId = localStorage.getItem('restaurantId');
+            return this.isLoggedIn && userRestaurantId === this.restaurantId;
         }
     },
+    created() {
+        this.checkLoginStatus();
+    },
     watch: {
-        // 라우트 변경 감지 -> restaurantId 업데이트 및 데이터 다시 로드
         "$route.params.id": {
-            immediate: true, // 컴포넌트가 처음 로드될 때도 실행
+            immediate: true,
             handler(newId) {
                 if (newId) {
                     this.fetchRestaurantDetail();
@@ -147,6 +149,10 @@ export default {
         }
     },
     methods: {
+        checkLoginStatus() {
+            const token = localStorage.getItem('token');
+            this.isLoggedIn = !!token;
+        },
         async fetchRestaurantDetail() {
             if (!this.restaurantId) return;
             try {
@@ -191,15 +197,35 @@ export default {
                 }
             }
         },
-        checkUserStatus() {
-            this.isLoggedIn = true;
-            this.restaurantId = localStorage.getItem("restaurantId");
-        },
         reload() {
             window.location.reload();
         },
-    },
+        hasAllergies(allergyInfo) {
+            if (!allergyInfo) return false;
+            return Object.values(allergyInfo).some(value => value === 'Y');
+        },
+        getAllergyList(allergyInfo) {
+            if (!allergyInfo) return [];
+            
+            const allergyLabels = {
+                milk: '우유',
+                egg: '계란',
+                wheat: '밀',
+                soy: '대두',
+                peanut: '땅콩',
+                nuts: '견과류',
+                fish: '생선',
+                shellfish: '조개류'
+            };
 
+            return Object.entries(allergyInfo)
+                .filter(([, value]) => value === 'Y')
+                .map(([key]) => ({
+                    key: key,
+                    label: allergyLabels[key]
+                }));
+        },
+    },
 };
 </script>
 
