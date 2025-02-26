@@ -1,12 +1,11 @@
 <template>
     <div class="container mx-auto p-4">
-        <!-- 상단 네비게이션 탭 추가 -->
+        <!-- 상단 네비게이션 탭 -->
         <v-tabs v-model="tab">
-            <v-tab :to="`/restaurant/detail/${restaurantId}/home`">레스토랑 홈</v-tab>
+            <v-tab :to="`/restaurant/detail/${restaurantId}`">레스토랑 홈</v-tab>
             <v-tab :to="`/restaurant/detail/${restaurantId}/main`">상세정보</v-tab>
-            <v-tab :to="`/menu/list/${restaurantId}`">메뉴</v-tab>
+            <v-tab @click="reload()">메뉴</v-tab>
             <v-tab :to="`/restaurant/detail/${restaurantId}/reviews`">리뷰</v-tab>
-            <v-tab :to="`/restaurant/detail/${restaurantId}/reservation`">예약하기</v-tab>
         </v-tabs>
 
         <h1 class="text-3xl font-bold text-center mb-8">{{ restaurantName }}</h1>
@@ -92,103 +91,105 @@
 </template>
 
 <script>
-/* eslint-disable */
-import axios from 'axios';
+import axios from "axios";
 
 export default {
-    name: 'MenuList',
+    name: "MenuList",
     data() {
         return {
             menuList: [],
-            restaurantName: '',
+            restaurantName: "",
             loading: false,
             allergyLabels: {
-                milk: '우유',
-                egg: '계란',
-                wheat: '밀',
-                soy: '대두',
-                peanut: '땅콩',
-                nuts: '견과류',
-                fish: '생선',
-                shellfish: '조개류'
+                milk: "우유",
+                egg: "계란",
+                wheat: "밀",
+                soy: "대두",
+                peanut: "땅콩",
+                nuts: "견과류",
+                fish: "생선",
+                shellfish: "조개류"
             },
             isLoggedIn: false,
-            restaurantId: null,
-            tab: null
+            tab: null,
+        };
+    },
+    computed: {
+        // 라우트 변경 시 자동으로 반영되도록 설정
+        restaurantId() {
+            return this.$route.params.id;
+        },
+        isRestaurantOwner() {
+            return this.isLoggedIn && this.restaurantId === this.$route.params.id;
         }
     },
-    async created() {
-        await this.fetchRestaurantDetail();
-        await this.fetchMenuList();
-        this.checkUserStatus();
+    watch: {
+        // 라우트 변경 감지 -> restaurantId 업데이트 및 데이터 다시 로드
+        "$route.params.id": {
+            immediate: true, // 컴포넌트가 처음 로드될 때도 실행
+            handler(newId) {
+                if (newId) {
+                    this.fetchRestaurantDetail();
+                    this.fetchMenuList();
+                }
+            }
+        }
     },
     methods: {
         async fetchRestaurantDetail() {
+            if (!this.restaurantId) return;
             try {
                 const response = await axios.get(
-                    `${process.env.VUE_APP_API_BASE_URL}/restaurant/detail/${this.$route.params.id}`
+                    `${process.env.VUE_APP_API_BASE_URL}/restaurant/detail/${this.restaurantId}`
                 );
                 this.restaurantName = response.data.name;
             } catch (error) {
-                console.error('레스토랑 정보 조회 실패:', error);
+                console.error("레스토랑 정보 조회 실패:", error);
             }
         },
         async fetchMenuList() {
-            this.loading = true;
+            if (!this.restaurantId) {
+                console.warn("🚨 restaurantId가 null입니다. API 요청을 생략합니다.");
+                return;
+            }
             try {
                 const response = await axios.get(
-                    `${process.env.VUE_APP_API_BASE_URL}/menu/list/${this.$route.params.id}`
+                    `${process.env.VUE_APP_API_BASE_URL}/menu/list/${this.restaurantId}`
                 );
                 this.menuList = response.data;
             } catch (error) {
-                console.error('메뉴 목록 조회 실패:', error);
-            } finally {
-                this.loading = false;
+                console.error("메뉴 목록 조회 실패:", error);
             }
         },
         numberWithCommas(x) {
             return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         },
-        getAllergyList(allergyInfo) {
-            if (!allergyInfo) return [];
-            return Object.entries(allergyInfo)
-                .filter(([key, value]) => value === 'Y')
-                .map(([key]) => ({
-                    key,
-                    label: this.allergyLabels[key]
-                }));
-        },
-        hasAllergies(allergyInfo) {
-            if (!allergyInfo) return false;
-            return Object.values(allergyInfo).some(value => value === 'Y');
-        },
         navigateToMenuRegistration() {
-            this.$router.push('/menu/create');
+            this.$router.push("/menu/create");
         },
         navigateToMenuUpdate(menuId) {
             this.$router.push(`/menu/update/${menuId}`);
         },
         async deleteMenu(menuId) {
-            if (confirm('정말로 이 메뉴를 삭제하시겠습니까?')) {
+            if (confirm("정말로 이 메뉴를 삭제하시겠습니까?")) {
                 try {
                     await axios.delete(`${process.env.VUE_APP_API_BASE_URL}/menu/delete/${menuId}`);
                     this.menuList = this.menuList.filter(menu => menu.id !== menuId);
                 } catch (error) {
-                    console.error('메뉴 삭제 실패:', error);
+                    console.error("메뉴 삭제 실패:", error);
                 }
             }
         },
         checkUserStatus() {
             this.isLoggedIn = true;
-            this.restaurantId = localStorage.getItem('restaurantId');
-        }
+            this.restaurantId = localStorage.getItem("restaurantId");
+        },
+        reload() {
+            window.location.reload();
+        },
     },
-    computed: {
-        isRestaurantOwner() {
-            return this.isLoggedIn && this.restaurantId === this.$route.params.id;
-        }
-    }
-}
+
+};
 </script>
 
 <style scoped>
