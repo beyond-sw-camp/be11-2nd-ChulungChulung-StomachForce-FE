@@ -15,51 +15,47 @@
         class="announcement-item"
       >
         <div class="d-flex align-center w-100">
-          <v-chip
-            class="mr-2"
-            :color="announcement.announcementType === 'EVENT' ? 'blue' : 'grey'"
-            outlined
-            small
-          >
-            {{ announcement.announcementType === 'EVENT' ? '이벤트' : '공지' }}
-          </v-chip>
-          
-          <div class="title-container" @click="goToAnnouncementDetail(announcement.id)">
-            <span class="announcement-title">{{ announcement.title }}</span>
-          </div>
-
-          <!-- 관리자 버튼 -->
-          <div v-if="isAdmin" class="admin-buttons mr-2">
-            <v-btn
-              small
-              text
-              color="primary"
+          <!-- 왼쪽: 타입 칩과 제목 -->
+          <div class="d-flex align-center flex-grow-1">
+            <v-chip
               class="mr-2"
-              @click="goToUpdatePage(announcement.id)"
-            >
-              수정
-            </v-btn>
-            <v-btn
+              :color="announcement.announcementType === 'EVENT' ? 'blue' : 'grey'"
+              outlined
               small
-              text
-              color="error"
-              @click="confirmDelete(announcement.id)"
             >
-              삭제
-            </v-btn>
+              {{ announcement.announcementType === 'EVENT' ? '이벤트' : '공지' }}
+            </v-chip>
+            
+            <div class="title-container" @click="goToAnnouncementDetail(announcement.id)">
+              <span class="announcement-title">{{ announcement.title }}</span>
+            </div>
           </div>
 
-          <span class="announcement-date">{{ formatDate(announcement.createdDate) }}</span>
+          <!-- 오른쪽: 관리자 버튼과 날짜 -->
+          <div class="d-flex align-center">
+            <div v-if="isAdmin" class="admin-buttons mr-4">
+              <v-btn small text color="primary" class="mr-2" @click="goToUpdatePage(announcement.id)">
+                수정
+              </v-btn>
+              <v-btn small text color="error" @click="confirmDelete(announcement.id)">
+                삭제
+              </v-btn>
+            </div>
+            <span class="announcement-date grey--text text--darken-1">
+              {{ formatDate(announcement.createdDate) }}
+            </span>
+          </div>
         </div>
       </v-list-item>
     </v-list>
 
     <!-- 글쓰기 버튼과 페이지네이션 영역 -->
-    <div class="bottom-container">
-      <div class="d-flex justify-space-between align-center">
+    <div class="bottom-container mt-6 mb-8">
+      <div class="pagination-container">
         <v-pagination 
           v-model="currentPage" 
           :length="totalPages"
+          :total-visible="5"
           class="pagination"
         ></v-pagination>
         <v-btn
@@ -73,15 +69,24 @@
       </div>
     </div>
 
-    <!-- 검색창 -->
-    <v-text-field
-      v-model="searchQuery"
-      append-icon="mdi-magnify"
-      label="공지사항 검색"
-      single-line
-      hide-details
-      class="mt-3"
-    ></v-text-field>
+    <!-- 🔹 검색창 -->
+    <div class="search-container my-6">
+      <div class="search-bar">
+        <img 
+          src="@/assets/stomach.png" 
+          alt="뱃살력 로고" 
+          class="search-logo"
+        />
+        <input 
+          v-model="searchQuery"
+          type="text"
+          class="search-input"
+          placeholder="공지사항 검색"
+          @keyup.enter="search"
+        />
+        <v-icon class="search-icon">mdi-magnify</v-icon>
+      </div>
+    </div>
 
     <!-- 삭제 확인 다이얼로그 -->
     <v-dialog v-model="deleteDialog" max-width="300">
@@ -104,60 +109,30 @@ import axios from "axios";
 export default {
 data() {
   return {
-    announcements: [], // 전체 공지사항 데이터
-    selectedTab: "all", // 현재 선택된 탭 (전체, 공지, 이벤트)
-    searchQuery: "", // 검색어
-    currentPage: 1, // 현재 페이지
-    itemsPerPage: 5, // 한 페이지에 표시할 항목 수
-    userRole: null, // 현재 로그인한 유저의 역할 (admin인지 확인)
-    deleteDialog: false, // 삭제 확인 다이얼로그 상태
-    selectedAnnouncementId: null, // 선택된 공지사항 ID
+    announcements: [],
+    selectedTab: "all",
+    searchQuery: "",
+    currentPage: 1,
+    itemsPerPage: 5,
+    userRole: null,
+    deleteDialog: false,
+    selectedAnnouncementId: null,
   };
 },
 computed: {
   sortedAnnouncements() {
-    // 날짜 기준 내림차순 정렬
     let sorted = [...this.announcements].sort((a, b) => {
       return new Date(b.createdDate) - new Date(a.createdDate);
     });
 
-    // 필터링 적용
     let filtered = this.filterAnnouncements(sorted);
-
-    // 페이지네이션을 위한 시작과 끝 인덱스 계산
-    let currentPage = this.currentPage;
-    if (currentPage > this.totalPages && this.totalPages > 0) {
-      currentPage = this.totalPages;
-    }
     
-    const start = (currentPage - 1) * this.itemsPerPage;
+    const start = (this.currentPage - 1) * this.itemsPerPage;
     const end = start + this.itemsPerPage;
     
     return filtered.slice(start, end);
   },
   
-  filteredAnnouncements() {
-    let filtered = this.announcements;
-
-    // 탭 필터링
-    if (this.selectedTab === "notice") {
-      filtered = filtered.filter(item => item.announcementType === "ANNOUNCE");
-    } else if (this.selectedTab === "event") {
-      filtered = filtered.filter(item => item.announcementType === "EVENT");
-    }
-
-    // 검색 필터링
-    if (this.searchQuery) {
-      filtered = filtered.filter(item =>
-        item.title.toLowerCase().includes(this.searchQuery.toLowerCase())
-      );
-    }
-
-    // 페이지네이션 적용
-    return filtered.slice((this.currentPage - 1) * this.itemsPerPage, this.currentPage * this.itemsPerPage);
-  },
-
-  // 🔹 관리자 권한 여부 확인
   isAdmin() {
     return this.userRole === "ADMIN";
   },
@@ -167,30 +142,9 @@ computed: {
     return Math.max(1, Math.ceil(filteredLength / this.itemsPerPage));
   },
 },
-watch: {
-  // 페이지 수가 변경될 때 현재 페이지 조정
-  totalPages: {
-    handler(newTotalPages) {
-      if (this.currentPage > newTotalPages) {
-        this.currentPage = newTotalPages;
-      }
-    },
-    immediate: true
-  },
-
-  // selectedTab이 변경될 때마다 페이지 초기화
-  selectedTab() {
-    this.currentPage = 1;
-  },
-  
-  // 검색어가 변경될 때도 페이지 초기화
-  searchQuery() {
-    this.currentPage = 1;
-  }
-},
 mounted() {
   this.fetchAnnouncements();
-  this.fetchUserRole(); // 🔹 유저 권한 가져오기
+  this.fetchUserRole();
 },
 methods: {
   async fetchAnnouncements() {
@@ -211,16 +165,12 @@ methods: {
     }
   },
 
-  // 🔹 공지사항 상세 페이지로 이동
   goToAnnouncementDetail(id) {
     if (id) {
       this.$router.push(`/notice/${id}`);
-    } else {
-      console.error("공지사항 ID가 존재하지 않습니다.");
     }
   },
 
-  // 🔹 공지사항 글쓰기 페이지로 이동
   goToCreatePage() {
     this.$router.push("/noticeCreatePage");
   },
@@ -233,14 +183,12 @@ methods: {
   filterAnnouncements(announcements) {
     let filtered = announcements;
 
-    // 탭 필터링
     if (this.selectedTab === "notice") {
       filtered = filtered.filter(item => item.announcementType === "ANNOUNCE");
     } else if (this.selectedTab === "event") {
       filtered = filtered.filter(item => item.announcementType === "EVENT");
     }
 
-    // 검색 필터링
     if (this.searchQuery) {
       filtered = filtered.filter(item =>
         item.title.toLowerCase().includes(this.searchQuery.toLowerCase())
@@ -249,111 +197,104 @@ methods: {
 
     return filtered;
   },
-
-  // 🔹 공지사항 수정 페이지로 이동
-  goToUpdatePage(id) {
-    if (id) {
-      this.$router.push(`/notice/update/${id}`);
-    } else {
-      console.error("공지사항 ID가 존재하지 않습니다.");
-    }
-  },
-
-  // 🔹 공지사항 삭제 확인
-  confirmDelete(id) {
-    this.selectedAnnouncementId = id;
-    this.deleteDialog = true;
-  },
-
-  // 🔹 공지사항 삭제
-  async deleteAnnouncement() {
-    if (!this.selectedAnnouncementId) {
-      console.error("❌ 선택된 공지사항 ID가 없습니다.");
-      return;
-    }
-
-    try {
-      // 🔥 DELETE 요청 보내기
-      await axios.post(`${process.env.VUE_APP_API_BASE_URL}/announcement/delete/${this.selectedAnnouncementId}`);
-
-      alert("공지사항이 성공적으로 삭제되었습니다.");
-      this.deleteDialog = false;
-      this.selectedAnnouncementId = null;
-
-      // 🔹 공지사항 목록 새로고침
-      this.fetchAnnouncements();
-    } catch (error) {
-      console.error("❌ 공지사항 삭제 중 오류 발생:", error);
-      alert("공지사항 삭제에 실패했습니다.");
-    }
-  },
 },
 };
 </script>
 
 <style scoped>
-.announcement-item {
-  padding: 12px;
-  border-bottom: 1px solid #e0e0e0;
+/* 🔹 검색창 스타일 */
+.search-container {
+  display: flex;
+  justify-content: center;
+  margin: 40px 0;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 50px;
+  height: 44px;
+  padding: 4px 10px;
+  gap: 6px;
+  max-width: 500px;
+  width: 100%;
+  border: 2px solid #F04E23;
+}
+
+.search-logo {
+  height: 37px; /* 🔥 기존보다 살짝 줄임 */
+  margin-left: 1px; /* 🔥 테두리에 더 가깝게 */
+  margin-right: 8px; /* 🔥 기존보다 살짝 더 붙임 */
+}
+
+.search-input {
+  flex: 1;
+  height: 100%;
+  background: white;
+  border-radius: 50px;
+  padding: 0 12px;
+  font-size: 14px;
+  color: black;
+  border: none;
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: #999;
+}
+
+.search-icon {
+  color: #F04E23;
+  margin-right: 10px; /* 🔥 기존보다 살짝 붙임 */
   cursor: pointer;
 }
 
-.announcement-item:hover {
-  background-color: #f5f5f5;
-}
-
-.d-flex {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+/* 🔹 공지사항 스타일 */
+.announcement-item {
+  padding: 16px;
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .title-container {
-  flex: 1;
-  min-width: 0;
+  flex-grow: 1;
   cursor: pointer;
 }
 
 .announcement-title {
   font-size: 16px;
-  font-weight: 500;
+  color: #333;
 }
 
 .announcement-date {
-  color: #666;
   font-size: 14px;
   white-space: nowrap;
 }
 
 .admin-buttons {
+  white-space: nowrap;
+}
+
+/* 🔹 페이지네이션 컨테이너 스타일 */
+.pagination-container {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  margin-left: auto;
-}
-
-.w-100 {
-  width: 100%;
-}
-
-.bottom-container {
-  margin: 20px 0;
-}
-
-.justify-space-between {
-  justify-content: space-between;
-}
-
-.align-center {
-  align-items: center;
+  gap: 20px;
 }
 
 .pagination {
-  flex-grow: 1;
   display: flex;
   justify-content: center;
+  width: 100%;
 }
 
 .write-button {
-  margin-left: 20px;
+  align-self: flex-end;
+}
+
+/* 하단 여백 */
+.bottom-container {
+  margin-bottom: 60px;
 }
 </style>

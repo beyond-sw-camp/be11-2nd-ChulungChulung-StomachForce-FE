@@ -711,7 +711,7 @@ export default {
       }
     },
     async fetchUserInfo() {
-  const token = localStorage.getItem("accessToken");
+  const token = localStorage.getItem("token");
   if (!token) {
     console.log("토큰이 없습니다. 비로그인 상태입니다.");
     return; // 토큰 없으면 호출하지 않음

@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+    <v-container class="mb-12">
       <!-- 상단 탭 메뉴 -->
       <div class="tab-wrapper">
         <div class="tab-container">

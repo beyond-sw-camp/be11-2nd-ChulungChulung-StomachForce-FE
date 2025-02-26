@@ -76,8 +76,14 @@ export default {
         async loadData() {
             try {
                 let params = { size: 10, page: 0 };
+                
                 if (this.searchValue) {
                     params[this.searchType] = this.searchValue;
+                }
+                const searchQuery = this.$route.query.name;
+                if (searchQuery) {
+                    params["name"] = searchQuery;
+                    this.searchValue = searchQuery; // ✅ 검색어 입력 필드에도 반영
                 }
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/restaurant/list`, { params });
                 this.restaurantList = response.data.content;
