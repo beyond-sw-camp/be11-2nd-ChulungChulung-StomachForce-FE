@@ -639,11 +639,11 @@ export default {
       navigationIcons: [
         { text: 'sns', image: 'sns.png', route:'/post/postList'  },
         { text: '이벤트', image: '이벤트.png', route:'/event'  },
-        { text: '한식', image: '한식.png', route:'/post/postList'  },
-        { text: '일식', image: '일식.png', route:'/post/postList'  },
-        { text: '퓨전', image: '퓨전.png' , route:'/post/postList' },
-        { text: '중식', image: '중식.png' , route:'/post/postList' },
-        { text: '양식', image: '양식.png' , route:'/post/postList' }
+        { text: '한식', image: '한식.png', route:'/restaurant/list/korean'  },
+        { text: '일식', image: '일식.png', route:'/restaurant/list/japanese'  },
+        { text: '퓨전', image: '퓨전.png' , route:'/restaurant/list/fusion' },
+        { text: '중식', image: '중식.png' , route:'/restaurant/list/chinese' },
+        { text: '양식', image: '양식.png' , route:'/restaurant/list/western' }
       ],
       posts: [],
       loginUserNickName: ""
