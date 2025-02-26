@@ -57,6 +57,29 @@
               </v-card-actions>
             </v-card>
           </v-menu>
+
+          <v-row>
+            <v-col v-for="menu in menus" :key="menu.id" cols="12" sm="6" md="4">
+              <v-card>
+                <v-img :src="menu.menuPhoto" height="200px" cover></v-img>
+                <v-card-title>{{ menu.name }}</v-card-title>
+                <v-card-subtitle>{{ menu.price }}원</v-card-subtitle>
+                <v-checkbox
+                  v-model="selectedMenus"
+                  :value="menu.id"
+                  :label="menu.name"
+                  @change="handleMenuSelection(menu.id)"
+                ></v-checkbox>
+                <v-text-field
+                  v-model.number="menuQuantities[menu.id]"
+                  label="수량"
+                  type="number"
+                  min="1"
+                  :disabled="!selectedMenus.includes(menu.id)"
+                ></v-text-field>
+              </v-card>
+            </v-col>
+          </v-row>
   
           <!-- 🔹 인원 수 입력 -->
           <v-text-field
@@ -67,7 +90,6 @@
             :rules="[validatePeopleNumber]"
             required
           ></v-text-field>
-
           <!-- 🔹 결제 방법 선택 -->
           <v-select
             v-model="reservation.paymentMethod"
@@ -112,8 +134,12 @@
           paymentMethod: "CARD",
           couponCode: "",
           mileage: 0,
-          reservationDateTime: null
+          reservationDateTime: null,
+
         },
+        menus: [],  // 메뉴 리스트 API 호출 필요
+        selectedMenus: [],
+        menuQuantities: {},  // 선택된 메뉴 ID 목록
         datePicker: false,
         tempDate: null,
         tempTime: null,
@@ -142,10 +168,14 @@
         ],
       };
     },
+    created() {
+    this.fetchMenus();
+    },
     computed: {
       minDate() {
         return new Date().toISOString().split('T')[0];
       },
+      
       formattedDateTime() {
         if (this.reservation.date && this.reservation.time) {
           const date = new Date(this.reservation.date);
@@ -159,6 +189,22 @@
       }
     },
     methods: {
+      handleMenuSelection(menuId) {
+    // 메뉴를 선택 해제하면 수량도 삭제
+    if (!this.selectedMenus.includes(menuId)) {
+      delete this.menuQuantities[menuId]; // ✅ Vue 3에서는 delete 사용
+    } else {
+      this.menuQuantities[menuId] = 1; // ✅ Vue 3에서는 직접 할당 가능
+    }
+  },
+      async fetchMenus() {
+    try {
+      const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/restaurant/${this.restaurantId}/menus`);
+      this.menus = response.data;
+    } catch (error) {
+      console.error("메뉴 로드 실패:", error);
+    }
+  },
         confirmDateTime() {
     if (this.tempDate && this.tempTime) {
         // ✅ 날짜 변환: "YYYY-MM-DD" 형식으로 저장
@@ -191,52 +237,45 @@
         return value > 0 ? true : "인원 수는 1명 이상이어야 합니다.";
       },
       async submitReservation() {
-        try {
-            if (!this.reservation.reservationDateTime) {
-            alert("예약 날짜 및 시간을 선택해주세요.");
-            return;
-            }
-            if (!this.reservation.peopleNumber || this.reservation.peopleNumber < 1) {
-            alert("인원 수를 1명 이상 입력해주세요.");
-            return;
-            }
+  try {
+    if (!this.reservation.reservationDateTime) {
+      alert("예약 날짜 및 시간을 선택해주세요.");
+      return;
+    }
+    if (!this.reservation.peopleNumber || this.reservation.peopleNumber < 1) {
+      alert("인원 수를 1명 이상 입력해주세요.");
+      return;
+    }
 
-            // 날짜와 시간 분리
+    // ✅ 메뉴 ID와 수량을 객체로 변환
+    const selectedMenuData = this.selectedMenus.map(id => ({
+      menuId: id,
+      quantity: this.menuQuantities[id] || 1 // 수량 기본값 1
+    }));
 
-            const reservationDate = this.reservation.date;
-            const reservationTime = this.reservation.time;
+    // ✅ JSON 데이터
+    const requestData = {
+      reservationDate: this.reservation.date,
+      reservationTime: this.reservation.time,
+      peopleNumber: this.reservation.peopleNumber,
+      paymentMethod: this.reservation.paymentMethod,
+      couponCode: this.reservation.couponCode,
+      mileage: this.reservation.mileage,
+      menus: selectedMenuData // ✅ 변경된 부분
+    };
+    console.log(requestData)
+    await axios.post(
+      `${process.env.VUE_APP_API_BASE_URL}/reservation/${this.restaurantId}/create`,
+      requestData
+    );
 
-            // ✅ 전송할 JSON 데이터 확인
-            console.log("📌 [DEBUG] 전송할 예약 데이터:", {
-                reservationDate: this.reservation.date,  // "YYYY-MM-DD"
-            reservationTime: this.reservation.time,  // "HH:mm"
-                peopleNumber: this.reservation.peopleNumber,
-                paymentMethod: this.reservation.paymentMethod,
-                couponCode: this.reservation.couponCode,
-                mileage: this.reservation.mileage
-            });
-
-            const requestData = {
-                reservationDate: reservationDate,
-                reservationTime: reservationTime,
-                peopleNumber: this.reservation.peopleNumber,
-                paymentMethod: this.reservation.paymentMethod,
-                couponCode: this.reservation.couponCode,
-                mileage: this.reservation.mileage
-            };
-
-            await axios.post(
-            `${process.env.VUE_APP_API_BASE_URL}/reservation/${this.restaurantId}/create`,
-            requestData
-            );
-
-            alert("예약이 완료되었습니다.");
-            this.$router.push(`/restaurant/detail/${this.restaurantId}/reservation`);
-        } catch (error) {
-            console.error("예약 실패:", error);
-            alert("예약에 실패했습니다.");
-        }
-        }
+    alert("예약이 완료되었습니다.");
+    this.$router.push(`/user/reservation`);
+  } catch (error) {
+    console.error("예약 실패:", error);
+    alert("예약에 실패했습니다.");
+  }
+}
     }
   };
   </script>

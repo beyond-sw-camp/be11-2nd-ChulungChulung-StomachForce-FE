@@ -55,6 +55,7 @@
                 </v-btn>
               </div>
 
+
               <v-btn
                 :loading="loading"
                 block
@@ -78,6 +79,17 @@
                   회원가입
                 </v-btn>
               </div>
+              <div class="text-center">
+                  <span class="text-body-2">사업자이신가요? </span>
+                  <v-btn
+                    variant="text"
+                    color="primary"
+                    class="text-caption"
+                    @click="goToRestaurantLogin"
+                  >
+                    로그인하러가기
+                  </v-btn>
+                </div>
             </v-form>
           </v-card-text>
         </v-card>
@@ -164,6 +176,9 @@ export default {
     forgotPassword() {
       this.$router.push('/forgot-password');
     },
+    goToUserLogin(){
+        this.$router.push("/restaurant/login");
+      },
     goToSignup() {
       this.$router.push('/user/create');
     }
