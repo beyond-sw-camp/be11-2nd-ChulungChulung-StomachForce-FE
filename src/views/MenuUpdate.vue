@@ -14,10 +14,30 @@
                 <label for="description" class="block text-gray-700">설명:</label>
                 <textarea v-model="menu.description" id="description" class="mt-1 block w-full border rounded-md" required></textarea>
             </div>
+            
+            <!-- 현재 메뉴 이미지 표시 -->
             <div class="mb-4">
-                <label for="menuPhoto" class="block text-gray-700">메뉴 사진:</label>
-                <input type="file" @change="onFileChange" id="menuPhoto" class="mt-1 block w-full border rounded-md" />
+                <label class="block text-gray-700 mb-2">현재 메뉴 이미지:</label>
+                <img 
+                    :src="menu.menuPhoto" 
+                    alt="현재 메뉴 이미지" 
+                    style="width: 200x; height: 200px;"
+                    class="object-cover rounded-md border max-w-[128px] max-h-[128px]"
+                />
             </div>
+
+            <!-- 새 이미지 선택 (선택사항) -->
+            <div class="mb-4">
+                <label for="menuPhoto" class="block text-gray-700">새 메뉴 이미지 (선택사항):</label>
+                <input 
+                    type="file" 
+                    @change="onFileChange" 
+                    id="menuPhoto" 
+                    class="mt-1 block w-full border rounded-md" 
+                    accept="image/*"
+                />
+            </div>
+
             <div class="mb-4">
                 <h2 class="text-lg font-bold">알레르기 정보:</h2>
                 <div class="flex flex-wrap">
@@ -79,21 +99,30 @@ export default {
     },
     methods: {
         onFileChange(event) {
-            this.menu.menuPhoto = event.target.files[0];
+            const file = event.target.files[0];
+            if (file) {
+                this.menu.newMenuPhoto = file;
+            }
         },
         toggleAllergy(allergy) {
             this.menu.allergyInfo[allergy] = this.menu.allergyInfo[allergy] === 'Y' ? 'N' : 'Y';
         },
         async updateMenu() {
             try {
+                // 데이터 유효성 검사
+                if (!this.menu.name || !this.menu.price || !this.menu.description) {
+                    alert('필수 항목을 모두 입력해주세요.');
+                    return;
+                }
+
                 const formData = new FormData();
                 formData.append('name', this.menu.name);
-                formData.append('price', this.menu.price);
+                formData.append('price', Number(this.menu.price)); // 명시적으로 숫자로 변환
                 formData.append('description', this.menu.description);
                 
-                // 새로운 메뉴 사진이 선택된 경우에만 추가
-                if (this.menu.menuPhoto && this.menu.menuPhoto instanceof File) {
-                    formData.append('menuPhoto', this.menu.menuPhoto);
+                // 새로운 이미지가 선택된 경우에만 추가
+                if (this.menu.newMenuPhoto) {
+                    formData.append('menuPhoto', this.menu.newMenuPhoto);
                 }
 
                 // 알레르기 정보 추가
@@ -101,8 +130,11 @@ export default {
                     formData.append(`allergyInfo.${key}`, value);
                 });
 
-                await axios.patch(
-                    `${process.env.VUE_APP_API_BASE_URL}/menu/update/${this.$route.params.id}`,
+                const menuId = this.$route.params.menuId; // URL 파라미터 이름 수정
+                console.log('Updating menu with ID:', menuId); // 디버깅용
+
+                const response = await axios.patch(
+                    `${process.env.VUE_APP_API_BASE_URL}/menu/update/${menuId}`,
                     formData,
                     {
                         headers: {
@@ -112,11 +144,14 @@ export default {
                     }
                 );
 
-                alert('메뉴가 수정되었습니다.');
-                this.$router.push(`/menu/list/${localStorage.getItem('restaurantId')}`);
+                if (response.data) {
+                    alert('메뉴가 수정되었습니다.');
+                    this.$router.push(`/menu/list/${localStorage.getItem('restaurantId')}`);
+                }
             } catch (error) {
                 console.error('메뉴 수정 실패:', error);
-                alert('메뉴 수정에 실패했습니다.');
+                console.error('에러 응답:', error.response?.data);
+                alert(`메뉴 수정에 실패했습니다: ${error.response?.data || error.message}`);
             }
         },
         async fetchMenu() {

@@ -107,6 +107,19 @@ export default {
                    (!this.photos || this.photos.length <= 5);
         }
     },
+    async created() {
+        // URL 쿼리 파라미터에서 신고할 사용자 닉네임을 가져옴
+        const reportedNickName = this.$route.query.reportedNickName;
+        if (reportedNickName) {
+            await this.searchUsers();
+            // users 배열에서 해당 닉네임을 가진 사용자를 찾아 자동 설정
+            const reportedUser = this.users.find(user => user.nickName === reportedNickName);
+            if (reportedUser) {
+                this.reportedId = reportedUser;
+                this.searchQuery = reportedUser.nickName;
+            }
+        }
+    },
     mounted() {
         this.searchUsers();
         window.scrollTo(0, 0);
