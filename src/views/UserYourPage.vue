@@ -263,7 +263,10 @@ export default {
       // 모달 관련 처리
     },
     reportUser() {
-      alert("신고하기 기능 실행 (예시)");
+      this.$router.push({
+        path: '/report/create',
+        query: { reportedNickName: this.userNickName }
+      });
     },
     async blockUser() {
       const payload = {

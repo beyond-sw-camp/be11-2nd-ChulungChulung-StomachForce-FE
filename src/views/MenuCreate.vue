@@ -1,212 +1,125 @@
 <template>
-    <v-container>
-        <v-card class="mx-auto" max-width="800">
-            <v-card-title class="text-h5 font-weight-bold">
-                메뉴 등록
-            </v-card-title>
-
-            <v-card-text>
-                <v-form ref="form" v-model="isFormValid">
-                    <v-text-field
-                        v-model="menu.name"
-                        label="메뉴명"
-                        required
-                        :rules="nameRules"
-                        variant="outlined"
-                        class="mb-4"
-                    ></v-text-field>
-
-                    <v-text-field
-                        v-model.number="menu.price"
-                        label="가격"
-                        type="number"
-                        required
-                        :rules="priceRules"
-                        variant="outlined"
-                        class="mb-4"
-                    ></v-text-field>
-
-                    <v-textarea
-                        v-model="menu.description"
-                        label="메뉴 설명"
-                        :rules="descriptionRules"
-                        variant="outlined"
-                        rows="3"
-                        auto-grow
-                        class="mb-4"
-                    ></v-textarea>
-
-                    <v-file-input
-                        v-model="menu.menuPhoto"
-                        label="메뉴 사진"
-                        accept="image/*"
-                        prepend-icon="mdi-camera"
-                        variant="outlined"
-                        :rules="photoRules"
-                        class="mb-4"
-                        @change="handleFileChange"
-                    ></v-file-input>
-
-                    <!-- 알레르기 정보 체크박스들 -->
-                    <v-card-title class="text-subtitle-1">알레르기 정보</v-card-title>
-                    <v-row>
-                        <v-col cols="6" sm="3">
-                            <v-checkbox v-model="menu.allergyInfo.milk" label="우유"></v-checkbox>
-                        </v-col>
-                        <v-col cols="6" sm="3">
-                            <v-checkbox v-model="menu.allergyInfo.egg" label="계란"></v-checkbox>
-                        </v-col>
-                        <v-col cols="6" sm="3">
-                            <v-checkbox v-model="menu.allergyInfo.wheat" label="밀"></v-checkbox>
-                        </v-col>
-                        <v-col cols="6" sm="3">
-                            <v-checkbox v-model="menu.allergyInfo.soy" label="대두"></v-checkbox>
-                        </v-col>
-                        <v-col cols="6" sm="3">
-                            <v-checkbox v-model="menu.allergyInfo.peanut" label="땅콩"></v-checkbox>
-                        </v-col>
-                        <v-col cols="6" sm="3">
-                            <v-checkbox v-model="menu.allergyInfo.nuts" label="견과류"></v-checkbox>
-                        </v-col>
-                        <v-col cols="6" sm="3">
-                            <v-checkbox v-model="menu.allergyInfo.fish" label="생선"></v-checkbox>
-                        </v-col>
-                        <v-col cols="6" sm="3">
-                            <v-checkbox v-model="menu.allergyInfo.shellfish" label="조개류"></v-checkbox>
-                        </v-col>
-                    </v-row>
-
-                    <div class="d-flex justify-end gap-2 mt-4">
-                        <v-btn
-                            color="error"
-                            variant="text"
-                            @click="$router.go(-1)"
-                        >
-                            취소
-                        </v-btn>
-                        <v-btn
-                            color="primary"
-                            :loading="loading"
-                            :disabled="!isFormValid"
-                            @click="createMenu"
-                        >
-                            등록
-                        </v-btn>
-                    </div>
-                </v-form>
-            </v-card-text>
-        </v-card>
-
-        <v-snackbar
-            v-model="showError"
-            color="error"
-            timeout="3000"
-            location="top"
-        >
-            {{ errorMessage }}
-        </v-snackbar>
-    </v-container>
+    <div class="container mx-auto p-4">
+        <h1 class="text-3xl font-bold text-center mb-8">메뉴 등록</h1>
+        <form @submit.prevent="createMenu">
+            <div class="mb-4">
+                <label for="name" class="block text-gray-700">메뉴 이름:</label>
+                <input type="text" v-model="menu.name" id="name" class="mt-1 block w-full border rounded-md" required />
+            </div>
+            <div class="mb-4">
+                <label for="price" class="block text-gray-700">가격:</label>
+                <input type="number" v-model="menu.price" id="price" class="mt-1 block w-full border rounded-md" required />
+            </div>
+            <div class="mb-4">
+                <label for="description" class="block text-gray-700">설명:</label>
+                <textarea v-model="menu.description" id="description" class="mt-1 block w-full border rounded-md" required></textarea>
+            </div>
+            <div class="mb-4">
+                <label for="menuPhoto" class="block text-gray-700">메뉴 사진 (필수):</label>
+                <input 
+                    type="file" 
+                    @change="onFileChange" 
+                    id="menuPhoto" 
+                    class="mt-1 block w-full border rounded-md" 
+                    accept="image/*"
+                    required
+                />
+            </div>
+            <div class="mb-4">
+                <h2 class="text-lg font-bold">알레르기 정보:</h2>
+                <div class="flex flex-wrap">
+                    <label class="mr-4">
+                        <input type="checkbox" :checked="menu.allergyInfo.milk === 'Y'" @change="toggleAllergy('milk')" /> 우유
+                    </label>
+                    <label class="mr-4">
+                        <input type="checkbox" :checked="menu.allergyInfo.egg === 'Y'" @change="toggleAllergy('egg')" /> 계란
+                    </label>
+                    <label class="mr-4">
+                        <input type="checkbox" :checked="menu.allergyInfo.wheat === 'Y'" @change="toggleAllergy('wheat')" /> 밀
+                    </label>
+                    <label class="mr-4">
+                        <input type="checkbox" :checked="menu.allergyInfo.soy === 'Y'" @change="toggleAllergy('soy')" /> 대두
+                    </label>
+                    <label class="mr-4">
+                        <input type="checkbox" :checked="menu.allergyInfo.peanut === 'Y'" @change="toggleAllergy('peanut')" /> 땅콩
+                    </label>
+                    <label class="mr-4">
+                        <input type="checkbox" :checked="menu.allergyInfo.nuts === 'Y'" @change="toggleAllergy('nuts')" /> 견과류
+                    </label>
+                    <label class="mr-4">
+                        <input type="checkbox" :checked="menu.allergyInfo.fish === 'Y'" @change="toggleAllergy('fish')" /> 생선
+                    </label>
+                    <label class="mr-4">
+                        <input type="checkbox" :checked="menu.allergyInfo.shellfish === 'Y'" @change="toggleAllergy('shellfish')" /> 조개류
+                    </label>
+                </div>
+            </div>
+            <button 
+                type="submit" 
+                class="bg-blue text-white px-4 py-2 rounded hover:bg-blue-700"
+                :disabled="!menu.menuPhoto"
+            >
+                등록
+            </button>
+        </form>
+    </div>
 </template>
 
 <script>
 import axios from 'axios';
 
 export default {
-    name: 'MenuCreate',
     data() {
         return {
-            restaurantId: localStorage.getItem('restaurantId'),
             menu: {
                 name: '',
                 price: null,
                 description: '',
                 menuPhoto: null,
                 allergyInfo: {
-                    milk: false,
-                    egg: false,
-                    wheat: false,
-                    soy: false,
-                    peanut: false,
-                    nuts: false,
-                    fish: false,
-                    shellfish: false
+                    milk: 'N',
+                    egg: 'N',
+                    wheat: 'N',
+                    soy: 'N',
+                    peanut: 'N',
+                    nuts: 'N',
+                    fish: 'N',
+                    shellfish: 'N',
                 }
-            },
-            isFormValid: false,
-            loading: false,
-            showError: false,
-            errorMessage: '',
-            nameRules: [
-                v => !!v || '메뉴명을 입력해주세요',
-                v => v.length <= 50 || '메뉴명은 50자 이하여야 합니다'
-            ],
-            priceRules: [
-                v => !!v || '가격을 입력해주세요',
-                v => v > 0 || '가격은 0보다 커야 합니다'
-            ],
-            descriptionRules: [
-                v => v.length <= 500 || '설명은 500자 이하여야 합니다'
-            ],
-            photoRules: [
-                v => !v || v.size < 5000000 || '파일 크기는 5MB 이하여야 합니다'
-            ]
-        }
+            }
+        };
     },
     methods: {
-        handleFileChange(file) {
-            if (file) {
-                this.menu.menuPhoto = file;
-            }
+        onFileChange(event) {
+            this.menu.menuPhoto = event.target.files[0];
+        },
+        toggleAllergy(allergy) {
+            this.menu.allergyInfo[allergy] = this.menu.allergyInfo[allergy] === 'Y' ? 'N' : 'Y';
         },
         async createMenu() {
-            if (!this.$refs.form.validate()) return;
-
-            this.loading = true;
+            const formData = new FormData();
+            formData.append('restaurantId', localStorage.getItem('restaurantId'));
+            formData.append('name', this.menu.name);
+            formData.append('price', this.menu.price);
+            formData.append('description', this.menu.description);
+            formData.append('menuPhoto', this.menu.menuPhoto);
+            Object.entries(this.menu.allergyInfo).forEach(([key, value]) => {
+                formData.append(`allergyInfo.${key}`, value); // "allergyInfo.wheat" : "Y"
+            });            
             try {
-                const formData = new FormData();
-                formData.append('restaurantId', this.restaurantId);
-                formData.append('name', this.menu.name);
-                formData.append('price', this.menu.price);
-                formData.append('description', this.menu.description);
-
-                // 메뉴 사진이 있는 경우에만 추가
-                if (this.menu.menuPhoto instanceof File) {
-                    formData.append('menuPhoto', this.menu.menuPhoto);
-                }
-
-                // 알레르기 정보를 개별적으로 추가
-                Object.entries(this.menu.allergyInfo).forEach(([key, value]) => {
-                    formData.append(`allergyInfo.${key}`, value);
-                });
-
-                const response = await axios.post(
-                    `${process.env.VUE_APP_API_BASE_URL}/menu/create`,
-                    formData,
-                    {
-                        headers: {
-                            'Content-Type': 'multipart/form-data',
-                            'Authorization': `Bearer ${localStorage.getItem('token')}`
-                        }
+                await axios.post(`${process.env.VUE_APP_API_BASE_URL}/menu/create`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
                     }
-                );
-
-                if (response.data) {
-                    this.$router.push(`/menu/list/${this.restaurantId}`);
-                }
+                });
+                alert('메뉴가 등록되었습니다.');
+                const restaurantId = localStorage.getItem('restaurantId');
+                this.$router.push(`/menu/list/${restaurantId}`); // 메뉴 목록으로 이동
             } catch (error) {
                 console.error('메뉴 등록 실패:', error);
-                this.errorMessage = error.response?.data || '메뉴 등록에 실패했습니다.';
-                this.showError = true;
-            } finally {
-                this.loading = false;
+                alert('메뉴 등록에 실패했습니다: ' + error.response.data); // 사용자에게 오류 메시지 표시
             }
         }
     }
 }
 </script>
-
-<style scoped>
-.gap-2 {
-    gap: 8px;
-}
-</style>
