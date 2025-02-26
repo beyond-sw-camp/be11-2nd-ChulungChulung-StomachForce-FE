@@ -66,7 +66,7 @@
       <v-col cols="12" md="6">
         <v-card class="info-card">
           <v-card-title>📍 주소</v-card-title>
-          <v-card-text>{{ restaurant.address }}</v-card-text>
+          <v-card-text>{{ restaurant.addressCity }}  {{ restaurant.addressStreet }}</v-card-text>
         </v-card>
         <v-card class="info-card">
           <v-card-title>📞 전화번호</v-card-title>
@@ -192,7 +192,8 @@ export default {
       tab: null,
       restaurant: {
         name: "",
-        address: "",
+        addressCity: "",
+        addressStreet: "",
         phoneNumber: "",
         averageRating: "",
         bookmarkCount: "",
