@@ -43,7 +43,8 @@
             </v-card-subtitle>
 
             <v-card-subtitle v-if="report">
-                작성일: {{ new Date(report.createdAt).toLocaleDateString() }}
+                작성일: {{ new Date(report.createdTime).toLocaleDateString() }} {{ new Date(report.createdTime).toLocaleTimeString() }} <br>
+                수정일: {{ new Date(report.updatedTime).toLocaleDateString() }} {{ new Date(report.updatedTime).toLocaleTimeString() }}
             </v-card-subtitle>
 
             <v-card-text v-if="report">
@@ -94,6 +95,11 @@
                     @click="deleteAnswer"
                 ></v-btn>
             </v-card-title>
+
+            <v-card-subtitle v-if="answer">
+                작성일: {{ new Date(answer.createdTime).toLocaleDateString() }} {{ new Date(answer.createdTime).toLocaleTimeString() }} <br>
+                수정일: {{ new Date(answer.updatedTime).toLocaleDateString() }} {{ new Date(answer.updatedTime).toLocaleTimeString() }}
+            </v-card-subtitle>
 
             <v-card-text>
                 <!-- 수정 모드일 때는 폼 표시 -->
