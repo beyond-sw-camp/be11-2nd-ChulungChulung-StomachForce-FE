@@ -85,26 +85,38 @@ export default {
             this.menu.allergyInfo[allergy] = this.menu.allergyInfo[allergy] === 'Y' ? 'N' : 'Y';
         },
         async updateMenu() {
-            const formData = new FormData();
-            formData.append('name', this.menu.name);
-            formData.append('price', this.menu.price);
-            formData.append('description', this.menu.description);
-            formData.append('menuPhoto', this.menu.menuPhoto);
-            Object.entries(this.menu.allergyInfo).forEach(([key, value]) => {
-                formData.append(`allergyInfo.${key}`, value); // "allergyInfo.wheat" : "Y"
-            });   
             try {
-                await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/menu/update/${this.$route.params.menuId}`, formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
+                const formData = new FormData();
+                formData.append('name', this.menu.name);
+                formData.append('price', this.menu.price);
+                formData.append('description', this.menu.description);
+                
+                // 새로운 메뉴 사진이 선택된 경우에만 추가
+                if (this.menu.menuPhoto && this.menu.menuPhoto instanceof File) {
+                    formData.append('menuPhoto', this.menu.menuPhoto);
+                }
+
+                // 알레르기 정보 추가
+                Object.entries(this.menu.allergyInfo).forEach(([key, value]) => {
+                    formData.append(`allergyInfo.${key}`, value);
                 });
+
+                await axios.patch(
+                    `${process.env.VUE_APP_API_BASE_URL}/menu/update/${this.$route.params.id}`,
+                    formData,
+                    {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    }
+                );
+
                 alert('메뉴가 수정되었습니다.');
-                const restaurantId = localStorage.getItem('restaurantId');
-                this.$router.push(`/menu/list/${restaurantId}`);
+                this.$router.push(`/menu/list/${localStorage.getItem('restaurantId')}`);
             } catch (error) {
                 console.error('메뉴 수정 실패:', error);
-                alert('메뉴 수정에 실패했습니다: ' + error.response.data);
+                alert('메뉴 수정에 실패했습니다.');
             }
         },
         async fetchMenu() {

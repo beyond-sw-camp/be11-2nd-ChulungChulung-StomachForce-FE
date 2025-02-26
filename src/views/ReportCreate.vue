@@ -17,14 +17,20 @@
                     class="mb-4"
                 ></v-select>
 
-                <v-text-field
+                <v-autocomplete
                     v-model="reportedId"
-                    label="신고할 사용자 ID"
-                    type="number"
+                    :items="users"
+                    :item-title="item => item.nickName"
+                    :item-value="item => item.userId"
+                    label="신고할 사용자 닉네임"
                     variant="outlined"
                     required
                     class="mb-4"
-                ></v-text-field>
+                    :loading="loading"
+                    v-model:search-input="searchQuery"
+                    return-object
+                    @update:search="searchUsers"
+                ></v-autocomplete>
 
                 <v-textarea
                     v-model="contents"
@@ -79,10 +85,12 @@ export default {
     data() {
         return { 
             reportClass: 'SPAM',
-            reportedId: '',
+            reportedId: null,
             contents: '',
             photos: [],
             loading: false,
+            users: [],
+            searchQuery: '',
             reportClassOptions: [
                 { title: '스팸', value: 'SPAM' },
                 { title: '욕설/비방', value: 'ABUSE' },
@@ -100,14 +108,26 @@ export default {
         }
     },
     mounted() {
+        this.searchUsers();
         window.scrollTo(0, 0);
     },
     methods: {
+        async searchUsers() {
+            try {
+                this.loading = true;
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/user/list`);
+                this.users = response.data;
+            } catch (error) {
+                console.error('사용자 목록 조회 실패:', error);
+            } finally {
+                this.loading = false;
+            }
+        },
         async submitPost() {
             try {
                 const formData = new FormData();
                 formData.append('reporterId', localStorage.getItem('userId'));
-                formData.append('reportedId', this.reportedId);
+                formData.append('reportedId', this.reportedId.userId);
                 formData.append('reportClass', this.reportClass);
                 formData.append('contents', this.contents);
 

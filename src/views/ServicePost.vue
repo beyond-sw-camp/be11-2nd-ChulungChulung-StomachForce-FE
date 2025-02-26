@@ -13,9 +13,16 @@
                         :color="answer ? 'success' : 'warning'"
                         :text="answer ? '답변완료' : '답변대기'"
                     ></v-chip>
+                    <v-chip
+                        class="ml-2"
+                        :color="post.visibility === 'Y' ? 'info' : 'grey'"
+                        size="small"
+                    >
+                        {{ post.visibility === 'Y' ? '공개' : '비공개' }}
+                    </v-chip>
                 </v-card-title>
                 <v-card-subtitle>
-                    작성일: {{ new Date(post.createdAt).toLocaleDateString() }}
+                    작성자: {{ authorNickname }} | 작성일: {{ new Date(post.createdAt).toLocaleDateString() }}
                 </v-card-subtitle>
                 <v-card-text>
                     <div class="content-text">{{ post.contents }}</div>
@@ -191,7 +198,9 @@ export default {
             answerRules: [
                 v => !!v || '답변 내용을 입력해주세요',
                 v => v.length >= 10 || '답변은 최소 10자 이상 입력해주세요'
-            ]
+            ],
+            authorNickname: '',
+            users: []
         };
     },
     computed: {
@@ -255,6 +264,14 @@ export default {
                 this.userRole = null;
             }
         },
+        async fetchUsers() {
+            try {
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/user/list`);
+                this.users = response.data;
+            } catch (error) {
+                console.error('사용자 목록 조회 실패:', error);
+            }
+        },
         async fetchPost() {
             try {
                 const postId = this.$route.params.id;
@@ -262,6 +279,10 @@ export default {
                     `${process.env.VUE_APP_API_BASE_URL}/service/post/${postId}`
                 );
                 this.post = response.data;
+
+                // 작성자 닉네임 찾기
+                const author = this.users.find(user => Number(user.userId) === Number(this.post.userId));
+                this.authorNickname = author ? author.nickName : '알 수 없음';
 
                 // 권한 체크
                 if (this.post.visibility === 'N') {
@@ -465,6 +486,7 @@ export default {
     },
     async mounted() {
         await this.fetchCurrentUser();
+        await this.fetchUsers();
         await this.fetchPost();
     }
 };
