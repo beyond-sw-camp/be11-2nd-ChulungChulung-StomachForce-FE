@@ -9,7 +9,7 @@
       <v-tab :to="`/restaurant/detail/${restaurantId}/reservation`">예약하기</v-tab>
     </v-tabs>
 
-    <!-- 매장명 (상대 위치를 주어 리뷰작성 버튼 배치) -->
+    <!-- 매장명과 즐겨찾기 버튼 (상대 위치를 주어 리뷰작성 버튼 배치) -->
     <v-card class="title-card" style="position: relative;">
       <v-btn
         class="review-button"
@@ -20,8 +20,14 @@
       >
         리뷰작성
       </v-btn>
-      <v-card-title class="text-h4 text-center">
+      <v-card-title class="text-h4 text-center" style="position: relative;">
         {{ restaurant.name }}
+        <!-- 즐겨찾기 버튼: 즐겨찾기 상태에 따라 아이콘 변경 -->
+        <v-btn icon @click="toggleBookmark" style="position: absolute; right: 0; top: 50%; transform: translateY(-50%);">
+          <v-icon size="32">
+            {{ isBookMark ? 'mdi-bookmark' : 'mdi-bookmark-outline' }}
+          </v-icon>
+        </v-btn>
       </v-card-title>
     </v-card>
     
@@ -34,8 +40,8 @@
             lazy-src="/assets/loading-placeholder.jpg"
             height="300px"
             contain
-            />
-            <v-card-actions class="d-flex justify-center">
+          />
+          <v-card-actions class="d-flex justify-center">
             <v-btn icon @click="prevImage">
               <v-icon>mdi-chevron-left</v-icon>
             </v-btn>
@@ -86,7 +92,6 @@
         </v-card>
       </v-col>
     </v-row>
-
 
     <!-- 영업시간 -->
     <v-card class="time-section">
@@ -196,7 +201,7 @@ export default {
         address: "",
         phoneNumber: "",
         averageRating: "",
-        bookmarkCount: "",
+        bookmarkCount: 0,
         openingTime: "",
         closingTime: "",
         lastOrder: "",
@@ -207,6 +212,7 @@ export default {
       },
       restaurantId: this.$route.params.id,
       currentIndex: 0,
+      isBookMark: false, // 즐겨찾기 여부
       // 리뷰 작성 다이얼로그 관련 데이터
       reviewDialog: false,
       reviewForm: {
@@ -223,16 +229,12 @@ export default {
   methods: {
     formatTime(timeString) {
       if (!timeString) return "없음";
-
-      // timeString이 "HH:MM:SS" 형식으로 올 경우, 초(:SS) 제거
       const timeParts = timeString.split(":");
       if (timeParts.length >= 2) {
-        return `${timeParts[0]}:${timeParts[1]}`; // "HH:MM" 형식으로 반환
+        return `${timeParts[0]}:${timeParts[1]}`;
       }
-
-      return "없음"; // 예상치 못한 형식일 경우 대비
+      return "없음";
     },
-
     async loadRestaurantDetail() {
       try {
         const response = await axios.get(
@@ -240,47 +242,41 @@ export default {
         );
         console.log("API 응답 데이터:", response.data);
         this.restaurant = response.data;
-
         if (!this.restaurant.imagePath || this.restaurant.imagePath.length === 0) {
           this.restaurant.imagePath = ["/assets/noImage.jpg"];
         }
         this.preloadImages(this.restaurant.imagePath);
+        // 레스토랑 정보를 로드한 후 즐겨찾기 상태 확인
+        this.checkBookmark();
       } catch (e) {
         console.error("레스토랑 상세 정보 로드 실패:", e);
       }
     },
-
     preloadImages(images) {
       images.forEach((src) => {
         const img = new Image();
         img.src = src;
       });
     },
-
     prevImage() {
       this.currentIndex =
         this.currentIndex === 0
           ? this.restaurant.imagePath.length - 1
           : this.currentIndex - 1;
     },
-
     nextImage() {
       this.currentIndex =
         this.currentIndex === this.restaurant.imagePath.length - 1
           ? 0
           : this.currentIndex + 1;
     },
-
     goToReservation() {
       this.$router.push(`/restaurant/reservation/${this.restaurant.id}`);
     },
-
     reload() {
       window.location.reload();
     },
-
     async submitReview() {
-      // 간단한 폼 검증 (필요에 따라 확장 가능)
       if (!this.reviewForm.contents) {
         alert("리뷰 내용을 입력해주세요.");
         return;
@@ -305,16 +301,67 @@ export default {
             },
           }
         );
-        // 성공 후 다이얼로그 닫기 및 폼 초기화
         this.reviewDialog = false;
         this.reviewForm = { contents: "", rating: 5, reviewImages: [] };
-        // 필요 시 리뷰 목록 새로고침 등의 추가 처리 가능
         alert("리뷰 등록 완료");
       } catch (error) {
         console.error("리뷰 작성 실패:", error);
         alert("리뷰 작성에 실패했습니다. 다시 시도해주세요.");
       } finally {
         this.reviewLoading = false;
+      }
+    },
+    // 즐겨찾기 상태 확인 (isBookMark API 호출)
+    async checkBookmark() {
+      try {
+        const response = await axios.post(
+          `${process.env.VUE_APP_API_BASE_URL}/restaurant/isBookMark`,
+          { restaurantId: this.restaurant.id },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        this.isBookMark = response.data;
+      } catch (error) {
+        console.error("즐겨찾기 상태 확인 실패:", error);
+      }
+    },
+    // 즐겨찾기 토글: 상태에 따라 추가 또는 삭제 API 호출
+    async toggleBookmark() {
+      try {
+        if (this.isBookMark) {
+          // 즐겨찾기 취소
+          await axios.post(
+            `${process.env.VUE_APP_API_BASE_URL}/restaurant/deleteBookMark`,
+            { restaurantId: this.restaurant.id },
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          );
+          this.isBookMark = false;
+          if (this.restaurant.bookmarkCount > 0) {
+            this.restaurant.bookmarkCount--;
+          }
+        } else {
+          // 즐겨찾기 추가
+          await axios.post(
+            `${process.env.VUE_APP_API_BASE_URL}/restaurant/addBookMark`,
+            { restaurantId: this.restaurant.id },
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          );
+          this.isBookMark = true;
+          this.restaurant.bookmarkCount++;
+        }
+      } catch (error) {
+        console.error("즐겨찾기 토글 실패:", error);
       }
     },
   },
