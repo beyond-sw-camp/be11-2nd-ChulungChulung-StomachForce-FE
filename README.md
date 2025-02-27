@@ -21,72 +21,62 @@
 1. [프로젝트 소개](#프로젝트-소개)
 2. [기획](#기획)
 3. [기술 스택](#기술-스택)
-4. [프론트엔드 기능 시연](#프론트엔드-기능-시연 #백엔드-api-요청-및-응답)
-5. [구조 및 아키텍처](#구조-및-아키텍처)
+4. [프론트엔드 기능 시연](#프론트엔드-기능-시연)
+5. [프로젝트 마무리](#프로젝트-마무리)
 
 ---
 
-## 🧡 프로젝트 소개  
-### 📌 **COCONOTE란?**  
-COCONOTE는 **노션**의 문서 관리 기능과 **슬랙**의 실시간 커뮤니케이션 기능을 통합한 **지식 공유 및 협업 플랫폼**입니다.
+##  프로젝트 소개  
+### 
+<p>
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/stomach.png?raw=true" width="20">
+</p> **뱃살력란?**  
+뱃살력은 원하는 식당을 검색하고 예약하며, 리뷰를 남기기도 하며 sns를 통해 다른 사람과 본인의 뱃살력을 뽐내는 서비스입니다.
 
 ### 🎯 **배경 및 목적**
-- 기업 및 팀 프로젝트 협업 도구 통합 🚀  
-- **효율적이고 체계적인 지식 관리 및 공유**  
-- **실시간 채팅을 통한 커뮤니케이션 및 협업 극대화**  
-- **드래그 앤 드롭**을 활용한 직관적인 파일 공유  
-- 여러 협업 도구를 넘나드는 번거로움 및 피로감 감소  
+-레스토랑 예약과 SNS를 하나로 통합 
+-효율적이고 직관적인 맛집 탐색 및 예약 시스템
+-실시간 공지 및 이벤트 확인으로 최신 정보 제공
+-커뮤니티 기능을 통한 사용자 간 소통 극대화
+-편리한 고객센터를 통한 문의 및 신고 접수
 
 ### 🔍 **주요 기능**
-✅ **SNS 간편 로그인 지원**  
-✅ **워크스페이스(Workspace) 생성**  
-✅ **공개/비공개 채널 설정 및 초대 기능**  
-✅ **각 채널 내 다양한 기능 지원**
-  - 📢 **쓰레드** : 단체 채팅, 이미지 기반 정보 공유  
-  - 📝 **캔버스** : 실시간 문서 공동 수정 (유저 동기화)  
-  - 📂 **드라이브** : 자동 업로드 & 동기화  
-
----
+✅ **홈화면에서 유명레스토랑 유명인플루언서 확인 가능**  
+✅ **레스토랑 리스트를 통해 원하는 식당예약 가능**  
+✅ **좋아요 및 댓글 기능으로 맛집 추천 및 공유 활성화**  
 
 ## 💛 기획
-📌 **협업 도구** : `JIRA` `Notion`  
-📌 **프로젝트 관리** : `WBS`  
 📌 **요구사항 정의**  
 📌 **ERD 설계**  
 📌 **화면 설계 (FIGMA)**  
-📌 **API 명세서**  
 
-🔗 [WBS 보러가기](#)  
+---
 🔗 [요구사항 정의서 보러가기](#)  
-🔗 [ERD 보러가기](#)  
-🔗 [화면설계서(FIGMA) 보러가기](#)  
-🔗 [API 명세서 보러가기](#)  
+🔗 [ERD 보러가기](https://www.erdcloud.com/d/wSEbrXDob5fz8JEo5)  
+🔗 [화면설계서(FIGMA) 보러가기](https://www.figma.com/design/vi3vWmmWRPv8dq9VBIt2Oc/%EB%B1%83%EC%82%B4%EB%A0%A5?node-id=0-1&t=Xts1hEkIqwq3ehUJ-1)  
 
 ---
 
 ## 🛠️ 기술 스택  
-
 ### 📌 Backend  
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-6DB33F?style=flat-square&logo=SpringBoot&logoColor=white)  
-📌 **Spring Boot** 사용  
+![Spring](https://img.shields.io/badge/Spring-6DB33F?style=flat-square&logo=Spring&logoColor=white)  
+![SpringBoot](https://img.shields.io/badge/SpringBoot-6DB33F?style=flat-square&logo=SpringBoot&logoColor=white)
 
-### 📌 Frontend  
-📌 **기술 스택 작성**  
+### 📌 Frontend   
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=CSS3&logoColor=white)  
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=JavaScript&logoColor=black)  
+![Vue.js](https://img.shields.io/badge/Vue.js-4FC08D?style=flat-square&logo=Vue.js&logoColor=white)
 
-### 📌 Database  
-📌 **기술 스택 작성**  
+### 📌 DB  
+![MariaDB](https://img.shields.io/badge/MariaDB-003545?style=flat-square&logo=MariaDB&logoColor=white)  
+![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=Redis&logoColor=white)
 
-### 📌 CI/CD  
-📌 **기술 스택 작성**  
-
-### 📌 기타  
-📌 **기술 스택 작성**  
+### 📌 Etc  
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=Docker&logoColor=white)
 
 ### 📌 Communication  
-![Discord](https://img.shields.io/badge/Discord-5865F2?style=flat-square&logo=Discord&logoColor=white)  
-📌 **Discord**  
-📌 **GitHub**  
-
+![Discord](https://img.shields.io/badge/Discord-5865F2?style=flat-square&logo=Discord&logoColor=white)   
+![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=GitHub&logoColor=white)  
 ---
 
 ## 📌 개발
@@ -100,17 +90,6 @@ API 문서화 작업을 위해 **Swagger**를 활용했습니다.
 ## 🎬 프론트엔드 기능 시연  
 **기능 시연 GIF 또는 링크 추가**  
 
----
-
-## 🏗️ 구조 및 아키텍처  
-📌 프로젝트 구조 설명  
-
----
-
-## 🚀 배포  
-📌 **배포 환경 및 과정 정리**  
-
----
 
 ## ✅ 테스트  
 📌 **테스트 방식 및 결과 정리**  
