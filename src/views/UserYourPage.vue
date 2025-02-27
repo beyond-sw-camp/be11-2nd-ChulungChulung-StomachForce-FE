@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <!-- 상단 앱바: 오른쪽 메뉴 버튼 추가 -->
+    <!-- 상단 앱바: 오른쪽 메뉴 버튼 -->
     <v-app-bar app color="white" flat>
       <v-spacer></v-spacer>
       <v-menu offset-y>
@@ -23,7 +23,7 @@
       </v-menu>
     </v-app-bar>
 
-    <!-- 페이지 주인이 현재 방문자를 차단한 경우 -->
+    <!-- 페이지 주인이 방문자를 차단한 경우 -->
     <v-main v-if="isBlockedByOwner">
       <v-container class="pa-12" style="text-align: center;">
         <h2>비공개 계정입니다.</h2>
@@ -44,10 +44,9 @@
           <v-col cols="12" sm="6" class="user-info text-left">
             <h2 class="user-name">
               {{ userNickName }}
-              <!-- influencer가 Y일 때만 아이콘 표시 -->
-              <v-icon 
-                v-if="influencer === 'Y'" 
-                class="ml-1 gold-icon" 
+              <v-icon
+                v-if="influencer === 'Y'"
+                class="ml-1 gold-icon"
                 size="30"
               >
                 mdi-silverware-variant
@@ -57,11 +56,11 @@
             <v-row class="stats mt-2" justify="left">
               <v-col cols="auto" class="stat-item text-center">
                 <strong @click="openFollowersDialog" style="cursor:pointer;">팔로워</strong>
-                <p @click="openFollowersDialog" style="cursor:pointer;">{{ followersCount }}</p>
+                <p @click="openFollowersDialog" style="cursor:pointer;">{{ filteredFollowersCount }}</p>
               </v-col>
               <v-col cols="auto" class="stat-item text-center">
                 <strong @click="openFollowingDialog" style="cursor:pointer;">팔로잉</strong>
-                <p @click="openFollowingDialog" style="cursor:pointer;">{{ followingCount }}</p>
+                <p @click="openFollowingDialog" style="cursor:pointer;">{{ filteredFollowingCount }}</p>
               </v-col>
               <v-col cols="auto" class="stat-item text-center">
                 <strong>게시글</strong>
@@ -69,10 +68,10 @@
               </v-col>
             </v-row>
     
-            <!-- 팔로우 버튼 (내가 해당 계정을 차단한 경우에는 보이지 않음) -->
-            <v-btn 
+            <!-- 팔로우 버튼 (내가 해당 계정을 차단한 경우 보이지 않음) -->
+            <v-btn
               v-if="!iBlockedOwner"
-              :color="isFollowing ? 'grey' : 'primary'" 
+              :color="isFollowing ? 'grey' : 'primary'"
               class="follow-btn mt-3"
               @click="toggleFollow"
             >
@@ -95,15 +94,15 @@
             sm="4"
             class="post-col"
           >
-            <v-card 
-              class="clickable-card" 
+            <v-card
+              class="clickable-card"
               @click="goToPostDetail(index)"
               flat
             >
-              <v-img 
-                :src="photo" 
-                aspect-ratio="1" 
-                cover 
+              <v-img
+                :src="photo"
+                aspect-ratio="1"
+                cover
                 class="post-image"
               ></v-img>
             </v-card>
@@ -128,9 +127,7 @@ export default {
       userNickName: "",
       userEmail: "",
       profilePhoto: "https://via.placeholder.com/130",
-      influencer: "N", // 서버로부터 받은 influencer 상태 (기본값)
-      followersCount: 0,
-      followingCount: 0,
+      influencer: "N", // 서버에서 받아온 값
       totalPost: 0,
       postPhotos: [],
       postIds: [],
@@ -139,24 +136,84 @@ export default {
       isLoading: false,
       isLastPage: false,
       isFollowing: false,
-      // 페이지 주인이 현재 방문자를 차단했는지 여부
+      // 페이지 주인이 방문자를 차단한 경우(즉, 내가 차단당한 경우)
       isBlockedByOwner: false,
       // 내가 해당 페이지 주인을 차단했는지 여부
       iBlockedOwner: false,
+      // 팔로워, 팔로잉, 차단 목록
+      followersList: [],
+      followingList: [],
+      blockedList: []
     };
   },
-  created() {
+  computed: {
+    // 차단 목록의 닉네임 배열 생성
+    blockedUserNickNames() {
+      return this.blockedList.map(user => user.userNickName);
+    },
+    // 차단 관계에 있는 사용자는 제외한 팔로워 목록
+    filteredFollowers() {
+      return this.followersList.filter(follower =>
+        !this.blockedUserNickNames.includes(follower.userNickName)
+      );
+    },
+    // 차단 관계에 있는 사용자는 제외한 팔로잉 목록
+    filteredFollowing() {
+      return this.followingList.filter(following =>
+        !this.blockedUserNickNames.includes(following.userNickName)
+      );
+    },
+    filteredFollowersCount() {
+      return this.filteredFollowers.length;
+    },
+    filteredFollowingCount() {
+      return this.filteredFollowing.length;
+    }
+  },
+  async created() {
+    // 라우트 쿼리로부터 페이지 주인 닉네임 설정
     if (this.$route.query.nickName) {
       this.userNickName = this.$route.query.nickName;
     }
-    this.loadUserPage();
-    this.checkBlockStatus();
-    window.addEventListener("scroll", this.scrollPagination);
+    // 먼저 차단 여부를 체크
+    await this.checkBlockStatus();
+    console.log("checkBlockStatus:", this.isBlockedByOwner, this.iBlockedOwner);
+    // 만약 페이지 주인이 방문자를 차단한 경우, "비공개 계정입니다" 화면을 띄우고 나머지 데이터 로드는 진행하지 않음
+    if (!this.isBlockedByOwner) {
+      await this.loadUserPage();
+      await this.fetchFollowersList();
+      await this.fetchFollowingList();
+      await this.fetchBlockedList();
+      window.addEventListener("scroll", this.scrollPagination);
+    }
   },
   beforeUnmount() {
     window.removeEventListener("scroll", this.scrollPagination);
   },
   methods: {
+    async checkBlockStatus() {
+      try {
+        const payload = {
+          blockedUserNickName: this.$route.query.nickName
+        };
+        const response = await axios.post(
+          `${process.env.VUE_APP_API_BASE_URL}/user/isblocked`,
+          payload,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+            }
+          }
+        );
+        console.log("API isblocked result:", response.data);
+        // response.data가 [true, false] 형태라면:
+        this.isBlockedByOwner = response.data[0];
+        this.iBlockedOwner = response.data[1];
+      } catch (error) {
+        console.error("차단 여부 확인 실패:", error);
+      }
+    },
     async loadUserPage() {
       if (this.isLoading || this.isLastPage) return;
       this.isLoading = true;
@@ -164,13 +221,13 @@ export default {
         const params = {
           size: this.pageSize,
           page: this.currentPage,
-          nickName: this.$route.query.nickName || "",
+          nickName: this.$route.query.nickName || ""
         };
         const response = await axios.get(
           `${process.env.VUE_APP_API_BASE_URL}/user/yourPage`,
           {
             params,
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            headers: { "Content-Type": "application/x-www-form-urlencoded" }
           }
         );
     
@@ -179,11 +236,9 @@ export default {
           this.profilePhoto = data.profile || "https://via.placeholder.com/130";
           this.userNickName = data.nickName;
           this.userEmail = data.email;
-          this.followersCount = data.follwers;
-          this.followingCount = data.followings;
           this.totalPost = data.totalPost;
           this.isFollowing = data.isFollowing || false;
-          this.influencer = data.influencer; // influencer 상태 설정
+          this.influencer = data.influencer;
           this.postPhotos = data.postPhotos || [];
           this.postIds = data.postIds || [];
         } else {
@@ -222,13 +277,8 @@ export default {
       this.$router.push(`/post/detail/${postId}`);
     },
     async toggleFollow() {
-      if (this.isFollowing) {
-        this.isFollowing = false;
-        if (this.followersCount > 0) this.followersCount--;
-      } else {
-        this.isFollowing = true;
-        this.followersCount++;
-      }
+      // 현재 팔로잉 상태 토글 후 API 호출
+      this.isFollowing = !this.isFollowing;
       try {
         const response = await axios.post(
           `${process.env.VUE_APP_API_BASE_URL}/user/follow`,
@@ -236,35 +286,24 @@ export default {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            },
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+            }
           }
         );
     
         const responseMessage = response.data;
         if (responseMessage === "팔로우가 취소되었습니다.") {
           this.isFollowing = false;
-          this.followersCount = Math.max(0, this.followersCount - 1);
         } else if (responseMessage === "ok") {
           this.isFollowing = true;
-          this.followersCount++;
         }
       } catch (error) {
         console.error("팔로우 요청 실패:", error);
       }
     },
-    logout() {
-      alert("로그아웃 되었습니다 (예시)");
-    },
-    openFollowersDialog() {
-      // 모달 관련 처리
-    },
-    openFollowingDialog() {
-      // 모달 관련 처리
-    },
     reportUser() {
       this.$router.push({
-        path: '/report/create',
+        path: "/report/create",
         query: { reportedNickName: this.userNickName }
       });
     },
@@ -273,14 +312,20 @@ export default {
         blockedUserNickName: this.$route.query.nickName
       };
       try {
-        await axios.post(`${process.env.VUE_APP_API_BASE_URL}/user/block`, payload, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+        await axios.post(
+          `${process.env.VUE_APP_API_BASE_URL}/user/block`,
+          payload,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+            }
           }
-        });
+        );
         alert("차단되었습니다.");
         this.iBlockedOwner = true;
+        // 차단 후 blockedList 업데이트
+        await this.fetchBlockedList();
       } catch (error) {
         console.error("차단 요청 실패:", error);
         alert("차단 요청에 실패했습니다.");
@@ -291,26 +336,8 @@ export default {
         blockedUserNickName: this.$route.query.nickName
       };
       try {
-        await axios.post(`${process.env.VUE_APP_API_BASE_URL}/user/unblock`, payload, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-          }
-        });
-        alert("차단 해제되었습니다.");
-        this.iBlockedOwner = false;
-      } catch (error) {
-        console.error("차단 해제 요청 실패:", error);
-        alert("차단 해제 요청에 실패했습니다.");
-      }
-    },
-    async checkBlockStatus() {
-      try {
-        const payload = {
-          blockedUserNickName: this.$route.query.nickName
-        };
-        const response = await axios.post(
-          `${process.env.VUE_APP_API_BASE_URL}/user/isblocked`,
+        await axios.post(
+          `${process.env.VUE_APP_API_BASE_URL}/user/unblock`,
           payload,
           {
             headers: {
@@ -319,11 +346,67 @@ export default {
             }
           }
         );
-        this.isBlockedByOwner = response.data[0];
-        this.iBlockedOwner = response.data[1];
+        alert("차단 해제되었습니다.");
+        this.iBlockedOwner = false;
+        // 차단 해제 후 blockedList 업데이트
+        await this.fetchBlockedList();
       } catch (error) {
-        console.error("차단 여부 확인 실패:", error);
+        console.error("차단 해제 요청 실패:", error);
+        alert("차단 해제 요청에 실패했습니다.");
       }
+    },
+    async fetchFollowersList() {
+      try {
+        const response = await axios.get(
+          `${process.env.VUE_APP_API_BASE_URL}/user/followerList`,
+          {
+            params: { nickName: this.$route.query.nickName },
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+            }
+          }
+        );
+        this.followersList = response.data;
+      } catch (error) {
+        console.error("팔로워 목록 로드 실패:", error);
+      }
+    },
+    async fetchFollowingList() {
+      try {
+        const response = await axios.get(
+          `${process.env.VUE_APP_API_BASE_URL}/user/followingList`,
+          {
+            params: { nickName: this.$route.query.nickName },
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+            }
+          }
+        );
+        this.followingList = response.data;
+      } catch (error) {
+        console.error("팔로잉 목록 로드 실패:", error);
+      }
+    },
+    async fetchBlockedList() {
+      try {
+        const response = await axios.get(
+          `${process.env.VUE_APP_API_BASE_URL}/user/blockedList`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+            }
+          }
+        );
+        this.blockedList = response.data;
+      } catch (error) {
+        console.error("차단 목록 로드 실패:", error);
+      }
+    },
+    openFollowersDialog() {
+      // 모달 관련 처리 (필요 시 filteredFollowers 사용)
+    },
+    openFollowingDialog() {
+      // 모달 관련 처리 (필요 시 filteredFollowing 사용)
     }
   }
 };
@@ -381,6 +464,6 @@ export default {
   opacity: 0.8;
 }
 .gold-icon {
-  color: #FFD700 !important; /* 순수한 금색 */
+  color: #FFD700 !important;
 }
 </style>
