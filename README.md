@@ -10,22 +10,22 @@
 <table>
   <tr>
     <td align="center">
-      <img src="[이미지_URL_1](https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/%EC%8B%AC%EC%88%9C.jpeg?raw=true)" width="120"><br>
+      <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/%EC%8B%AC%EC%88%9C.jpeg?raw=true" width="120"><br>
       <b>임성재</b><br>
       팀장
     </td>
     <td align="center">
-      <img src="[이미지_URL_2](https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/%EB%A7%88%EC%A7%80%EC%8B%9C%EB%AF%93%E3%84%B4.png?raw=true)" width="120"><br>
+      <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/%EB%A7%88%EC%A7%80%EC%8B%9C%EB%AF%93%E3%84%B4.png?raw=true" width="120"><br>
       <b>최영일</b><br>
       팀원
     </td>
     <td align="center">
-      <img src="[이미지_URL_3](https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/%EB%B0%94%ED%8A%B8%EC%8B%AC%EC%8A%A8.jpeg?raw=true)" width="120"><br>
+      <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/%EB%B0%94%ED%8A%B8%EC%8B%AC%EC%8A%A8.jpeg?raw=true" width="120"><br>
       <b>최영재</b><br>
       팀원
     </td>
     <td align="center">
-      <img src="[이미지_URL_4](https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/%EB%B0%94%ED%8A%B8%EC%8B%AC%EC%8A%A8.png?raw=true)" width="120"><br>
+      <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/%EB%B0%94%ED%8A%B8%EC%8B%AC%EC%8A%A8.png?raw=true" width="120"><br>
       <b>홍성혁</b><br>
       팀원
     </td>
