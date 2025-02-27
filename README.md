@@ -110,14 +110,9 @@
 
  ##  프론트엔드 기능 시연  
 <details>
-  <summary>▶️</summary>
-  <video controls width="600">
-    ![test](https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/testtest.gif?raw=true)
-  </video>
-  
-
+  <summary>▶️ 클릭해서 보기</summary>
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/testtest.gif?raw=true" width="600">
 </details>
-
 ---
 
  ##   프로젝트 마무리  
