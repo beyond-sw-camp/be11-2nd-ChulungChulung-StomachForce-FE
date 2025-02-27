@@ -6,7 +6,7 @@
 
 
 ---
-
+## 📌 팀원소개
 <div align="center">
 <table>
   <tr>
