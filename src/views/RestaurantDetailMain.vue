@@ -1,157 +1,448 @@
 <template>
-  <v-container>
+  <v-container class="pa-0" fluid>
     <!-- 네비게이션 바 -->
-    <v-tabs v-model="tab">
-      <v-tab :to="`/restaurant/detail/${restaurantId}`">레스토랑 홈</v-tab>
-      <v-tab @click="reload()">상세정보</v-tab>
-      <v-tab :to="`/menu/list/${restaurantId}`">메뉴</v-tab>
-      <v-tab :to="`/restaurant/detail/${restaurantId}/reviews`">리뷰</v-tab>
-    </v-tabs>
-
-    <h2 class="text-center title-box">{{ restaurant.name || "로딩 중..." }}</h2>
-
-    <!-- 기본 정보 -->
-    <div class="info-container">
-      <p>📍 주소: 
-        <span v-if="isOwner">
-          <input v-model="restaurant.addressCity"/> 
-          <input v-model="restaurant.addressStreet"/>
-        </span>
-        <span v-else>{{ restaurant.addressCity || "주소 없음" }} {{ restaurant.addressStreet || "" }}</span>
-      </p>
-      <p>📞 전화번호: 
-        <span v-if="isOwner">
-          <input v-model="restaurant.phoneNumber"/>
-        </span>
-        <span v-else>{{ restaurant.phoneNumber || '정보 없음' }}</span>
-      </p>
-      <p>⭐ 평점: {{ restaurant.averageRating || "0" }}</p>
-      <p>📌 즐겨찾기: {{ restaurant.bookmarkCount || 0 }}</p>
-
-      <!-- 지도 버튼 -->
-      <div class="map-buttons">
-        <v-btn color="blue" outlined @click="openNaverMap">네이버지도 바로가기</v-btn>
-        <v-btn color="green" outlined @click="openKakaoMap">카카오지도 바로가기</v-btn>
-      </div>
+    <div class="navigation-wrapper">
+      <v-container>
+        <v-tabs v-model="tab" background-color="transparent" color="#FF5722">
+          <v-tab :to="`/restaurant/detail/${restaurantId}`" class="custom-tab">레스토랑 홈</v-tab>
+          <v-tab @click="reload()" class="custom-tab">상세정보</v-tab>
+          <v-tab :to="`/menu/list/${restaurantId}`" class="custom-tab">메뉴</v-tab>
+          <v-tab :to="`/restaurant/detail/${restaurantId}/reviews`" class="custom-tab">리뷰</v-tab>
+        </v-tabs>
+      </v-container>
     </div>
 
-    <!-- 공지사항 -->
-    <div class="notice-container">
-      <h3>공지사항</h3>
-      <ul>
-        <li v-for="(info, index) in restaurantInfos" :key="info.id">
-          <span v-if="isOwner">
-            <input v-model="restaurantInfos[index].informationText" />
-            <v-btn @click="updateNotice(info.id, index)">수정</v-btn>
-            <v-btn @click="deleteNotice(info.id)">삭제</v-btn>
-          </span>
-          <span v-else>{{ info.informationText }}</span>
-        </li>
-      </ul>
-      <div v-if="isOwner">
-        <input v-model="newNoticeText" placeholder="새 공지사항 입력" />
-        <v-btn @click="addNotice">추가</v-btn>
-      </div>
-    </div>
+    <!-- 메인 컨텐츠 -->
+    <v-container class="main-content">
+      <!-- 레스토랑 이름 -->
+      <h1 class="restaurant-title">{{ restaurant.name || "로딩 중..." }}</h1>
 
-    <!-- 레스토랑 설명 -->
-    <div class="description-box">
-      <p v-if="!isOwner">{{ restaurant.description || "설명 없음" }}</p>
-      <textarea v-else v-model="restaurant.description"></textarea>
-    </div>
+      <!-- 매장 사진 섹션 -->
+      <div class="photo-gallery" v-if="restaurant.imagePath.length">
+        <div class="gallery-container">
+          <v-btn 
+            icon 
+            class="nav-btn prev-btn" 
+            @click="prevImage" 
+            :disabled="currentIndex === 0"
+            elevation="0"
+            :ripple="false"
+          >
+            <div class="btn-hover-effect"></div>
+            <v-icon size="42" color="grey-darken-3">mdi-chevron-left</v-icon>
+          </v-btn>
+          
+          <div class="images-container">
+            <transition-group name="slide">
+              <div v-for="image in paginatedImages" 
+                   :key="image" 
+                   class="image-card"
+                   @click="openImageDialog(image)">
+                <v-img
+                  :src="image"
+                  aspect-ratio="1"
+                  cover
+                  class="gallery-image"
+                ></v-img>
+              </div>
+            </transition-group>
+          </div>
 
-    <!-- 현재 비밀번호 입력 -->
-    <div v-if="isOwner" class="password-box">
-      <label>현재 비밀번호 입력 (정보 변경 시 필요)</label>
-      <input v-model="currentPassword" type="password" />
-    </div>
-    <v-btn v-if="isOwner" block color="black" @click="updateRestaurant">저장하기</v-btn>
-    <v-btn block color="black" class="reserve-button">예약하기</v-btn>
-
-    <!-- 매장 사진 (한 줄에 4장 & 한 장씩 넘기기 & 무한 루프) -->
-    <v-container v-if="restaurant.imagePath.length"> 
-      <div class="info-container">
-        매장 사진
-      </div><br>
-      <v-row class="image-slider" justify="center" align="center">
-        <v-btn icon @click="prevImage" :disabled="restaurant.imagePath.length <= 4">
-          <v-icon>mdi-chevron-left</v-icon>
-        </v-btn>
-
-        <div class="image-wrapper">
-          <v-img
-            v-for="(image, index) in paginatedImages"
-            :key="index"
-            :src="image"
-            class="store-image"
-          ></v-img>
+          <v-btn 
+            icon 
+            class="nav-btn next-btn" 
+            @click="nextImage" 
+            :disabled="currentIndex + imagesPerPage >= restaurant.imagePath.length"
+            elevation="0"
+            :ripple="false"
+          >
+            <div class="btn-hover-effect"></div>
+            <v-icon size="42" color="grey-darken-3">mdi-chevron-right</v-icon>
+          </v-btn>
         </div>
+      </div>
 
-        <v-btn icon @click="nextImage" :disabled="restaurant.imagePath.length <= 4">
-          <v-icon>mdi-chevron-right</v-icon>
+      <!-- 레스토랑 소개 -->
+      <div class="description-section">
+        <h2 class="section-title">레스토랑 소개</h2>
+        <div class="description-content">
+          <p v-if="!isOwner" class="description-text">{{ restaurant.description || "설명이 없습니다." }}</p>
+          <textarea v-else v-model="restaurant.description" class="description-input" placeholder="레스토랑 소개를 입력해주세요."></textarea>
+        </div>
+      </div>
+
+      <!-- 공지사항 섹션 -->
+      <div class="notice-section">
+        <h2 class="section-title">공지사항</h2>
+        <div class="notice-content">
+          <div v-if="isOwner" class="add-notice">
+            <input v-model="newNoticeText" placeholder="새 공지사항 입력" class="notice-input"/>
+            <v-btn color="#FF5722" class="add-btn" @click="addNotice">
+              <v-icon left>mdi-plus</v-icon> 추가
+            </v-btn>
+          </div>
+          
+          <div class="notice-list">
+            <div v-for="(info, index) in restaurantInfos" :key="info.id" class="notice-item">
+              <template v-if="isOwner">
+                <div class="notice-edit">
+                  <input v-model="restaurantInfos[index].informationText" class="notice-input"/>
+                  <div class="notice-actions">
+                    <v-btn text small @click="updateNotice(info.id, index)" class="action-btn">
+                      <v-icon small>mdi-pencil</v-icon>
+                    </v-btn>
+                    <v-btn text small @click="deleteNotice(info.id)" class="action-btn">
+                      <v-icon small>mdi-delete</v-icon>
+                    </v-btn>
+                  </div>
+                </div>
+              </template>
+              <p v-else class="notice-text">{{ info.informationText }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 관리자 섹션 -->
+      <div v-if="isOwner" class="admin-section">
+        <input 
+          v-model="currentPassword" 
+          type="password" 
+          placeholder="현재 비밀번호 입력"
+          class="password-input"
+        />
+        <v-btn block color="#FF5722" dark class="save-btn" @click="updateRestaurant">
+          <v-icon left>mdi-content-save</v-icon> 변경사항 저장
         </v-btn>
-      </v-row>
+      </div>
     </v-container>
-
-    <v-btn block color="black" class="reserve-button">예약하기</v-btn>
   </v-container>
 </template>
 
 <style scoped>
-.title-box {
-  background-color: #f8e4c3;
-  padding: 15px;
-  border-radius: 10px;
+.main-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
 }
 
-.info-container {
+.restaurant-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #333;
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
 }
 
-.map-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
+.photo-gallery {
+  margin: 40px 0;
 }
 
-.notice-container {
-  background: #f5f5f5;
-  padding: 15px;
-  border-radius: 8px;
-  margin-bottom: 15px;
-}
-
-.description-box {
-  background: #fff7e6;
-  padding: 15px;
-  border-radius: 8px;
-  text-align: center;
-  margin-bottom: 15px;
-}
-
-/* 슬라이더를 위한 스타일 */
-.image-slider {
+.gallery-container {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 20px 60px;
+  margin: 0 -40px;
 }
 
-.image-wrapper {
+.images-container {
+  position: relative;
   display: flex;
-  gap: 10px;
+  gap: 20px;
+  overflow: hidden;
+  width: 100%;
+  justify-content: center;
+  min-height: 300px;
 }
 
-.store-image {
-  width: 200px;
-  height: 200px;
-  object-fit: cover;
+.image-card {
+  flex: 0 0 auto;
+  width: calc(25% - 15px);
+  max-width: 300px;
+  height: 300px;
+  position: relative;
+}
+
+.gallery-image {
+  height: 100%;
+  width: 100%;
+}
+
+.nav-btn {
+  position: absolute;
+  width: 60px !important;
+  height: 100% !important;
+  background: transparent !important;
+  transition: all 0.2s ease;
+  opacity: 0.7;
+  overflow: visible !important;
+}
+
+.btn-hover-effect {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: transparent;
+  transition: background-color 0.2s ease;
+}
+
+.nav-btn:hover .btn-hover-effect {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.prev-btn {
+  left: 0;
+}
+
+.next-btn {
+  right: 0;
+}
+
+.nav-btn.v-btn--disabled {
+  opacity: 0 !important;
+  pointer-events: none;
+}
+
+.section-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 25px;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background-color: #FF5722;
+}
+
+.description-section,
+.notice-section {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  margin: 40px 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.description-text {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #555;
+}
+
+.description-input {
+  width: 100%;
+  min-height: 150px;
+  padding: 15px;
+  border: 1px solid #ddd;
   border-radius: 10px;
+  font-size: 1.1rem;
+  resize: vertical;
+  transition: border-color 0.3s ease;
 }
 
-.reserve-button {
-  font-size: 18px;
+.description-input:focus {
+  border-color: #FF5722;
+  outline: none;
+}
+
+.notice-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.notice-item {
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #f8f8f8;
+  transition: background-color 0.3s ease;
+}
+
+.notice-item:hover {
+  background-color: #f0f0f0;
+}
+
+.notice-edit {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.notice-input {
+  flex: 1;
   padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.notice-input:focus {
+  border-color: #FF5722;
+  outline: none;
+}
+
+.notice-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.action-btn {
+  color: #FF5722 !important;
+}
+
+.add-notice {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.add-btn {
+  white-space: nowrap;
+  text-transform: none;
+  font-weight: 500;
+}
+
+.admin-section {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.password-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  transition: border-color 0.3s ease;
+}
+
+.password-input:focus {
+  border-color: #FF5722;
+  outline: none;
+}
+
+.save-btn {
+  text-transform: none;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  height: 48px;
+}
+
+@media (max-width: 960px) {
+  .gallery-container {
+    padding: 20px 40px;
+    margin: 0 -20px;
+  }
+  
+  .nav-btn {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  
+  .nav-btn .v-icon {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 600px) {
+  .gallery-container {
+    padding: 20px 30px;
+    margin: 0 -10px;
+  }
+  
+  .nav-btn {
+    width: 36px !important;
+    height: 36px !important;
+  }
+  
+  .nav-btn .v-icon {
+    font-size: 24px;
+  }
+  
+  .restaurant-title {
+    font-size: 1.8rem;
+  }
+  
+  .section-title {
+    font-size: 1.5rem;
+  }
+  
+  .description-section,
+  .notice-section {
+    padding: 25px;
+  }
+}
+
+.navigation-wrapper {
+  background-color: white;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.custom-tab {
+  text-transform: none;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  min-width: 120px;
+}
+
+::v-deep .v-tabs-slider-wrapper {
+  display: none;
+}
+
+/* 페이드 애니메이션 */
+.fade-move {
+  transition: transform 0.3s ease;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+  position: absolute;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* 슬라이드 애니메이션 */
+.slide-move {
+  transition: transform 0.3s ease;
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-enter-from {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+.slide-leave-to {
+  opacity: 0;
+  transform: translateX(-30px);
 }
 </style>
 
@@ -164,38 +455,23 @@ export default {
       tab: null,
       restaurant: {
         name: '',
-        addressCity: '',
-        addressStreet: '',
-        phoneNumber: '',
-        averageRating: '',
-        bookmarkCount: '',
         description: '',
         imagePath: [], // 이미지 배열
       },
       restaurantInfos: [],
       newNoticeText: "",
       isOwner: false,
-      currentPassword: "", // 사용자가 입력한 현재 비밀번호
+      currentPassword: "",
       restaurantId: this.$route.params.id,
-      currentIndex: 0, // 현재 표시되는 첫 번째 이미지 인덱스
-      imagesPerPage: 4, // 한 번에 보여줄 이미지 개수
+      currentIndex: 0,
+      imagesPerPage: 4,
     };
   },
   computed: {
-    // 현재 화면에 표시할 4개의 이미지 가져오기 (무한 루프 적용)
     paginatedImages() {
-      let totalImages = this.restaurant.imagePath.length;
-
-      // 사진이 4장 이하이면 그대로 출력
-      if (totalImages <= 4) {
-        return this.restaurant.imagePath;
-      }
-
-      let images = [];
-      for (let i = 0; i < this.imagesPerPage; i++) {
-        images.push(this.restaurant.imagePath[(this.currentIndex + i) % totalImages]);
-      }
-      return images;
+      const start = this.currentIndex;
+      const end = Math.min(start + this.imagesPerPage, this.restaurant.imagePath.length);
+      return this.restaurant.imagePath.slice(start, end);
     }
   },
   created() {
@@ -271,18 +547,17 @@ export default {
     reload() {
       window.location.reload();
     },
-    // 이전 이미지로 이동 (한 장씩, 5장 이상일 때만)
     prevImage() {
-      if (this.restaurant.imagePath.length > 4) {
-        let totalImages = this.restaurant.imagePath.length;
-        this.currentIndex = (this.currentIndex - 1 + totalImages) % totalImages;
+      if (this.currentIndex > 0) {
+        this.currentIndex = Math.max(0, this.currentIndex - this.imagesPerPage);
       }
     },
-    // 다음 이미지로 이동 (한 장씩, 5장 이상일 때만)
     nextImage() {
-      if (this.restaurant.imagePath.length > 4) {
-        let totalImages = this.restaurant.imagePath.length;
-        this.currentIndex = (this.currentIndex + 1) % totalImages;
+      if (this.currentIndex + this.imagesPerPage < this.restaurant.imagePath.length) {
+        this.currentIndex = Math.min(
+          this.currentIndex + this.imagesPerPage,
+          this.restaurant.imagePath.length - this.imagesPerPage
+        );
       }
     }
   }
