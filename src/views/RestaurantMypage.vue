@@ -7,9 +7,7 @@
             <h1 class="text-h4 font-weight-bold mb-2" style="color: #FF5722;">마이페이지</h1>
             <p class="text-subtitle-1 text-medium-emphasis">레스토랑 정보를 관리할 수 있습니다.</p>
           </div>
-          
           <v-divider></v-divider>
-
           <v-container class="pa-6">
             <v-row>
               <v-col cols="12" sm="6">
@@ -23,7 +21,6 @@
                   </v-card-text>
                 </v-card>
               </v-col>
-
               <v-col cols="12" sm="6">
                 <v-card class="menu-card" elevation="2" @click="openDialog('businessHours')">
                   <v-card-text class="d-flex align-center">
@@ -35,7 +32,6 @@
                   </v-card-text>
                 </v-card>
               </v-col>
-
               <v-col cols="12" sm="6">
                 <v-card class="menu-card" elevation="2" @click="openDialog('textInfo')">
                   <v-card-text class="d-flex align-center">
@@ -47,7 +43,6 @@
                   </v-card-text>
                 </v-card>
               </v-col>
-
               <v-col cols="12" sm="6">
                 <v-card class="menu-card" elevation="2" @click="openDialog('photos')">
                   <v-card-text class="d-flex align-center">
@@ -162,6 +157,15 @@
                 prepend-inner-icon="mdi-clock-end"
               ></v-text-field>
             </v-col>
+            <!-- 브레이크타임 없음 체크박스 -->
+            <v-col cols="12">
+              <v-checkbox 
+                v-model="noBreakTime" 
+                label="브레이크타임 없음" 
+                @change="toggleBreakTime"
+                color="#FF5722"
+              ></v-checkbox>
+            </v-col>
             <v-col cols="12" sm="6">
               <v-text-field
                 v-model="form.breakTimeStart"
@@ -169,6 +173,9 @@
                 type="time"
                 variant="outlined"
                 prepend-inner-icon="mdi-clock-pause"
+                :disabled="noBreakTime || !form.openingTime || !form.closingTime"
+                :min="form.openingTime"
+                :max="form.closingTime"
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="6">
@@ -178,6 +185,9 @@
                 type="time"
                 variant="outlined"
                 prepend-inner-icon="mdi-clock-pause"
+                :disabled="noBreakTime || !form.openingTime || !form.closingTime"
+                :min="form.openingTime"
+                :max="form.closingTime"
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="6">
@@ -187,6 +197,8 @@
                 type="time"
                 variant="outlined"
                 prepend-inner-icon="mdi-clock-alert"
+                :min="form.openingTime"
+                :max="form.closingTime"
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="6">
@@ -196,6 +208,7 @@
                 type="date"
                 variant="outlined"
                 prepend-inner-icon="mdi-calendar"
+                :min="new Date().toISOString().split('T')[0]"
               ></v-text-field>
             </v-col>
           </v-row>
@@ -227,20 +240,20 @@
               ></v-textarea>
             </v-col>
             <v-col cols="12" sm="6">
-              <v-text-field
+              <v-select
                 v-model="form.capacity"
+                :items="capacityOptions"
                 label="수용 인원"
                 variant="outlined"
-                prepend-inner-icon="mdi-account-group"
-              ></v-text-field>
+              ></v-select>
             </v-col>
             <v-col cols="12" sm="6">
-              <v-text-field
+              <v-select
                 v-model="form.restaurantType"
+                :items="restaurantTypeOptions"
                 label="레스토랑 유형"
                 variant="outlined"
-                prepend-inner-icon="mdi-store"
-              ></v-text-field>
+              ></v-select>
             </v-col>
             <v-col cols="12" sm="6">
               <v-text-field
@@ -248,6 +261,8 @@
                 label="도시"
                 variant="outlined"
                 prepend-inner-icon="mdi-city"
+                :error="isAddressCityEmpty"
+                :error-messages="isAddressCityEmpty ? '비울 수 없는 필드입니다' : ''"
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="6">
@@ -256,6 +271,8 @@
                 label="거리"
                 variant="outlined"
                 prepend-inner-icon="mdi-map-marker"
+                :error="isAddressStreetEmpty"
+                :error-messages="isAddressStreetEmpty ? '비울 수 없는 필드입니다' : ''"
               ></v-text-field>
             </v-col>
             <!-- 기존 추가 정보 칸: infos 배열을 개행 문자로 결합한 문자열이 이미 할당되어 있음 -->
@@ -269,7 +286,6 @@
               ></v-textarea>
             </v-col>
             <v-col cols="12" sm="6">
-              <!-- computed property depositAvailableBool 사용 -->
               <v-checkbox
                 v-model="depositAvailableBool"
                 label="예약금 가능 여부"
@@ -294,6 +310,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
     <!-- 업장 사진 수정 다이얼로그 -->
     <v-dialog v-model="dialogs.photos" max-width="800px">
       <v-card class="dialog-card">
@@ -322,12 +339,7 @@
                 <v-img :src="photo.photoUrl" height="200" cover></v-img>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn
-                    color="error"
-                    icon
-                    variant="text"
-                    @click="removePhoto(photo.photoId)"
-                  >
+                  <v-btn color="error" icon variant="text" @click="removePhoto(photo.photoId)">
                     <v-icon>mdi-delete</v-icon>
                   </v-btn>
                 </v-card-actions>
@@ -347,7 +359,6 @@
 
 <script>
 import axios from "axios";
-
 export default {
   name: "RestaurantMypage",
   data() {
@@ -402,18 +413,16 @@ export default {
           this.form.deposit = 0;
         }
       }
-    }
-  },
-  async created() {
-    await this.getMyRestaurantId();
-  },
-  computed: {
+    },
     isAddressCityEmpty() {
       return this.form.addressCity.trim() === "";
     },
     isAddressStreetEmpty() {
       return this.form.addressStreet.trim() === "";
     }
+  },
+  async created() {
+    await this.getMyRestaurantId();
   },
   methods: {
     async getMyRestaurantId() {
@@ -424,9 +433,15 @@ export default {
         console.error("레스토랑 ID 불러오기 실패:", error);
       }
     },
-    toggleBreakTime() { if (this.noBreakTime) this.form.breakTimeStart = this.form.breakTimeEnd = ""; },
-    toggleDeposit() { if (!this.form.depositAvailable) this.form.deposit = ""; },
-    
+    toggleBreakTime() {
+      if (this.noBreakTime) {
+        this.form.breakTimeStart = "";
+        this.form.breakTimeEnd = "";
+      }
+    },
+    toggleDeposit() {
+      if (!this.form.depositAvailable) this.form.deposit = "";
+    },
     async openDialog(dialog) {
       if (dialog === "photos") {
         await this.loadPhotos();
@@ -448,7 +463,7 @@ export default {
         if (res.data.infos) {
           this.form.infoText = res.data.infos.join("\n");
         }
-        // depositAvailable 처리: 서버에서 대문자로 "YES"/"NO"로 오므로, 소문자로 변환
+        // depositAvailable 처리: 서버에서 대문자로 "YES"/"NO"로 오므로, 소문자로 변환 후 deposit 설정
         if (res.data.depositAvailable && res.data.depositAvailable.toUpperCase() === "NO") {
           this.form.depositAvailable = "no";
           this.form.deposit = 0;
@@ -456,10 +471,17 @@ export default {
           this.form.depositAvailable = "yes";
           // deposit 값은 res.data.deposit에 있음
         }
+        // 추가: breakTime이 null 또는 빈 값이면 noBreakTime 체크
+        if (!this.form.breakTimeStart && !this.form.breakTimeEnd) {
+          this.noBreakTime = true;
+        } else {
+          this.noBreakTime = false;
+        }
       } catch (error) {
         console.error("데이터 로드 실패:", error);
       }
     },
+
     async loadPhotos() {
       try {
         const res = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/restaurant/photos`);
@@ -522,6 +544,7 @@ export default {
       }
     },
     async updateBusinessHours() {
+      console.log(this.form);
       try {
         await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/restaurant/update`, this.form);
         this.closeDialog("businessHours");
@@ -532,13 +555,12 @@ export default {
     async updateTextInfo() {
       if (this.isAddressCityEmpty || this.isAddressStreetEmpty) {
         alert("도시와 거리 필드는 비울 수 없습니다.");
-        return; // 🚨 필수 입력값이 없으면 저장 막기
+        return;
       }
-
       try {
         const payload = {
           ...this.form,
-          depositAvailable: this.form.depositAvailable // 이미 computed setter에서 관리됨
+          depositAvailable: this.form.depositAvailable // computed setter에서 관리됨
         };
         console.log(payload);
         await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/restaurant/update`, payload);
