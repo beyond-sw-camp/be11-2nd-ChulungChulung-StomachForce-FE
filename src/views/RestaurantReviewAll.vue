@@ -1,68 +1,93 @@
 <template>
-  <v-container>
-        <!-- 네비게이션 바 -->
-        <v-tabs v-model="tab">
-      <v-tab :to="`/restaurant/detail/${restaurantId}`">레스토랑 홈</v-tab>
-      <v-tab :to="`/restaurant/detail/${restaurantId}/main`">상세정보</v-tab>
-      <v-tab :to="`/menu/list/${restaurantId}`">메뉴</v-tab>
-      <v-tab @click="reload()">리뷰</v-tab>
-    </v-tabs>
-    <h2 class="text-center title-box">리뷰</h2>
+  <v-container class="pa-0" fluid>
+    <!-- 네비게이션 바 -->
+    <div class="navigation-wrapper">
+      <v-container>
+        <v-tabs v-model="tab" background-color="transparent" color="#FF5722">
+          <v-tab :to="`/restaurant/detail/${restaurantId}`" class="custom-tab">레스토랑 홈</v-tab>
+          <v-tab @click="reload()" class="custom-tab">상세정보</v-tab>
+          <v-tab :to="`/menu/list/${restaurantId}`" class="custom-tab">메뉴</v-tab>
+          <v-tab :to="`/restaurant/detail/${restaurantId}/reviews`" class="custom-tab">리뷰</v-tab>
+        </v-tabs>
+      </v-container>
+    </div>
 
-    <v-row>
-      <v-col v-for="review in reviews" :key="review.id" cols="12" md="6">
-        <v-card class="review-card" elevation="3">
-          <!-- 리뷰 헤더 (별점 왼쪽, 유저 ID 오른쪽) -->
-          <v-card-title class="d-flex justify-space-between align-center">
-            <v-rating
-              v-model="review.rating"
-              readonly
-              color="amber"
-              background-color="grey lighten-3"
-              dense
-              half-increments
-              size="20"
-            ></v-rating>
-            <span class="reviewer-id">작성자 : {{ review.userIdentify }}</span>
-          </v-card-title>
+    <!-- 메인 컨텐츠 -->
+    <v-container>
+      <div class="review-header">
+        <h2>리뷰</h2>
+        <div class="review-stats">
+          <v-rating
+            :model-value="averageRating"
+            color="amber"
+            half-increments
+            readonly
+            size="24"
+          ></v-rating>
+          <span class="review-count">
+            평균 {{ averageRating.toFixed(1) }} · 총 {{ reviews.length }}개의 리뷰
+          </span>
+        </div>
+      </div>
 
-          <!-- 프로필 이미지 (가운데 정렬) -->
-          <div class="profile-section d-flex justify-center">
-            <v-avatar size="60">
-              <v-img :src="review.userProfileImage || '/assets/default-profile.jpg'"></v-img>
-            </v-avatar>
-          </div>
+      <v-row>
+        <v-col v-for="review in reviews" :key="review.id" cols="12">
+          <v-card class="review-card">
+            <div class="review-card-header">
+              <div class="user-info">
+                <v-avatar size="40">
+                  <v-img :src="review.userProfileImage || '/assets/default-profile.jpg'" />
+                </v-avatar>
+                <div class="user-details">
+                  <div class="user-name">{{ review.userIdentify }}</div>
+                  <v-rating
+                    v-model="review.rating"
+                    readonly
+                    color="amber"
+                    dense
+                    half-increments
+                    size="16"
+                  ></v-rating>
+                </div>
+              </div>
+              <div class="review-date">{{ formatDate(review.createdTime) }}</div>
+            </div>
 
-          <!-- 리뷰 사진 (별점 바로 밑) -->
-          <v-sheet class="image-box" v-if="review.reviewPhotos.length">
-            <v-row>
-              <v-col v-for="(image, index) in review.reviewPhotos" :key="index" cols="4">
-                <v-img :src="image" class="review-image" @click="openImage(image)"></v-img>
+            <div class="review-content" v-if="review.contents">
+              {{ review.contents }}
+            </div>
+
+            <v-row class="review-photos" v-if="review.reviewPhotos.length">
+              <v-col v-for="(image, index) in review.reviewPhotos" 
+                     :key="index" 
+                     cols="4" 
+                     sm="3" 
+                     md="2">
+                <v-img
+                  :src="image"
+                  aspect-ratio="1"
+                  cover
+                  class="review-photo"
+                  @click="openImage(image)"
+                ></v-img>
               </v-col>
             </v-row>
-          </v-sheet>
+          </v-card>
+        </v-col>
+      </v-row>
 
-          <!-- 리뷰 내용 (테두리 감싸기) -->
-          <v-sheet class="review-content-box">
-            <v-card-text class="review-content">
-              <p>{{ review.contents }}</p>
-            </v-card-text>
-          </v-sheet>
+      <v-dialog v-model="imageDialog" max-width="90vw">
+        <v-card>
+          <v-img :src="selectedImage" max-height="90vh" contain></v-img>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn icon @click="imageDialog = false">
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </v-card-actions>
         </v-card>
-      </v-col>
-    </v-row>
-
-    <!-- 이미지 확대 보기 모달 -->
-    <v-dialog v-model="imageDialog" max-width="80%">
-      <v-card>
-        <v-img :src="selectedImage" class="expanded-image"></v-img>
-        <v-card-actions>
-          <v-btn color="primary" block @click="imageDialog = false">닫기</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <v-btn block color="black" class="reserve-button">예약하기</v-btn>
+      </v-dialog>
+    </v-container>
   </v-container>
 </template>
 
@@ -71,86 +96,147 @@
 ### **💄 스타일 (SCSS)**
 ```vue
 <style scoped>
-.title-box {
-  background-color: #f8e4c3;
-  padding: 15px;
-  border-radius: 10px;
-  text-align: center;
-  margin-bottom: 20px;
-  font-weight: bold;
+.navigation-wrapper {
+  background-color: white;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.custom-tab {
+  text-transform: none;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  min-width: 120px;
+}
+
+::v-deep .v-tabs-slider-wrapper {
+  display: none;
+}
+
+.review-header {
+  margin-bottom: 24px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+}
+
+.review-header h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.review-stats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.review-count {
+  color: #666;
+  font-size: 14px;
 }
 
 .review-card {
-  margin-bottom: 20px;
-  padding: 15px;
+  padding: 20px;
+  margin-bottom: 16px;
   border-radius: 12px;
-  transition: transform 0.3s ease-in-out;
+  border: 1px solid #eee;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+  transition: all 0.3s ease;
+  background: linear-gradient(to right bottom, #ffffff, #fafafa);
+  position: relative;
+  overflow: hidden;
 }
+
 .review-card:hover {
-  transform: scale(1.02);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  border-color: #e0e0e0;
 }
 
-/* 유저 ID (오른쪽 정렬) */
-.reviewer-id {
-  font-size: 14px;
-  font-weight: bold;
+.review-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, #FFA000, #FFD54F);
+}
+
+.review-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 15px;
+  color: #424242;
+  letter-spacing: 0.3px;
+}
+
+.review-date {
   color: #666;
+  font-size: 13px;
 }
 
-/* 프로필 이미지 */
-.profile-section {
-  margin-top: 10px;
-}
-
-/* 사진 박스 (별점 바로 밑) */
-.image-box {
-  background: #f8f8f8;
-  padding: 10px;
-  border-radius: 10px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-/* 리뷰 이미지 */
-.review-image {
-  width: 100%;
-  height: 100px;
-  border-radius: 10px;
-  object-fit: cover;
-  cursor: pointer;
-  transition: transform 0.2s ease-in-out;
-}
-.review-image:hover {
-  transform: scale(1.05);
-}
-
-/* 확대된 이미지 */
-.expanded-image {
-  width: 100%;
-  border-radius: 10px;
-}
-
-/* 리뷰 텍스트 박스 */
-.review-content-box {
-  background: #f8f8f8;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 10px;
-  margin-top: 10px;
-}
-
-/* 리뷰 텍스트 */
 .review-content {
-  font-size: 14px;
-  line-height: 1.5;
-  color: #444;
+  margin: 16px 0;
+  line-height: 1.6;
+  color: #424242;
+  font-size: 15px;
+  padding: 0 4px;
 }
 
-/* 예약 버튼 */
+.review-photos {
+  margin-top: 16px;
+}
+
+.review-photo {
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.review-photo:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
 .reserve-button {
-  font-size: 18px;
-  padding: 12px;
-  margin-top: 20px;
+  font-size: 16px;
+  padding: 12px !important;
+  letter-spacing: 1px;
+}
+
+/* 태블릿 & 모바일 반응형 */
+@media (max-width: 960px) {
+  .review-card {
+    padding: 16px;
+  }
+  
+  .review-header {
+    padding: 16px;
+  }
 }
 </style>
 
@@ -165,6 +251,13 @@ export default {
       selectedImage: "", // 선택된 이미지
       restaurantId: this.$route.params.id,
     };
+  },
+  computed: {
+    averageRating() {
+      if (this.reviews.length === 0) return 0;
+      const sum = this.reviews.reduce((acc, review) => acc + review.rating, 0);
+      return sum / this.reviews.length;
+    }
   },
   created() {
     this.loadReviews();
@@ -190,6 +283,14 @@ export default {
     openImage(imageUrl) {
       this.selectedImage = imageUrl;
       this.imageDialog = true;
+    },
+    formatDate(createdTime) {
+      if (!createdTime) return '';
+      const date = new Date(createdTime);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}.${month}.${day}`;
     },
   },
 };

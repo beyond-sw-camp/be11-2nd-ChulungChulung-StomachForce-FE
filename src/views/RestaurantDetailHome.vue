@@ -1,16 +1,16 @@
 <template>
   <v-container class="pa-0" fluid>
-    <!-- 상단 네비게이션 바 -->
-    <v-card flat class="navigation-bar">
+    <!-- 네비게이션 바 -->
+    <div class="navigation-wrapper">
       <v-container>
-        <v-tabs v-model="tab" background-color="transparent" class="custom-tabs">
-          <v-tab @click="reload">레스토랑 홈</v-tab>
-          <v-tab :to="`/restaurant/detail/${restaurantId}/main`">상세정보</v-tab>
-          <v-tab :to="`/menu/list/${restaurantId}`">메뉴</v-tab>
-          <v-tab :to="`/restaurant/detail/${restaurantId}/reviews`">리뷰</v-tab>
+        <v-tabs v-model="tab" background-color="transparent" color="#FF5722">
+          <v-tab @click="reload" class="custom-tab">레스토랑 홈</v-tab>
+          <v-tab :to="`/restaurant/detail/${restaurantId}/main`" class="custom-tab">상세정보</v-tab>
+          <v-tab :to="`/menu/list/${restaurantId}`" class="custom-tab">메뉴</v-tab>
+          <v-tab :to="`/restaurant/detail/${restaurantId}/reviews`" class="custom-tab">리뷰</v-tab>
         </v-tabs>
       </v-container>
-    </v-card>
+    </div>
 
     <v-container class="main-content">
       <!-- 레스토랑 헤더 섹션 -->
@@ -105,19 +105,15 @@
 
       <!-- 대표 메뉴 섹션 -->
       <v-card class="menu-section mt-6">
-        <v-card-title class="section-title">
-          <v-icon large color="var(--primary-orange)" class="mr-2">mdi-food</v-icon>
-          대표 메뉴
+        <v-card-title class="section-title d-flex align-center">
+          <div class="d-flex align-center">
+            <v-icon large color="var(--primary-orange)" class="mr-2">mdi-food</v-icon>
+            대표 메뉴
+          </div>
           <v-spacer></v-spacer>
-          <v-btn
-            text
-            color="var(--primary-orange)"
-            @click="goToMenuList"
-            class="menu-view-all-btn"
-          >
-            전체 메뉴 보기
-            <v-icon right>mdi-chevron-right</v-icon>
-          </v-btn>
+          <router-link :to="`/menu/list/${restaurantId}`" class="view-all-link">
+            전체 메뉴 보기 <v-icon small>mdi-chevron-right</v-icon>
+          </router-link>
         </v-card-title>
         <v-card-text>
           <v-row>
@@ -138,11 +134,11 @@
         </v-card-text>
       </v-card>
 
-      <!-- 예약 버튼 -->
+      <!-- 예약하기 버튼 -->
       <v-btn
         block
         x-large
-        color="primary"
+        elevation="0"
         class="reservation-button mt-6"
         @click="goToReservation"
       >
@@ -208,21 +204,19 @@
   --text-dark: #333333;
 }
 
-.navigation-bar {
+.navigation-wrapper {
+  background-color: white;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
   position: sticky;
   top: 0;
   z-index: 100;
-  background-color: var(--white);
-  border-bottom: 1px solid rgba(255, 107, 0, 0.1);
 }
 
-.custom-tabs {
-  border-bottom: none;
-}
-
-/* v-tab 활성화 색상 변경 */
-::v-deep .v-tab--active {
-  color: #FF6B00 !important;
+.custom-tab {
+  text-transform: none;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  min-width: 120px;
 }
 
 .main-content {
@@ -451,6 +445,43 @@ a:hover {
 .menu-view-all-btn .v-icon {
   color: var(--primary-orange) !important;
 }
+
+.view-all-link {
+  color: var(--primary-orange);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.view-all-link:hover {
+  color: var(--dark-orange);
+}
+
+.fixed-reservation-button {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 100 !important;
+  height: 56px !important;
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100vw !important;
+  background-color: var(--primary-orange) !important;
+  color: var(--white) !important;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1) !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.fixed-reservation-button:hover {
+  background-color: var(--dark-orange) !important;
+}
 </style>
 
 <script>
@@ -490,15 +521,20 @@ export default {
 
       topMenus: [],
 
+      showFixedButton: false,
     };
   },
   created() {
     this.loadRestaurantDetail();
     this.loadTopMenus();
+    window.addEventListener('scroll', this.handleScroll);
   },
   mounted() {
     // 식당 상세정보 로드 후 즐겨찾기 상태 확인
     this.checkBookmark();
+  },
+  unmounted() {
+    window.removeEventListener('scroll', this.handleScroll);
   },
   methods: {
     formatTime(timeString) {
@@ -645,7 +681,11 @@ export default {
 
     goToMenuList() {
       this.$router.push(`/menu/list/${this.restaurantId}`);
-    }
+    },
+
+    handleScroll() {
+      this.showFixedButton = window.scrollY > 500;
+    },
   },
 };
 </script>

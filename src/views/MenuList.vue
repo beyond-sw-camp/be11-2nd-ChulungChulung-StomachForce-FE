@@ -1,103 +1,109 @@
 <template>
-    <v-container class="py-8">
-        <!-- 상단 네비게이션 탭 -->
-        <v-tabs v-model="tab" class="mb-8">
-            <v-tab :to="`/restaurant/detail/${restaurantId}`">레스토랑 홈</v-tab>
-            <v-tab :to="`/restaurant/detail/${restaurantId}/main`">상세정보</v-tab>
-            <v-tab @click="reload()">메뉴</v-tab>
-            <v-tab :to="`/restaurant/detail/${restaurantId}/reviews`">리뷰</v-tab>
-        </v-tabs>
+    <v-container class="pa-0" fluid>
+        <!-- 네비게이션 바 -->
+        <div class="navigation-wrapper">
+            <v-container>
+                <v-tabs v-model="tab" background-color="transparent" color="#FF5722">
+                    <v-tab :to="`/restaurant/detail/${restaurantId}`" class="custom-tab">레스토랑 홈</v-tab>
+                    <v-tab :to="`/restaurant/detail/${restaurantId}/main`" class="custom-tab">상세정보</v-tab>
+                    <v-tab @click="reload()" class="custom-tab">메뉴</v-tab>
+                    <v-tab :to="`/restaurant/detail/${restaurantId}/reviews`" class="custom-tab">리뷰</v-tab>
+                </v-tabs>
+            </v-container>
+        </div>
 
-        <!-- 레스토랑 이름 -->
-        <div class="menu-header text-center mb-8">
-            <h1 class="text-h3 font-weight-bold mb-4">{{ restaurantName }}</h1>
-            <div class="divider">
-                <span class="divider-line"></span>
-                <v-icon size="24" color="grey-darken-2" class="mx-3">mdi-silverware-fork-knife</v-icon>
-                <span class="divider-line"></span>
+        <v-container class="py-8">
+            <!-- 레스토랑 이름 -->
+            <div class="menu-header text-center mb-8">
+                <h1 class="text-h3 font-weight-bold mb-4">{{ restaurantName }}</h1>
+                <div class="divider">
+                    <span class="divider-line"></span>
+                    <v-icon size="24" color="grey-darken-2" class="mx-3">mdi-silverware-fork-knife</v-icon>
+                    <span class="divider-line"></span>
+                </div>
             </div>
-        </div>
 
-        <!-- 메뉴 등록 버튼 -->
-        <div class="text-right mb-6" v-if="isLoggedIn && isRestaurantOwner">
-            <v-btn
-                color="deep-orange"
-                @click="navigateToMenuRegistration"
-                prepend-icon="mdi-plus"
-            >
-                메뉴 등록
-            </v-btn>
-        </div>
+            <!-- 메뉴 등록 버튼 -->
+            <div class="text-right mb-6" v-if="isLoggedIn && isRestaurantOwner">
+                <v-btn
+                    color="deep-orange"
+                    @click="navigateToMenuRegistration"
+                    prepend-icon="mdi-plus"
+                >
+                    메뉴 등록
+                </v-btn>
+            </div>
 
-        <!-- 메뉴 그리드 -->
-        <v-row>
-            <v-col v-for="menu in menuList" :key="menu.id" cols="12" md="6" lg="4">
-                <v-card class="menu-card" elevation="0">
-                    <!-- 메뉴 이름 -->
-                    <div class="menu-name text-h5 font-weight-bold text-center py-4">
-                        {{ menu.name }}
-                    </div>
-
-                    <!-- 메뉴 이미지 -->
-                    <div class="menu-image-container">
-                        <v-img
-                            v-if="menu.menuPhoto"
-                            :src="menu.menuPhoto"
-                            height="300"
-                            cover
-                            class="menu-image"
-                        ></v-img>
-                        <div v-else class="menu-image-placeholder">
-                            <v-icon size="48" color="grey">mdi-food</v-icon>
-                        </div>
-                    </div>
-
-                    <!-- 메뉴 정보 -->
-                    <div class="menu-info pa-6">
-                        <p class="menu-description mb-4">{{ menu.description }}</p>
-                        <div class="menu-price-line">
-                            <span class="dots"></span>
-                            <span class="price font-weight-bold">{{ numberWithCommas(menu.price) }}원</span>
+            <!-- 메뉴 그리드 -->
+            <v-row>
+                <v-col v-for="menu in menuList" :key="menu.id" cols="12" md="6" lg="4">
+                    <v-card class="menu-card" elevation="0">
+                        <!-- 메뉴 이름 -->
+                        <div class="menu-name text-h5 font-weight-bold text-center py-4">
+                            {{ menu.name }}
                         </div>
 
-                        <!-- 알레르기 정보 -->
-                        <div class="allergy-info mt-4" v-if="hasAllergies(menu.allergyInfo)">
-                            <div class="text-subtitle-2 font-weight-medium mb-2">알레르기 정보</div>
-                            <v-chip-group>
-                                <v-chip
-                                    v-for="allergy in getAllergyList(menu.allergyInfo)"
-                                    :key="allergy.key"
-                                    size="small"
-                                    color="grey-lighten-3"
-                                    class="mr-1"
+                        <!-- 메뉴 이미지 -->
+                        <div class="menu-image-container">
+                            <v-img
+                                v-if="menu.menuPhoto"
+                                :src="menu.menuPhoto"
+                                height="300"
+                                cover
+                                class="menu-image"
+                            ></v-img>
+                            <div v-else class="menu-image-placeholder">
+                                <v-icon size="48" color="grey">mdi-food</v-icon>
+                            </div>
+                        </div>
+
+                        <!-- 메뉴 정보 -->
+                        <div class="menu-info pa-6">
+                            <p class="menu-description mb-4">{{ menu.description }}</p>
+                            <div class="menu-price-line">
+                                <span class="dots"></span>
+                                <span class="price font-weight-bold">{{ numberWithCommas(menu.price) }}원</span>
+                            </div>
+
+                            <!-- 알레르기 정보 -->
+                            <div class="allergy-info mt-4" v-if="hasAllergies(menu.allergyInfo)">
+                                <div class="text-subtitle-2 font-weight-medium mb-2">알레르기 정보</div>
+                                <v-chip-group>
+                                    <v-chip
+                                        v-for="allergy in getAllergyList(menu.allergyInfo)"
+                                        :key="allergy.key"
+                                        size="small"
+                                        color="grey-lighten-3"
+                                        class="mr-1"
+                                    >
+                                        {{ allergy.label }}
+                                    </v-chip>
+                                </v-chip-group>
+                            </div>
+
+                            <!-- 수정/삭제 버튼 -->
+                            <div class="d-flex justify-end mt-4" v-if="isLoggedIn && isRestaurantOwner">
+                                <v-btn
+                                    variant="text"
+                                    color="primary"
+                                    class="mr-2"
+                                    @click="navigateToMenuUpdate(menu.id)"
                                 >
-                                    {{ allergy.label }}
-                                </v-chip>
-                            </v-chip-group>
+                                    수정
+                                </v-btn>
+                                <v-btn
+                                    variant="text"
+                                    color="error"
+                                    @click="deleteMenu(menu.id)"
+                                >
+                                    삭제
+                                </v-btn>
+                            </div>
                         </div>
-
-                        <!-- 수정/삭제 버튼 -->
-                        <div class="d-flex justify-end mt-4" v-if="isLoggedIn && isRestaurantOwner">
-                            <v-btn
-                                variant="text"
-                                color="primary"
-                                class="mr-2"
-                                @click="navigateToMenuUpdate(menu.id)"
-                            >
-                                수정
-                            </v-btn>
-                            <v-btn
-                                variant="text"
-                                color="error"
-                                @click="deleteMenu(menu.id)"
-                            >
-                                삭제
-                            </v-btn>
-                        </div>
-                    </div>
-                </v-card>
-            </v-col>
-        </v-row>
+                    </v-card>
+                </v-col>
+            </v-row>
+        </v-container>
     </v-container>
 </template>
 
@@ -230,6 +236,21 @@ export default {
 </script>
 
 <style scoped>
+.navigation-wrapper {
+    background-color: white;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.custom-tab {
+    text-transform: none;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    min-width: 120px;
+}
+
 .menu-header {
     position: relative;
     padding: 40px 0;
