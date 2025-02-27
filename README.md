@@ -109,7 +109,16 @@
 ---
 
  ##  프론트엔드 기능 시연  
-**기능 시연 GIF 또는 링크 추가**  
+<details>
+  <summary>▶️ 클릭하면 영상이 펼쳐집니다</summary>
+  <p>🎬 아래에서 동영상을 확인하세요:</p>
+  
+  <video controls width="600">
+    <source src="https://your-video-url.com/video.mp4" type="video/mp4">
+    브라우저가 video 태그를 지원하지 않습니다.
+  </video>
+  
+</details
 
 ---
 
