@@ -20,20 +20,18 @@
 ## 📌 목차
 1. [프로젝트 소개](#프로젝트-소개)
 2. [기획](#기획)
-3. [기술 스택](#기술-스택)
-4. [프론트엔드 기능 시연](#프론트엔드-기능-시연)
-5. [프로젝트 마무리](#프로젝트-마무리)
+3. [기술 스택](#🛠️-기술-스택)
+4. [프론트엔드 기능 시연](#🎬-프론트엔드-기능-시연)
+5. [프로젝트 마무리](#🎯-프로젝트-마무리)
 
 ---
 
 ## 프로젝트 소개  
 ### 
-<p align="center">
-  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/stomach.png?raw=true" width="30">
-</p> 
-
-**뱃살력이란?**  
-뱃살력은 원하는 식당을 검색하고 예약하며, 리뷰를 남기기도 하며 SNS를 통해 다른 사람과 본인의 뱃살력을 뽐내는 서비스입니다.
+<p>
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/stomach.png?raw=true" width="30" align="center">
+  <strong>뱃살력이란?</strong>  
+</p>
 
 ### 🎯 배경 및 목적
 - 레스토랑 예약과 SNS를 하나로 통합  
