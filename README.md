@@ -1,7 +1,7 @@
 # 📝 지식 관리 시스템 - COCONOTE
 
-## 🚀 협업의 새로운 차원  
-COCONOTE 바로가기 👉 [coconote.site](https://coconote.site)
+## 🚀 뱃살력
+
 
 ---
 
