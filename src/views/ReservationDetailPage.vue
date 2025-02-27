@@ -61,31 +61,6 @@
             </tr>
           </tbody>
         </v-table>
-         <!-- 🔹 결제 정보 -->
-         <v-table>
-            <tbody>
-              <tr>
-                <td><strong>결제방법</strong></td>
-                <td>{{ reservation.paymentMethod }}</td>
-                <td><strong>사용한 마일리지</strong></td>
-                <td>{{ reservation.useMilege || 0 }} P</td>
-              </tr>
-            </tbody>
-          </v-table>
-  
-          <!-- 🔹 쿠폰/할인 정보 -->
-          <v-table v-if="reservation.couponName" class="coupon-table">
-            <tbody>
-              <tr>
-                <td><strong>쿠폰 이름</strong></td>
-                <td><strong>할인 금액</strong></td>
-              </tr>
-              <tr>
-                <td>{{ reservation.couponName }}</td>
-                <td>{{ reservation.discountAmount }} 원</td>
-              </tr>
-            </tbody>
-          </v-table>
       </v-card-text>
     </v-card>
   </v-container>

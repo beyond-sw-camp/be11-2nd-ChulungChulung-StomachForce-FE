@@ -1,21 +1,19 @@
 <template>
-    <v-container>
-        <v-card class="mx-auto" max-width="1000">
-            <v-tabs v-model="activeTab">
-                <v-tab value="service">문의사항</v-tab>
-                <v-tab value="report">신고</v-tab>
-            </v-tabs>
+    <v-container class="pa-0">
+        <v-tabs v-model="activeTab">
+            <v-tab value="service">문의사항</v-tab>
+            <v-tab value="report">신고</v-tab>
+        </v-tabs>
 
-            <!-- 문의사항 탭 -->
-            <div v-if="activeTab === 'service'" class="pa-4">
-                <service-post-list></service-post-list>
-            </div>
+        <!-- 문의사항 탭 -->
+        <div v-if="activeTab === 'service'" class="pt-4">
+            <service-post-list></service-post-list>
+        </div>
 
-            <!-- 신고 탭 -->
-            <div v-else class="pa-4">
-                <report-list></report-list>
-            </div>
-        </v-card>
+        <!-- 신고 탭 -->
+        <div v-else class="pt-4">
+            <report-list></report-list>
+        </div>
     </v-container>
 </template>
 
@@ -38,7 +36,7 @@ export default {
 </script>
 
 <style scoped>
-.v-card {
-    height: 100%;
+:deep(.v-tabs) {
+    border-bottom: none;
 }
-</style> 
+</style>

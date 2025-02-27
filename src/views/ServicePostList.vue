@@ -1,78 +1,66 @@
 <template>
     <v-container>
-        <v-card class="mx-auto" max-width="1000">
-            <v-card-title class="text-h4 py-4 px-6">
-                문의 게시판
-                <v-spacer></v-spacer>
-                <v-btn
-                    color="red"
-                    :to="{path:'/service/post/create'}"
-                    prepend-icon="mdi-plus"
-                >
-                    게시글 등록
-                </v-btn>
-            </v-card-title>
+        <v-divider class="mb-4"></v-divider>
+        <!-- 리스트 아이템 -->
+        <v-list class="list-content">
+            <v-list-item
+                v-for="post in posts"
+                :key="post.id"
+                @click="handlePostClick(post)"
+                class="list-item"
+            >
+                <div class="d-flex align-center w-100">
+                    <span class="visibility-col text-center">
+                        <v-chip
+                            :color="post.visibility === 'Y' ? 'success' : 'warning'"
+                            size="small"
+                            class="font-weight-medium"
+                        >
+                            {{ post.visibility === 'Y' ? '공개' : '비공개' }}
+                        </v-chip>
+                    </span>
+                    <span class="title-col" :class="{ 'blur-text': shouldBlurTitle(post) }">
+                        {{ post.title }}
+                    </span>
+                    <span class="category-col text-center">
+                        <v-chip
+                            :color="getCategoryColor(post.category)"
+                            size="small"
+                            class="font-weight-medium"
+                        >
+                            {{ getCategoryText(post.category) }}
+                        </v-chip>
+                    </span>
+                    <span class="status-col text-center">
+                        <v-chip
+                            :color="post.answer ? 'success' : 'warning'"
+                            size="small"
+                            class="font-weight-medium"
+                        >
+                            {{ post.answer ? '답변완료' : '답변대기' }}
+                        </v-chip>
+                    </span>
+                </div>
+            </v-list-item>
+        </v-list>
 
-            <v-divider></v-divider>
-
-            <v-table>
-                <thead>
-                    <tr>
-                        <th class="text-center">번호</th>
-                        <th>제목</th>
-                        <th class="text-center">문의유형</th>
-                        <th class="text-center">공개여부</th>
-                        <th class="text-center">답변상태</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="post in posts" :key="post.id" 
-                        @click="handlePostClick(post)"
-                        style="cursor: pointer"
-                        class="post-row"
-                    >
-                        <td class="text-center">{{ post.id }}</td>
-                        <td :class="{ 'blur-text': shouldBlurTitle(post) }">
-                            {{ post.title }}
-                        </td>
-                        <td class="text-center">
-                            <v-chip
-                                :color="getCategoryColor(post.category)"
-                                size="small"
-                            >
-                                {{ getCategoryText(post.category) }}
-                            </v-chip>
-                        </td>
-                        <td class="text-center">
-                            <v-chip
-                                :color="post.visibility === 'Y' ? 'success' : 'warning'"
-                                size="small"
-                            >
-                                {{ post.visibility === 'Y' ? '공개' : '비공개' }}
-                            </v-chip>
-                        </td>
-                        <td class="text-center">
-                            <v-chip
-                                :color="post.answer ? 'success' : 'warning'"
-                                size="small"
-                            >
-                                {{ post.answer ? '답변완료' : '답변대기' }}
-                            </v-chip>
-                        </td>
-                    </tr>
-                </tbody>
-            </v-table>
-
-            <v-divider></v-divider>
-
-            <v-card-actions class="pa-4 justify-center">
+        <div class="bottom-container py-4">
+            <div class="pagination-wrapper">
                 <v-pagination
                     v-model="page"
                     :length="totalPages"
                     :total-visible="7"
                 ></v-pagination>
-            </v-card-actions>
-        </v-card>
+                <v-btn
+                    color="red"
+                    :to="{path:'/service/post/create'}"
+                    prepend-icon="mdi-plus"
+                    class="create-btn"
+                >
+                    게시글 등록
+                </v-btn>
+            </div>
+        </div>
     </v-container>
 </template>
 
@@ -102,7 +90,7 @@ export default {
             const colorMap = {
                 'INQUIRY': 'blue',
                 'REQUEST': 'green',
-                'COMPLAINT': 'orange'
+                'COMPLAINT': '#9575CD'
             };
             return colorMap[category] || 'grey';
         },
@@ -241,17 +229,47 @@ export default {
 </script>
 
 <style scoped>
-.post-row:hover {
+.service-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.list-content {
+    background: transparent !important;
+}
+
+.list-item {
+    border-bottom: 1px solid #e0e0e0;
+    transition: background-color 0.2s;
+    cursor: pointer;
+    min-height: 60px !important;
+}
+
+.list-item:hover {
     background-color: #f5f5f5;
 }
 
-.v-table {
-    cursor: default;
+.list-item:last-child {
+    border-bottom: none;
 }
 
-th {
-    font-weight: bold !important;
-    background-color: #f5f5f5;
+/* 컬럼 너비 설정 */
+.id-col {
+    width: 80px;
+    flex-shrink: 0;
+}
+
+.title-col {
+    flex-grow: 1;
+    padding: 0 16px;
+}
+
+.category-col,
+.visibility-col,
+.status-col {
+    width: 120px;
+    flex-shrink: 0;
 }
 
 .v-chip {
@@ -265,5 +283,30 @@ th {
 
 .blur-text:hover {
     filter: blur(4px);
+}
+
+.bottom-container {
+    position: relative;
+}
+
+.pagination-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.create-btn {
+    position: absolute;
+    right: 0;
+}
+
+/* v-list 기본 패딩 제거 */
+:deep(.v-list-item__content) {
+    padding: 0;
+}
+
+:deep(.v-list-item) {
+    padding: 8px 16px;
 }
 </style>

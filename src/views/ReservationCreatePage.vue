@@ -99,18 +99,6 @@
             label="결제 방법 선택"
             required
           ></v-select>
-  
-          <!-- 🔹 쿠폰 코드 입력 -->
-          <v-text-field v-model="reservation.couponCode" label="쿠폰 코드 (선택 사항)"></v-text-field>
-  
-          <!-- 🔹 마일리지 사용 입력 -->
-          <v-text-field
-            v-model.number="reservation.mileage"
-            label="사용할 마일리지 (선택 사항)"
-            type="number"
-            min="0"
-          ></v-text-field>
-  
           <!-- 🔹 예약하기 버튼 -->
           <v-btn color="primary" class="mt-3" :disabled="!isFormValid" @click="submitReservation">
             예약하기
