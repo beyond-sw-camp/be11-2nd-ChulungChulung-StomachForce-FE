@@ -198,7 +198,6 @@ export default {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`
           }
         });
-        console.log(response);
         // response.data에 userNickName이 포함되어 있다고 가정
         this.loginUserNickName = response.data.userNickName;
       } catch (error) {

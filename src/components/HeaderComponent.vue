@@ -148,8 +148,6 @@ export default {
     );
     this.loginUserNickName = response.data.userNickName;
     this.userRole = response.data.role;
-    console.log("API 응답 데이터:", response.data);
-    console.log(this.userRole)
   } catch (error) {
     console.error("로그인 유저 정보 조회 실패:", error);
   }

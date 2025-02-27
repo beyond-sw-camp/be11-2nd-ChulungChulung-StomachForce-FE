@@ -3,8 +3,9 @@
         <div class="text-right mb-4">
             <v-btn
                 color="red"
-                :to="{path:'/report/create'}"
                 prepend-icon="mdi-plus"
+
+                @click="handleReportCreateClick"
             >
                 신고하기
             </v-btn>
@@ -67,6 +68,14 @@ export default {
         };
     },
     methods: {
+
+        async handleReportCreateClick() {
+            if (!this.currentUser) {
+                alert('로그인이 필요합니다.');
+                return;
+            }
+            this.$router.push('/report/create');
+        },
         getReportClassText(reportClass) {
             const classMap = {
                 'SPAM': '스팸',

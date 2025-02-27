@@ -145,7 +145,6 @@ export default {
         const fetchUsers = async () => {
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/user/list`);
-                console.log(response.data);
                 users.value = Array.isArray(response.data) ? response.data : [];
                 await nextTick();
             } catch (error) {
@@ -156,7 +155,6 @@ export default {
         const fetchRestaurants = async () => {
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/restaurant/listmanage`);
-                console.log(response.data);
                 restaurants.value = Array.isArray(response.data) ? response.data : [];
                 await nextTick();
             } catch (error) {

@@ -25,7 +25,7 @@
             </v-row>
 
             <!-- 회사 상세 정보 -->
-            <v-row class="company-details mt-6">
+            <v-row class="company-details mt-1">
                 <v-col cols="12">
                     <div class="detail-line">
                         <span>상호명: 주식회사 뱃살력컴퍼니</span>

@@ -36,6 +36,7 @@
     border: 2px solid #e0e0e0;
     border-radius: 12px;
     transition: transform 0.2s;
+    border-color: #39a0ef;
   }
   
   .business-card {
