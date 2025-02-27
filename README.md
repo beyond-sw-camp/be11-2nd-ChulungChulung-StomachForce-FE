@@ -110,51 +110,51 @@
 
  ##  프론트엔드 기능 시연  
 <details>
-  <summary>▶️ 테스트입니다.</summary>
+  <summary>▶️예약생성</summary>
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/reservation_create.gif?raw=true" width="600">
+</details>
+<details>
+  <summary>▶️ 이벤트생성</summary>
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/event_create.gif?raw=true" width="600">
+</details>
+<details>
+  <summary>▶️이벤트수정,삭제</summary>
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/event_update_delete.gif?raw=true" width="600">
+</details>
+<details>
+  <summary>▶️ 관리자 유저권한설정</summary>
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/admin_manage.gif?raw=true" width="600">
+</details>
+<details>
+  <summary>▶️ 업로드예정</summary>
   <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/testtest.gif?raw=true" width="600">
 </details>
 <details>
-  <summary>▶️ 테스트입니다2.</summary>
+  <summary>▶️ 업로드예정</summary>
   <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/testtest.gif?raw=true" width="600">
 </details>
 <details>
-  <summary>▶️ 테스트입니다3.</summary>
+  <summary>▶️ 업로드예정</summary>
   <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/testtest.gif?raw=true" width="600">
 </details>
 <details>
-  <summary>▶️ 테스트입니다4.</summary>
+  <summary>▶️ 업로드예정</summary>
   <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/testtest.gif?raw=true" width="600">
 </details>
 <details>
-  <summary>▶️ 테스트입니다5.</summary>
+  <summary>▶️ 업로드예정</summary>
   <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/testtest.gif?raw=true" width="600">
 </details>
 <details>
-  <summary>▶️ 테스트입니다6.</summary>
+  <summary>▶️ 업로드예정</summary>
   <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/testtest.gif?raw=true" width="600">
 </details>
 <details>
-  <summary>▶️ 테스트입니다7.</summary>
+  <summary>▶️ 업로드예정</summary>
   <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/testtest.gif?raw=true" width="600">
 </details>
 <details>
-  <summary>▶️ 테스트입니다8.</summary>
-  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/testtest.gif?raw=true" width="600">
-</details>
-<details>
-  <summary>▶️ 테스트입니다9.</summary>
-  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/testtest.gif?raw=true" width="600">
-</details>
-<details>
-  <summary>▶️ 테스트입니다10.</summary>
-  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/testtest.gif?raw=true" width="600">
-</details>
-<details>
-  <summary>▶️ 테스트입니다11.</summary>
-  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/testtest.gif?raw=true" width="600">
-</details>
-<details>
-  <summary>▶️ 테스트입니다12.</summary>
+  <summary>▶️ 업로드예정</summary>
   <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/testtest.gif?raw=true" width="600">
 </details>
 ---
