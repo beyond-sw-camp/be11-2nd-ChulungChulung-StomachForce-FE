@@ -1,6 +1,6 @@
 
 
-(https://drive.google.com/file/d/15j4Fu39ZMSxK_RWGRrPRlpm-Gd30ISiA/view)
+![뱃살력로고]([https://drive.google.com/file/d/15j4Fu39ZMSxK_RWGRrPRlpm-Gd30ISiA/view](https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/stomach.png?raw=true))
 
 
 ---
