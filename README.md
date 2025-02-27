@@ -110,14 +110,12 @@
 
  ##  프론트엔드 기능 시연  
 <details>
-  <summary>▶️ 클릭하면 영상이 펼쳐집니다</summary>
-  <p>🎬 아래에서 동영상을 확인하세요:</p>
-  
+  <summary>▶️</summary>
   <video controls width="600">
-    <source src="https://your-video-url.com/video.mp4" type="video/mp4">
-    브라우저가 video 태그를 지원하지 않습니다.
+    ![testtest](https://github.com/user-attachments/assets/6f210444-698c-40b9-935b-9f18cd876812)
   </video>
   
+
 </details
 
 ---
