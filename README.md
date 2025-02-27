@@ -1,6 +1,6 @@
 
 
-![StomachForce 로고](https://drive.google.com/file/d/15j4Fu39ZMSxK_RWGRrPRlpm-Gd30ISiA/view)
+(https://drive.google.com/file/d/15j4Fu39ZMSxK_RWGRrPRlpm-Gd30ISiA/view)
 
 
 ---
