@@ -58,7 +58,7 @@
 
 ---
 
- ## 🛠️  기술 스택  
+ ##  기술 스택  
 ### 📌 Backend  
 <div>
   <img src="https://img.shields.io/badge/Spring-6DB33F?style=flat-square&logo=Spring&logoColor=white">
@@ -90,12 +90,12 @@
 </div>
 ---
 
- ## 🎬 프론트엔드 기능 시연  
+ ##  프론트엔드 기능 시연  
 **기능 시연 GIF 또는 링크 추가**  
 
 ---
 
- ## 🎯  프로젝트 마무리  
+ ##   프로젝트 마무리  
 ### 📌 배운 점 & 개선할 점
 📌 **팀원들이 느낀 점 & 피드백 공유**  
 
