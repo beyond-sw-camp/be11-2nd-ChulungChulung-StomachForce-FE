@@ -80,7 +80,6 @@
         async fetchEvents() {
         try {
             const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/announcement/list`);
-            console.log("이벤트 데이터 확인:", response.data); // 🔥 데이터 확인용 콘솔 로그 추가
             this.events = response.data.filter(event => event.announcementType === "EVENT");
         } catch (error) {
             console.error("이벤트 데이터를 가져오는 중 오류 발생", error);

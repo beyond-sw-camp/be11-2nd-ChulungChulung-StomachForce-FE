@@ -294,7 +294,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
     <!-- 업장 사진 수정 다이얼로그 -->
     <v-dialog v-model="dialogs.photos" max-width="800px">
       <v-card class="dialog-card">
@@ -386,7 +385,10 @@ export default {
         infos: [],
         restaurantPhotos: [],
         newPhotos: []
-      }
+      },
+      noBreakTime: false,
+      capacityOptions: Array.from({ length: 20 }, (_, i) => (i + 1) * 5), // 5~100명
+      restaurantTypeOptions: ["KOREAN", "CHINESE", "WESTERN", "JAPANESE", "FUSION"]
     };
   },
   computed: {
@@ -405,6 +407,14 @@ export default {
   async created() {
     await this.getMyRestaurantId();
   },
+  computed: {
+    isAddressCityEmpty() {
+      return this.form.addressCity.trim() === "";
+    },
+    isAddressStreetEmpty() {
+      return this.form.addressStreet.trim() === "";
+    }
+  },
   methods: {
     async getMyRestaurantId() {
       try {
@@ -414,6 +424,9 @@ export default {
         console.error("레스토랑 ID 불러오기 실패:", error);
       }
     },
+    toggleBreakTime() { if (this.noBreakTime) this.form.breakTimeStart = this.form.breakTimeEnd = ""; },
+    toggleDeposit() { if (!this.form.depositAvailable) this.form.deposit = ""; },
+    
     async openDialog(dialog) {
       if (dialog === "photos") {
         await this.loadPhotos();
@@ -460,6 +473,10 @@ export default {
       }
     },
     async removePhoto(photoId) {
+      if (this.form.restaurantPhotos.length <= 1) {
+        alert("최소 1개 이상의 사진이 필요합니다");
+        return;
+      }
       try {
         await axios.post(`${process.env.VUE_APP_API_BASE_URL}/restaurant/photoDelete`, { photoId });
         this.form.restaurantPhotos = this.form.restaurantPhotos.filter(photo => photo.photoId !== photoId);
@@ -513,6 +530,11 @@ export default {
       }
     },
     async updateTextInfo() {
+      if (this.isAddressCityEmpty || this.isAddressStreetEmpty) {
+        alert("도시와 거리 필드는 비울 수 없습니다.");
+        return; // 🚨 필수 입력값이 없으면 저장 막기
+      }
+
       try {
         const payload = {
           ...this.form,

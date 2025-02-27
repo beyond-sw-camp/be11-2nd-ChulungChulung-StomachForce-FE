@@ -31,36 +31,6 @@
       </v-slide-group>
     </div>
 
-    <!-- 네비게이션 아이콘 섹션 -->
-    <div class="nav-icons-container">
-      <v-container>
-        <v-row justify="center" align="center">
-          <v-col 
-            v-for="(icon, index) in navigationIcons" 
-            :key="index"
-            cols="auto"
-            class="text-center mx-2"
-          >
-            <v-btn
-              variant="text"
-              class="nav-icon-btn"
-              @click="navigateTo(icon.route)"
-            >
-              <div class="d-flex flex-column align-center">
-                <v-img
-                  :src="require(`@/assets/${icon.image}`)"
-                  width="60"
-                  height="60"
-                  class="nav-icon mb-1"
-                ></v-img>
-                <span class="nav-text">{{ icon.text }}</span>
-              </div>
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-container>
-    </div>
-
     <!-- 메인 컨텐츠 -->
     <v-container>
       <!-- 인기 레스토랑 섹션 -->
@@ -686,7 +656,6 @@ export default {
     async fetchTopRestaurants() {
       try {
         const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/restaurant/top-favorites`);
-        console.log("✅ 레스토랑 데이터:", response.data); 
         this.topRestaurants = response.data;
       } catch (error) {
         console.error("레스토랑 데이터를 가져오는 중 오류 발생", error);
@@ -713,7 +682,6 @@ export default {
     async fetchUserInfo() {
   const token = localStorage.getItem("token");
   if (!token) {
-    console.log("토큰이 없습니다. 비로그인 상태입니다.");
     return; // 토큰 없으면 호출하지 않음
   }
 
