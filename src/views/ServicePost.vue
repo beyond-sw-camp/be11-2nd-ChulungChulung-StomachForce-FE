@@ -4,95 +4,121 @@
             <v-progress-circular indeterminate color="primary"></v-progress-circular>
         </v-container>
 
-        <v-container v-else-if="post">
-            <v-card class="mb-4">
-                <v-card-title class="d-flex align-center">
-                    {{ post.title }}
-                    <v-chip
-                        class="ml-4"
-                        :color="answer ? 'success' : 'warning'"
-                        :text="answer ? '답변완료' : '답변대기'"
-                    ></v-chip>
-                    <v-chip
-                        class="ml-2"
-                        :color="post.visibility === 'Y' ? 'info' : 'grey'"
-                        size="small"
-                    >
-                        {{ post.visibility === 'Y' ? '공개' : '비공개' }}
-                    </v-chip>
-                </v-card-title>
-                <v-card-subtitle>
-                    작성자: {{ authorNickname }} <br>
-                    작성일: {{ new Date(post.createdTime).toLocaleDateString() }} {{ new Date(post.createdTime).toLocaleTimeString() }} <br>
-                    수정일: {{ new Date(post.updatedTime).toLocaleDateString() }} {{ new Date(post.updatedTime).toLocaleTimeString() }}
-                </v-card-subtitle>
-                <v-card-text>
-                    <div class="content-text">{{ post.contents }}</div>
+        <v-container v-else-if="post" class="pt-8">
+            <v-card class="post-card mb-6" elevation="3">
+                <!-- 게시글 헤더 -->
+                <div class="post-header pa-6">
+                    <div class="d-flex justify-space-between align-center mb-4">
+                        <h2 class="text-h5 font-weight-bold">{{ post.title }}</h2>
+                        <div class="d-flex gap-2">
+                            <v-chip
+                                :color="answer ? 'success' : 'warning'"
+                                :text="answer ? '답변완료' : '답변대기'"
+                                class="status-chip"
+                            ></v-chip>
+                            <v-chip
+                                :color="post.visibility === 'Y' ? 'info' : 'grey'"
+                                size="small"
+                                class="visibility-chip"
+                            >
+                                {{ post.visibility === 'Y' ? '공개' : '비공개' }}
+                            </v-chip>
+                        </div>
+                    </div>
+
+                    <div class="post-info">
+                        <div class="info-item">
+                            <v-icon size="small" color="grey">mdi-account</v-icon>
+                            <span>{{ authorNickname }}</span>
+                        </div>
+                        <div class="info-item">
+                            <v-icon size="small" color="grey">mdi-calendar</v-icon>
+                            <span>작성일: {{ new Date(post.createdTime).toLocaleDateString() }}</span>
+                        </div>
+                        <div class="info-item">
+                            <v-icon size="small" color="grey">mdi-update</v-icon>
+                            <span>수정일: {{ new Date(post.updatedTime).toLocaleDateString() }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 게시글 내용 -->
+                <v-divider></v-divider>
+                <div class="post-content pa-6">
+                    <p class="content-text">{{ post.contents }}</p>
                     
                     <!-- 이미지 표시 부분 -->
-                    <div v-if="post.photos && post.photos.length > 0" class="image-container">
+                    <div v-if="post.photos && post.photos.length > 0" class="image-grid mt-4">
                         <v-img
                             v-for="(photo, index) in post.photos"
                             :key="index"
                             :src="photo"
                             @click="openImageDialog(photo)"
                             class="post-image"
+                            height="200"
                             cover
-                            max-height="200"
                         ></v-img>
                     </div>
-                </v-card-text>
-                
-                <!-- 수정 버튼 (작성자인 경우에만 표시) -->
-                <v-card-actions v-if="isAuthor">
+                </div>
+
+                <!-- 작성자 전용 버튼 -->
+                <v-divider v-if="isAuthor"></v-divider>
+                <v-card-actions v-if="isAuthor" class="pa-4">
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" @click="editPost">
+                    <v-btn color="primary" variant="outlined" class="mr-2" @click="editPost">
+                        <v-icon left class="mr-1">mdi-pencil</v-icon>
                         수정하기
                     </v-btn>
-                </v-card-actions>
-                <v-card-actions v-if="isAuthor">
-                    <v-spacer></v-spacer>
-                    <v-btn color="primary" @click="deletePost">
+                    <v-btn color="error" variant="outlined" @click="deletePost">
+                        <v-icon left class="mr-1">mdi-delete</v-icon>
                         삭제하기
                     </v-btn>
                 </v-card-actions>
             </v-card>
 
-            <!-- 답변 표시 -->
-            <v-card v-if="answer" class="mb-4">
-                <v-card-title class="d-flex align-center">
-                    답변
-                    <!-- 관리자용 답변 수정 버튼 -->
-                    <v-spacer></v-spacer>
-                    <v-btn
-                        v-if="userRole === 'ADMIN'"
-                        color="primary"
-                        variant="text"
-                        :disabled="isEditingAnswer"
-                        @click="startEditAnswer"
-                    >
-                        수정하기
-                    </v-btn>
-                </v-card-title>
-                <v-card-title class="d-flex align-center">
-                    <!-- 관리자용 답변 삭제 버튼 -->
-                    <v-spacer></v-spacer>
-                    <v-btn
-                        v-if="userRole === 'ADMIN'"
-                        color="primary"
-                        variant="text"
-                        :disabled="isEditingAnswer"
-                        @click="deleteAnswer"
-                    >
-                        삭제하기
-                    </v-btn>
-                </v-card-title>
-                <v-card-subtitle>
-                    작성일: {{ new Date(answer.createdTime).toLocaleDateString() }} {{ new Date(answer.createdTime).toLocaleTimeString() }} <br>
-                    수정일: {{ new Date(answer.updatedTime).toLocaleDateString() }} {{ new Date(answer.updatedTime).toLocaleTimeString() }}
-                </v-card-subtitle>
-                <v-card-text>
-                    <!-- 수정 모드일 때는 textarea 표시 -->
+            <!-- 답변 섹션 -->
+            <v-card v-if="answer" class="answer-card mb-6" elevation="2">
+                <div class="answer-header pa-6">
+                    <div class="d-flex justify-space-between align-center">
+                        <h3 class="text-h6 font-weight-bold">
+                            <v-icon color="success" class="mr-2">mdi-check-circle</v-icon>
+                            답변
+                        </h3>
+                        <div v-if="userRole === 'ADMIN'" class="d-flex gap-2">
+                            <v-btn
+                                color="primary"
+                                variant="text"
+                                :disabled="isEditingAnswer"
+                                @click="startEditAnswer"
+                            >
+                                <v-icon left class="mr-1">mdi-pencil</v-icon>
+                                수정
+                            </v-btn>
+                            <v-btn
+                                color="error"
+                                variant="text"
+                                :disabled="isEditingAnswer"
+                                @click="deleteAnswer"
+                            >
+                                <v-icon left class="mr-1">mdi-delete</v-icon>
+                                삭제
+                            </v-btn>
+                        </div>
+                    </div>
+                    <div class="answer-info mt-2">
+                        <div class="info-item">
+                            <v-icon size="small" color="grey">mdi-calendar</v-icon>
+                            <span>작성일: {{ new Date(answer.createdTime).toLocaleDateString() }}</span>
+                        </div>
+                        <div class="info-item">
+                            <v-icon size="small" color="grey">mdi-update</v-icon>
+                            <span>수정일: {{ new Date(answer.updatedTime).toLocaleDateString() }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <v-divider></v-divider>
+                <div class="answer-content pa-6">
                     <v-form v-if="isEditingAnswer" ref="editAnswerForm" v-model="isAnswerFormValid">
                         <v-textarea
                             v-model="editAnswerContents"
@@ -102,9 +128,9 @@
                             auto-grow
                             variant="outlined"
                         ></v-textarea>
-                        <div class="d-flex justify-end gap-2">
+                        <div class="d-flex justify-end gap-2 mt-4">
                             <v-btn
-                                color="error"
+                                color="grey"
                                 variant="text"
                                 @click="cancelEditAnswer"
                             >
@@ -120,15 +146,17 @@
                             </v-btn>
                         </div>
                     </v-form>
-                    <!-- 일반 모드일 때는 텍스트 표시 -->
-                    <div v-else class="content-text">{{ answer.contents }}</div>
-                </v-card-text>
+                    <p v-else class="content-text">{{ answer.contents }}</p>
+                </div>
             </v-card>
 
             <!-- 관리자용 답변 등록 폼 -->
-            <v-card v-else-if="userRole === 'ADMIN'" class="mb-4">
-                <v-card-title>답변 등록</v-card-title>
-                <v-card-text>
+            <v-card v-else-if="userRole === 'ADMIN'" class="answer-form-card" elevation="2">
+                <v-card-title class="pa-6">
+                    <v-icon color="primary" class="mr-2">mdi-reply</v-icon>
+                    답변 등록
+                </v-card-title>
+                <v-card-text class="pa-6">
                     <v-form ref="answerForm" v-model="isAnswerFormValid">
                         <v-textarea
                             v-model="answerContents"
@@ -140,7 +168,7 @@
                         ></v-textarea>
                     </v-form>
                 </v-card-text>
-                <v-card-actions>
+                <v-card-actions class="pa-6 pt-0">
                     <v-spacer></v-spacer>
                     <v-btn
                         color="primary"
@@ -153,30 +181,31 @@
                 </v-card-actions>
             </v-card>
 
-            <!-- 이미지 다이얼로그 -->
-            <v-dialog v-model="imageDialog" max-width="800px">
-                <v-card v-if="selectedImage">
-                    <v-img :src="selectedImage"></v-img>
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn @click="closeImageDialog">닫기</v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-dialog>
-
-            <!-- 하단 버튼 그룹 -->
-            <div class="d-flex mt-4">
-                <v-btn color="red" @click="$router.push('/service/list')">
+            <!-- 하단 버튼 -->
+            <div class="d-flex mt-6">
+                <v-btn color="grey" variant="outlined" @click="$router.push('/service/list')">
+                    <v-icon left class="mr-1">mdi-arrow-left</v-icon>
                     목록으로
                 </v-btn>
             </div>
         </v-container>
 
         <v-container v-else>
-            <v-alert type="error">
+            <v-alert type="error" class="mt-4">
                 게시글을 불러올 수 없습니다.
             </v-alert>
         </v-container>
+
+        <!-- 이미지 다이얼로그 -->
+        <v-dialog v-model="imageDialog" max-width="800px">
+            <v-card v-if="selectedImage">
+                <v-img :src="selectedImage"></v-img>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn @click="closeImageDialog">닫기</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -495,37 +524,72 @@ export default {
 
 <style scoped>
 .service-post {
-    padding: 20px;
+    background-color: #f5f5f5;
+    min-height: 100vh;
+}
+
+.post-card, .answer-card, .answer-form-card {
+    border-radius: 12px;
+    background-color: white;
+}
+
+.post-header, .answer-header {
+    background-color: #fafafa;
+}
+
+.status-chip {
+    font-weight: 500;
+}
+
+.visibility-chip {
+    font-weight: 500;
+}
+
+.post-info, .answer-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    color: #666;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.9rem;
 }
 
 .content-text {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #333;
     white-space: pre-wrap;
-    margin-bottom: 20px;
 }
 
-.image-container {
+.image-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 10px;
-    margin-top: 20px;
+    gap: 16px;
 }
 
 .post-image {
+    border-radius: 8px;
     cursor: pointer;
-    border-radius: 4px;
+    transition: transform 0.2s;
 }
 
-/* 제목과 상태 칩 정렬을 위한 스타일 */
-.v-card-title {
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.v-textarea {
-    margin-bottom: 16px;
+.post-image:hover {
+    transform: scale(1.02);
 }
 
 .gap-2 {
     gap: 8px;
+}
+
+@media (max-width: 600px) {
+    .post-info, .answer-info {
+        flex-direction: column;
+        gap: 8px;
+    }
 }
 </style>

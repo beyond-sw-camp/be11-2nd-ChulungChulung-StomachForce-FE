@@ -57,7 +57,7 @@
                         </template>
                         <v-list-item-title class="text-error">게시글 삭제</v-list-item-title>
                       </v-list-item>
-                      <v-list-item v-else @click="reportPost">
+                      <v-list-item v-else @click="reportUser">
                         <template v-slot:prepend>
                           <v-icon color="error" class="mr-2">mdi-alert-circle-outline</v-icon>
                         </template>
@@ -294,6 +294,12 @@ export default {
     this.fetchUserInfo();
   },
   methods: {
+    reportUser() {
+      this.$router.push({
+        path: '/report/create',
+        query: { reportedNickName: this.postDetail.userNickName }
+      });
+    },
     async initializePage() {
       try {
         await this.fetchPostDetail();
@@ -412,9 +418,6 @@ export default {
       } catch (error) {
         console.error("댓글 등록 실패:", error);
       }
-    },
-    reportPost() {
-      alert("신고가 접수되었습니다.");
     },
     deletePost() {
       const postId = this.$route.params.postId;
