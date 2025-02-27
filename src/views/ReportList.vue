@@ -1,57 +1,56 @@
 <template>
-    <v-container>
-        <v-card class="mx-auto" max-width="1000">
-            <v-card-title class="text-h4 py-4 px-6">
-                신고 목록
-                <v-spacer></v-spacer>
-                <v-btn
-                    color="red"
-                    :to="{path:'/report/create'}"
-                    prepend-icon="mdi-plus"
-                >
-                    신고하기            
-                </v-btn>
-            </v-card-title>
+    <v-container class="pa-0">
+        <div class="text-right mb-4">
+            <v-btn
+                color="red"
+                :to="{path:'/report/create'}"
+                prepend-icon="mdi-plus"
+            >
+                신고하기
+            </v-btn>
+        </div>
 
-            <v-divider></v-divider>
+        <!-- 리스트 아이템 -->
+        <v-list class="list-content">
+            <v-list-item
+                v-for="report in reports"
+                :key="report.id"
+                @click="goToReport(report.id)"
+                class="list-item"
+            >
+                <div class="d-flex align-center w-100">
+                    <span class="type-col text-center">
+                        <v-chip
+                            :color="getReportClassColor(report.reportClass)"
+                            size="small"
+                            class="font-weight-medium"
+                        >
+                            {{ getReportClassText(report.reportClass) }}
+                        </v-chip>
+                    </span>
+                    <span class="content-col">{{ report.contents }}</span>
+                    <span class="status-col text-center">
+                        <v-chip
+                            :color="report.answer ? 'success' : 'warning'"
+                            size="small"
+                            class="font-weight-medium"
+                        >
+                            {{ report.answer ? '답변완료' : '답변대기' }}
+                        </v-chip>
+                    </span>
+                </div>
+            </v-list-item>
+        </v-list>
 
-            <v-table>
-                <thead>
-                    <tr>
-                        <th class="text-center">번호</th>
-                        <th class="text-center">신고 유형</th>
-                        <th>신고 내용</th>
-                        <th class="text-center">답변상태</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="report in reports" :key="report.id" 
-                        @click="goToReport(report.id)"
-                        style="cursor: pointer"
-                        class="report-row"
-                    >
-                        <td class="text-center">{{ report.id }}</td>
-                        <td class="text-center">
-                            <v-chip
-                                :color="getReportClassColor(report.reportClass)"
-                                size="small"
-                            >
-                                {{ getReportClassText(report.reportClass) }}
-                            </v-chip>
-                        </td>
-                        <td>{{ report.contents }}</td>
-                        <td class="text-center">
-                            <v-chip
-                                :color="report.answer ? 'success' : 'warning'"
-                                size="small"
-                            >
-                                {{ report.answer ? '답변완료' : '답변대기' }}
-                            </v-chip>
-                        </td>
-                    </tr>
-                </tbody>
-            </v-table>
-        </v-card>
+        <div class="bottom-container py-4">
+            <div class="pagination-wrapper">
+                <v-pagination
+                    v-model="page"
+                    :length="totalPages"
+                    :total-visible="7"
+                ></v-pagination>
+            </div>
+        </div>
     </v-container>
 </template>
 
@@ -157,20 +156,60 @@ export default {
 </script>
 
 <style scoped>
-.report-row:hover {
+.list-content {
+    background: transparent !important;
+}
+
+.list-item {
+    border-bottom: 1px solid #e0e0e0;
+    transition: background-color 0.2s;
+    cursor: pointer;
+    min-height: 60px !important;
+}
+
+.list-item:hover {
     background-color: #f5f5f5;
 }
 
-.v-table {
-    cursor: default;
+.list-item:last-child {
+    border-bottom: none;
 }
 
-th {
-    font-weight: bold !important;
-    background-color: #f5f5f5;
+.type-col {
+    width: 120px;
+    flex-shrink: 0;
+}
+
+.content-col {
+    flex-grow: 1;
+    padding: 0 16px;
+}
+
+.status-col {
+    width: 120px;
+    flex-shrink: 0;
 }
 
 .v-chip {
     font-weight: 500;
+}
+
+.bottom-container {
+    position: relative;
+}
+
+.pagination-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* v-list 기본 패딩 제거 */
+:deep(.v-list-item__content) {
+    padding: 0;
+}
+
+:deep(.v-list-item) {
+    padding: 8px 16px;
 }
 </style>
