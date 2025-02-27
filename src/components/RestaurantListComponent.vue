@@ -63,15 +63,53 @@
         <!-- 🔹 레스토랑 리스트 -->
         <v-row>
             <v-col v-for="restaurant in restaurantList" :key="restaurant.id" cols="12" sm="6" md="4" lg="3">
-                <v-card @click="goToDetail(restaurant.id)" class="clickable">
-                    <v-img :src="restaurant.imagePath || '/noImage.jpg'" class="restaurant-image"></v-img>
-                    <v-card-title>{{ restaurant.name }}</v-card-title>
-                    <v-card-subtitle>{{ restaurant.address }}</v-card-subtitle>
-                    <v-card-text>
-                        <p>⭐ 평균 별점: {{ restaurant.averageRating }}</p>
-                        <p>📌 즐겨찾기 수: {{ restaurant.bookmarkCount }}</p>
-                        <p>💬 리뷰 수: {{ restaurant.reviewCount }}</p>
-                        <p>🍽️ 유형: {{ restaurant.restaurantType }}</p>
+                <v-card @click="goToDetail(restaurant.id)" class="restaurant-card" elevation="0">
+                    <div class="image-wrapper">
+                        <v-img 
+                            :src="restaurant.imagePath || '/noImage.jpg'" 
+                            class="restaurant-image" 
+                            height="220"
+                            cover
+                        >
+                            <template v-slot:placeholder>
+                                <v-row class="fill-height ma-0" align="center" justify="center">
+                                    <v-progress-circular indeterminate color="primary"></v-progress-circular>
+                                </v-row>
+                            </template>
+                        </v-img>
+                        <div class="image-gradient"></div>
+                        <div class="overlay-content">
+                            <v-chip class="restaurant-type-chip" color="white" text-color="#FF5722">
+                                {{ restaurant.restaurantType }}
+                            </v-chip>
+                            <div class="rating-badge">
+                                <v-icon color="amber-darken-2" size="18">mdi-star</v-icon>
+                                <span>{{ restaurant.averageRating }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <v-card-text class="content-wrapper pa-4">
+                        <div class="d-flex justify-space-between align-center mb-2">
+                            <h3 class="restaurant-name text-truncate">{{ restaurant.name }}</h3>
+                        </div>
+
+                        <div class="address-wrapper mb-3">
+                            <v-icon size="16" color="grey-darken-1">mdi-map-marker</v-icon>
+                            <span class="address-text">{{ restaurant.address }}</span>
+                        </div>
+
+                        <div class="stats-container">
+                            <div class="stat-item">
+                                <v-icon size="18" color="#FF5722">mdi-bookmark</v-icon>
+                                <span class="stat-text">{{ restaurant.bookmarkCount }}</span>
+                            </div>
+                            <div class="divider"></div>
+                            <div class="stat-item">
+                                <v-icon size="18" color="#FF5722">mdi-comment</v-icon>
+                                <span class="stat-text">{{ restaurant.reviewCount }}</span>
+                            </div>
+                        </div>
                     </v-card-text>
                 </v-card>
             </v-col>
@@ -192,6 +230,126 @@
     margin-top: 4px;
     color: #424242;
 }
+
+.restaurant-card {
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    height: 100%;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: white;
+}
+
+.restaurant-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12) !important;
+    border-color: rgba(0, 0, 0, 0.12);
+}
+
+.image-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.restaurant-image {
+    transition: transform 0.4s ease;
+}
+
+.restaurant-card:hover .restaurant-image {
+    transform: scale(1.05);
+}
+
+.image-gradient {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.4), transparent);
+}
+
+.overlay-content {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.restaurant-type-chip {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    height: 24px;
+}
+
+.rating-badge {
+    background: white;
+    padding: 4px 8px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #FFA000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.content-wrapper {
+    background: white;
+}
+
+.restaurant-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0;
+    padding-right: 8px;
+}
+
+.address-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.address-text {
+    font-size: 0.85rem;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.stats-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 0;
+}
+
+.divider {
+    width: 1px;
+    height: 14px;
+    background-color: rgba(0, 0, 0, 0.12);
+}
+
+.stat-text {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #FF5722;
+}
 </style>
 
 <script>
@@ -234,7 +392,7 @@ export default {
         },
         async loadData() {
             try {
-                let params = { size: 10, page: 0 };
+                let params = { size: 8, page: 0 };
                 if (this.searchType === "restaurantType" && this.selectedType) {
                     params["restaurantType"] = this.selectedType;
                 } else if (this.searchValue) {
@@ -250,7 +408,8 @@ export default {
             this.searchType = "restaurantType";
             this.selectedType = categoryValue;
             this.searchRestaurants();
-        },goToDetail(id) {
+        },
+        goToDetail(id) {
             this.$router.push(`/restaurant/detail/${id}`);
         }
     }
