@@ -36,8 +36,7 @@
             <transition-group name="slide">
               <div v-for="image in paginatedImages" 
                    :key="image" 
-                   class="image-card"
-                   @click="openImageDialog(image)">
+                   class="image-card">
                 <v-img
                   :src="image"
                   aspect-ratio="1"
@@ -163,6 +162,9 @@
   max-width: 300px;
   height: 300px;
   position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .gallery-image {
@@ -172,12 +174,13 @@
 
 .nav-btn {
   position: absolute;
-  width: 60px !important;
-  height: 100% !important;
+  width: 48px !important;
+  height: 48px !important;
   background: transparent !important;
   transition: all 0.2s ease;
   opacity: 0.7;
   overflow: visible !important;
+  border-radius: 50% !important;
 }
 
 .btn-hover-effect {
