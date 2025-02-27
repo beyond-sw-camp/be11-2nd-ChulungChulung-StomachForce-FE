@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <!-- 상단 앱바 및 기타 레이아웃은 그대로 유지 -->
+    <!-- 상단 앱바 -->
     <v-app-bar app color="white" flat>
       <v-menu offset-y>
         <template #activator="{ props }">
@@ -11,9 +11,6 @@
         <v-list>
           <v-list-item @click="editProfile">
             <v-list-item-title>내 정보 수정</v-list-item-title>
-          </v-list-item>
-          <v-list-item @click="goToMileage">
-            <v-list-item-title>마일리지 내역</v-list-item-title>
           </v-list-item>
           <v-list-item @click="goToReservation">
             <v-list-item-title>내 예약 내역</v-list-item-title>
@@ -37,6 +34,7 @@
       </v-menu>
     </v-app-bar>
 
+    <!-- 메인 컨텐츠 -->
     <v-main>
       <v-container>
         <!-- 프로필 섹션 -->
@@ -49,9 +47,9 @@
           <v-col cols="12" sm="6" class="user-info text-left">
             <h2 class="user-name">
               {{ userNickName }}
-              <v-icon 
-                v-if="influencer === 'Y'" 
-                class="ml-1 gold-icon" 
+              <v-icon
+                v-if="influencer === 'Y'"
+                class="ml-1 gold-icon"
                 size="30"
               >
                 mdi-silverware-variant
@@ -89,17 +87,8 @@
             sm="4"
             class="post-col"
           >
-            <v-card 
-              class="clickable-card" 
-              @click="goToPostDetail(index)"
-              flat
-            >
-              <v-img 
-                :src="photo" 
-                aspect-ratio="1" 
-                cover 
-                class="post-image"
-              ></v-img>
+            <v-card class="clickable-card" @click="goToPostDetail(index)" flat>
+              <v-img :src="photo" aspect-ratio="1" cover class="post-image"></v-img>
             </v-card>
           </v-col>
         </v-row>
@@ -116,23 +105,17 @@
       <v-card class="follow-dialog">
         <v-card-title class="dialog-title px-6 py-4">
           <span class="text-h6 font-weight-medium">팔로워</span>
-          <v-btn 
-            icon
-            variant="text"
-            density="comfortable"
-            class="close-btn"
-            @click="showFollowersDialog = false"
-          >
+          <v-btn icon variant="text" density="comfortable" class="close-btn" @click="showFollowersDialog = false">
             <v-icon size="20">mdi-close</v-icon>
           </v-btn>
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text class="pa-0">
-          <v-text-field 
-            v-model="followerSearch" 
-            label="닉네임 검색" 
-            dense 
-            outlined 
+          <v-text-field
+            v-model="followerSearch"
+            label="닉네임 검색"
+            dense
+            outlined
             hide-details
             class="mx-4 mt-2"
           ></v-text-field>
@@ -146,17 +129,14 @@
             >
               <template v-slot:prepend>
                 <v-avatar size="44" class="mr-4">
-                  <v-img 
-                    :src="follower.userProfile || placeholderProfile"
-                    class="profile-image"
-                  />
+                  <v-img :src="follower.userProfile || placeholderProfile" class="profile-image"></v-img>
                 </v-avatar>
               </template>
               <v-list-item-title class="d-flex align-center">
                 <span class="font-weight-medium text-body-1">{{ follower.userNickName }}</span>
-                <v-icon 
-                  v-if="follower.influencer === 'Y'" 
-                  class="ml-2 gold-icon" 
+                <v-icon
+                  v-if="follower.influencer === 'Y'"
+                  class="ml-2 gold-icon"
                   size="16"
                 >
                   mdi-silverware-variant
@@ -179,23 +159,17 @@
       <v-card class="follow-dialog">
         <v-card-title class="dialog-title px-6 py-4">
           <span class="text-h6 font-weight-medium">팔로잉</span>
-          <v-btn 
-            icon
-            variant="text"
-            density="comfortable"
-            class="close-btn"
-            @click="showFollowingDialog = false"
-          >
+          <v-btn icon variant="text" density="comfortable" class="close-btn" @click="showFollowingDialog = false">
             <v-icon size="20">mdi-close</v-icon>
           </v-btn>
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text class="pa-0">
-          <v-text-field 
-            v-model="followingSearch" 
-            label="닉네임 검색" 
-            dense 
-            outlined 
+          <v-text-field
+            v-model="followingSearch"
+            label="닉네임 검색"
+            dense
+            outlined
             hide-details
             class="mx-4 mt-2"
           ></v-text-field>
@@ -209,17 +183,14 @@
             >
               <template v-slot:prepend>
                 <v-avatar size="44" class="mr-4">
-                  <v-img 
-                    :src="following.userProfile || placeholderProfile"
-                    class="profile-image"
-                  />
+                  <v-img :src="following.userProfile || placeholderProfile" class="profile-image"></v-img>
                 </v-avatar>
               </template>
               <v-list-item-title class="d-flex align-center">
                 <span class="font-weight-medium text-body-1">{{ following.userNickName }}</span>
-                <v-icon 
-                  v-if="following.influencer === 'Y'" 
-                  class="ml-2 gold-icon" 
+                <v-icon
+                  v-if="following.influencer === 'Y'"
+                  class="ml-2 gold-icon"
                   size="16"
                 >
                   mdi-silverware-variant
@@ -245,12 +216,11 @@ export default {
   name: "YourPage",
   data() {
     return {
-      // 프로필 정보
+      // 프로필 및 게시글 관련 데이터
       userNickName: "",
       userEmail: "",
-      influencer: "N", // 기본값 (서버에서 받아옴)
+      influencer: "N",
       profilePhoto: localStorage.getItem("profilePhoto") || "https://via.placeholder.com/130",
-      // 게시글 관련 데이터
       postPhotos: [],
       postIds: [],
       totalPost: 0,
@@ -259,40 +229,36 @@ export default {
       currentPage: 0,
       isLoading: false,
       isLastPage: false,
-      // 모달 관련 데이터
+      // 모달 및 검색용 데이터
       showFollowersDialog: false,
       showFollowingDialog: false,
+      // 팔로워/팔로잉 리스트 (서버에서 받아옴)
       followersList: [],
       followingList: [],
-      placeholderProfile: "https://via.placeholder.com/50",
-      // 검색용 변수
+      // 차단 여부를 개별 확인하기 위한 추가 필드
+      // 각 항목에 { isBlocked: true/false } 값을 추가할 예정입니다.
       followerSearch: "",
       followingSearch: "",
-      // 차단된 사용자 목록 (서버에서 받아옴)
-      blockedList: []
+      placeholderProfile: "https://via.placeholder.com/50"
     };
   },
   computed: {
-    // 차단된 사용자의 닉네임 목록 생성
-    blockedUserNickNames() {
-      return this.blockedList.map(user => user.userNickName);
-    },
+    // 차단되지 않은 팔로워만 필터링
     filteredFollowers() {
       return this.followersList.filter(user => {
-        const notBlocked = !this.blockedUserNickNames.includes(user.userNickName);
         const matchesSearch = this.followerSearch
           ? user.userNickName.toLowerCase().includes(this.followerSearch.toLowerCase())
           : true;
-        return notBlocked && matchesSearch;
+        return !user.isBlocked && matchesSearch;
       });
     },
+    // 차단되지 않은 팔로잉만 필터링
     filteredFollowing() {
       return this.followingList.filter(user => {
-        const notBlocked = !this.blockedUserNickNames.includes(user.userNickName);
         const matchesSearch = this.followingSearch
           ? user.userNickName.toLowerCase().includes(this.followingSearch.toLowerCase())
           : true;
-        return notBlocked && matchesSearch;
+        return !user.isBlocked && matchesSearch;
       });
     },
     filteredFollowersCount() {
@@ -303,8 +269,7 @@ export default {
     }
   },
   async created() {
-    // 프로필 및 팔로워/팔로잉 목록 로드
-    await this.fetchBlockedList(); // 차단 목록 먼저 로드
+    // 먼저 팔로워/팔로잉 리스트를 로드한 후, 각 항목별로 차단 여부를 확인
     await this.fetchFollowers();
     await this.fetchFollowing();
     await this.loadData();
@@ -314,6 +279,27 @@ export default {
     window.removeEventListener("scroll", this.scrollPagination);
   },
   methods: {
+    // 개별 사용자 차단 여부 확인 메서드 (blockedUserNickName: 대상 닉네임)
+    async checkIfBlocked(blockedUserNickName) {
+      try {
+        const payload = { blockedUserNickName };
+        const response = await axios.post(
+          `${process.env.VUE_APP_API_BASE_URL}/user/isblocked`,
+          payload,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+            }
+          }
+        );
+        // response.data: [blockedByOther, blockedByMe]
+        return response.data[0] || response.data[1];
+      } catch (error) {
+        console.error(`차단 여부 확인 실패 (${blockedUserNickName}):`, error);
+        return false;
+      }
+    },
     async loadData() {
       if (this.isLoading || this.isLastPage) return;
       this.isLoading = true;
@@ -354,7 +340,8 @@ export default {
       this.isLoading = false;
     },
     scrollPagination() {
-      const isBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 200;
+      const isBottom =
+        window.innerHeight + window.scrollY >= document.body.offsetHeight - 200;
       if (isBottom && !this.isLoading && !this.isLastPage) {
         this.loadData();
       }
@@ -414,9 +401,6 @@ export default {
         });
       }
     },
-    logout() {
-      alert("로그아웃 되었습니다 (예시)");
-    },
     async fetchFollowers() {
       try {
         const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/user/followerList`, {
@@ -424,7 +408,15 @@ export default {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`
           }
         });
-        this.followersList = response.data;
+        // 각 항목별로 차단 여부 확인 후, isBlocked 필드를 추가
+        const list = response.data;
+        const checkedList = await Promise.all(
+          list.map(async user => {
+            user.isBlocked = await this.checkIfBlocked(user.userNickName);
+            return user;
+          })
+        );
+        this.followersList = checkedList;
       } catch (error) {
         console.error("팔로워 목록 로드 실패:", error);
       }
@@ -436,21 +428,17 @@ export default {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`
           }
         });
-        this.followingList = response.data;
+        // 각 항목별로 차단 여부 확인 후, isBlocked 필드를 추가
+        const list = response.data;
+        const checkedList = await Promise.all(
+          list.map(async user => {
+            user.isBlocked = await this.checkIfBlocked(user.userNickName);
+            return user;
+          })
+        );
+        this.followingList = checkedList;
       } catch (error) {
         console.error("팔로잉 목록 로드 실패:", error);
-      }
-    },
-    async fetchBlockedList() {
-      try {
-        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/user/blockedList`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-          }
-        });
-        this.blockedList = response.data;
-      } catch (error) {
-        console.error("차단 목록 로드 실패:", error);
       }
     },
     async openFollowersDialog() {
@@ -470,7 +458,6 @@ export default {
 </script>
 
 <style scoped>
-/* 기존 스타일 그대로 유지 */
 .profile-section {
   display: flex;
   align-items: center;
