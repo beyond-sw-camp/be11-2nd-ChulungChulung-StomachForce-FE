@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <!-- 상단 앱바 -->
+    <!-- 상단 앱바 및 기타 레이아웃은 그대로 유지 -->
     <v-app-bar app color="white" flat>
       <v-menu offset-y>
         <template #activator="{ props }">
@@ -49,7 +49,6 @@
           <v-col cols="12" sm="6" class="user-info text-left">
             <h2 class="user-name">
               {{ userNickName }}
-              <!-- influencer가 Y일 때만 아이콘 표시 -->
               <v-icon 
                 v-if="influencer === 'Y'" 
                 class="ml-1 gold-icon" 
@@ -62,11 +61,11 @@
             <v-row class="stats mt-2" justify="left">
               <v-col cols="auto" class="stat-item text-center">
                 <strong @click="openFollowersDialog" style="cursor:pointer;">팔로워</strong>
-                <p @click="openFollowersDialog" style="cursor:pointer;">{{ followersCount }}</p>
+                <p @click="openFollowersDialog" style="cursor:pointer;">{{ filteredFollowersCount }}</p>
               </v-col>
               <v-col cols="auto" class="stat-item text-center">
                 <strong @click="openFollowingDialog" style="cursor:pointer;">팔로잉</strong>
-                <p @click="openFollowingDialog" style="cursor:pointer;">{{ followingCount }}</p>
+                <p @click="openFollowingDialog" style="cursor:pointer;">{{ filteredFollowingCount }}</p>
               </v-col>
               <v-col cols="auto" class="stat-item text-center">
                 <strong>게시글</strong>
@@ -129,7 +128,6 @@
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text class="pa-0">
-          <!-- 검색 입력 -->
           <v-text-field 
             v-model="followerSearch" 
             label="닉네임 검색" 
@@ -193,7 +191,6 @@
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text class="pa-0">
-          <!-- 검색 입력 -->
           <v-text-field 
             v-model="followingSearch" 
             label="닉네임 검색" 
@@ -251,10 +248,8 @@ export default {
       // 프로필 정보
       userNickName: "",
       userEmail: "",
-      influencer: "N", // 서버에서 받아온 influencer 상태 (기본값)
+      influencer: "N", // 기본값 (서버에서 받아옴)
       profilePhoto: localStorage.getItem("profilePhoto") || "https://via.placeholder.com/130",
-      followersCount: 0,
-      followingCount: 0,
       // 게시글 관련 데이터
       postPhotos: [],
       postIds: [],
@@ -270,32 +265,49 @@ export default {
       followersList: [],
       followingList: [],
       placeholderProfile: "https://via.placeholder.com/50",
-      // 검색용 변수 추가
+      // 검색용 변수
       followerSearch: "",
-      followingSearch: ""
+      followingSearch: "",
+      // 차단된 사용자 목록 (서버에서 받아옴)
+      blockedList: []
     };
   },
   computed: {
+    // 차단된 사용자의 닉네임 목록 생성
+    blockedUserNickNames() {
+      return this.blockedList.map(user => user.userNickName);
+    },
     filteredFollowers() {
-      if (!this.followerSearch) return this.followersList;
-      return this.followersList.filter(follower =>
-        follower.userNickName.toLowerCase().includes(this.followerSearch.toLowerCase())
-      );
+      return this.followersList.filter(user => {
+        const notBlocked = !this.blockedUserNickNames.includes(user.userNickName);
+        const matchesSearch = this.followerSearch
+          ? user.userNickName.toLowerCase().includes(this.followerSearch.toLowerCase())
+          : true;
+        return notBlocked && matchesSearch;
+      });
     },
     filteredFollowing() {
-      if (!this.followingSearch) return this.followingList;
-      return this.followingList.filter(following =>
-        following.userNickName.toLowerCase().includes(this.followingSearch.toLowerCase())
-      );
+      return this.followingList.filter(user => {
+        const notBlocked = !this.blockedUserNickNames.includes(user.userNickName);
+        const matchesSearch = this.followingSearch
+          ? user.userNickName.toLowerCase().includes(this.followingSearch.toLowerCase())
+          : true;
+        return notBlocked && matchesSearch;
+      });
+    },
+    filteredFollowersCount() {
+      return this.filteredFollowers.length;
+    },
+    filteredFollowingCount() {
+      return this.filteredFollowing.length;
     }
   },
   async created() {
     // 프로필 및 팔로워/팔로잉 목록 로드
+    await this.fetchBlockedList(); // 차단 목록 먼저 로드
     await this.fetchFollowers();
     await this.fetchFollowing();
-    // 첫 페이지 게시글 로드
     await this.loadData();
-    // 스크롤 이벤트 등록
     window.addEventListener("scroll", this.scrollPagination);
   },
   beforeUnmount() {
@@ -316,12 +328,10 @@ export default {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`
           }
         });
-        console.log(response);
         const additionalPhotos = response.data.postPhotos;
         this.totalPost = response.data.totalPost;
         this.userNickName = response.data.nickName;
         this.userEmail = response.data.email;
-        // 서버에서 influencer 상태도 받아옴
         this.influencer = response.data.influencer;
   
         const additionalPostIds = response.data.postIds || [];
@@ -415,7 +425,6 @@ export default {
           }
         });
         this.followersList = response.data;
-        this.followersCount = response.data.length;
       } catch (error) {
         console.error("팔로워 목록 로드 실패:", error);
       }
@@ -428,9 +437,20 @@ export default {
           }
         });
         this.followingList = response.data;
-        this.followingCount = response.data.length;
       } catch (error) {
         console.error("팔로잉 목록 로드 실패:", error);
+      }
+    },
+    async fetchBlockedList() {
+      try {
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/user/blockedList`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+          }
+        });
+        this.blockedList = response.data;
+      } catch (error) {
+        console.error("차단 목록 로드 실패:", error);
       }
     },
     async openFollowersDialog() {
@@ -442,7 +462,6 @@ export default {
     goToPostCreate() {
       this.$router.push("/post/create");
     },
-    // 추가: 유저 닉네임 클릭 시 UserYourPage로 라우팅
     goToUserYourPage(nickName) {
       this.$router.push({ path: "/user/yourPage", query: { nickName } });
     }
@@ -451,6 +470,7 @@ export default {
 </script>
 
 <style scoped>
+/* 기존 스타일 그대로 유지 */
 .profile-section {
   display: flex;
   align-items: center;
