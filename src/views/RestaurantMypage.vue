@@ -58,10 +58,25 @@
         <v-card-text>
           <v-text-field v-model="form.openingTime" label="오픈 시간" type="time"></v-text-field>
           <v-text-field v-model="form.closingTime" label="마감 시간" type="time"></v-text-field>
-          <v-text-field v-model="form.breakTimeStart" label="브레이크 시작" type="time"></v-text-field>
-          <v-text-field v-model="form.breakTimeEnd" label="브레이크 종료" type="time"></v-text-field>
-          <v-text-field v-model="form.lastOrder" label="라스트 오더" type="time"></v-text-field>
-          <v-text-field v-model="form.holiday" label="휴무일" type="date"></v-text-field>
+
+          <!-- 브레이크타임 없음 체크박스 -->
+          <v-checkbox v-model="noBreakTime" label="브레이크타임 없음" @change="toggleBreakTime"></v-checkbox>
+
+          <!-- 브레이크타임 (없을 경우 비활성화) -->
+          <v-text-field v-model="form.breakTimeStart" label="브레이크 시작" type="time"
+            :disabled="noBreakTime || !form.openingTime || !form.closingTime"
+            :min="form.openingTime" :max="form.closingTime"></v-text-field>
+
+          <v-text-field v-model="form.breakTimeEnd" label="브레이크 종료" type="time"
+            :disabled="noBreakTime || !form.openingTime || !form.closingTime"
+            :min="form.openingTime" :max="form.closingTime"></v-text-field>
+
+          <v-text-field v-model="form.lastOrder" label="라스트 오더" type="time"
+            :min="form.openingTime" :max="form.closingTime"></v-text-field>
+
+          <!-- 휴무일은 오늘 이후 날짜만 선택 가능 -->
+          <v-text-field v-model="form.holiday" label="휴무일" type="date"
+            :min="new Date().toISOString().split('T')[0]"></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-btn color="primary" @click="updateBusinessHours">저장</v-btn>
@@ -75,14 +90,33 @@
       <v-card>
         <v-card-title>업장 텍스트 정보 수정</v-card-title>
         <v-card-text>
-          <v-text-field v-model="form.description" label="업장 설명"></v-text-field>
-          <v-text-field v-model="form.capacity" label="수용 인원"></v-text-field>
-          <v-text-field v-model="form.addressCity" label="도시"></v-text-field>
-          <v-text-field v-model="form.addressStreet" label="거리"></v-text-field>
-          <v-text-field v-model="form.restaurantType" label="레스토랑 유형"></v-text-field>
-          <v-text-field v-model="form.infoText" label="추가 정보"></v-text-field>
-          <v-checkbox v-model="form.depositAvailable" label="예약금 가능 여부"></v-checkbox>
-          <v-text-field v-model="form.deposit" label="예약금 금액"></v-text-field>
+          <!-- 수용 인원 5명 단위 선택 -->
+          <v-select v-model="form.capacity" :items="capacityOptions" label="수용 인원"></v-select>
+
+          <!-- 도시/거리 필드 (비우면 경고) -->
+          <v-text-field 
+            v-model="form.addressCity" 
+            label="도시" 
+            :error="isAddressCityEmpty"
+            :error-messages="isAddressCityEmpty ? '비울 수 없는 필드입니다' : ''"
+          ></v-text-field>
+
+          <v-text-field 
+            v-model="form.addressStreet" 
+            label="거리" 
+            :error="isAddressStreetEmpty"
+            :error-messages="isAddressStreetEmpty ? '비울 수 없는 필드입니다' : ''"
+          ></v-text-field>
+
+          <!-- 레스토랑 유형 선택 -->
+          <v-select v-model="form.restaurantType" :items="restaurantTypeOptions" label="레스토랑 유형"></v-select>
+
+          <!-- 예약금 가능 여부 체크 -->
+          <v-checkbox v-model="form.depositAvailable" label="예약금이 있습니다." @change="toggleDeposit"></v-checkbox>
+
+          <!-- 예약금 (체크가 해제되면 비활성화) -->
+          <v-text-field v-model="form.deposit" label="예약금 금액" type="number"
+            :disabled="!form.depositAvailable"></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-btn color="primary" @click="updateTextInfo">저장</v-btn>
@@ -96,17 +130,14 @@
       <v-card>
         <v-card-title>업장 사진 수정</v-card-title>
         <v-card-text>
-          <!-- DB에서 불러온 기존 사진 목록 -->
-          <div v-for="(photo, index) in form.restaurantPhotos" :key="photo.photoId || index" class="mb-3">
+          <div v-for="(photo, index) in form.restaurantPhotos" :key="photo.photoId || index">
             <v-img :src="photo.photoUrl" height="100px"></v-img>
-            <v-btn color="error" @click="removePhoto(photo.photoId)">삭제</v-btn>
+            <v-btn color="error" @click="removePhoto(photo.photoId)" 
+              :disabled="form.restaurantPhotos.length <= 1">삭제</v-btn>
           </div>
-          <v-divider class="my-4"></v-divider>
-          <!-- 새 사진 추가 (배치 업로드) -->
           <v-file-input label="새 사진 추가" multiple @change="uploadNewPhotos"></v-file-input>
         </v-card-text>
         <v-card-actions>
-          <!-- 수정 완료 버튼: 새 사진이 있다면 등록 후 다이얼로그 닫음 -->
           <v-btn color="primary" @click="finishPhotoUpdate">수정 완료</v-btn>
           <v-btn @click="closeDialog('photos')">취소</v-btn>
         </v-card-actions>
@@ -155,11 +186,22 @@ export default {
         restaurantPhotos: [],
         // 새로 추가할 사진 파일 배열
         newPhotos: []
-      }
+      },
+      noBreakTime: false,
+      capacityOptions: Array.from({ length: 20 }, (_, i) => (i + 1) * 5), // 5~100명
+      restaurantTypeOptions: ["KOREAN", "CHINESE", "WESTERN", "JAPANESE", "FUSION"]
     };
   },
   async created() {
     await this.getMyRestaurantId();
+  },
+  computed: {
+    isAddressCityEmpty() {
+      return this.form.addressCity.trim() === "";
+    },
+    isAddressStreetEmpty() {
+      return this.form.addressStreet.trim() === "";
+    }
   },
   methods: {
     async getMyRestaurantId() {
@@ -170,6 +212,9 @@ export default {
         console.error("레스토랑 ID 불러오기 실패:", error);
       }
     },
+    toggleBreakTime() { if (this.noBreakTime) this.form.breakTimeStart = this.form.breakTimeEnd = ""; },
+    toggleDeposit() { if (!this.form.depositAvailable) this.form.deposit = ""; },
+    
     async openDialog(dialog) {
       if (dialog === "photos") {
         await this.loadPhotos();
@@ -204,6 +249,10 @@ export default {
       }
     },
     async removePhoto(photoId) {
+      if (this.form.restaurantPhotos.length <= 1) {
+        alert("최소 1개 이상의 사진이 필요합니다");
+        return;
+      }
       try {
         await axios.post(`${process.env.VUE_APP_API_BASE_URL}/restaurant/photoDelete`, { photoId });
         this.form.restaurantPhotos = this.form.restaurantPhotos.filter(photo => photo.photoId !== photoId);
@@ -261,6 +310,11 @@ export default {
       }
     },
     async updateTextInfo() {
+      if (this.isAddressCityEmpty || this.isAddressStreetEmpty) {
+        alert("도시와 거리 필드는 비울 수 없습니다.");
+        return; // 🚨 필수 입력값이 없으면 저장 막기
+      }
+
       try {
         console.log(this.form);
         await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/restaurant/update`, this.form);
