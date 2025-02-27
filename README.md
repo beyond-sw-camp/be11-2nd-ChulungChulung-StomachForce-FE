@@ -1,13 +1,9 @@
 
-<p align="center" style="color:#F04E23; font-size:28px; font-weight:bold;">
-    먹고 모이는 공간
-</p>
+<h2 align="center">먹고 모이는 공간</h2>
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/stomach.png?raw=true" width="400">
 </p>
-<p align="center" style="color:#F04E23; font-size:28px; font-weight:bold;">
-    뱃살력
-</p>
+<h2 align="center">뱃살력</h2>
 
 
 ---
