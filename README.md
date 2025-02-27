@@ -1,24 +1,127 @@
-# stomach_force
+# 📝 지식 관리 시스템 - COCONOTE
 
-## Project setup
-```
-npm install
-```
+## 🚀 협업의 새로운 차원  
+COCONOTE 바로가기 👉 [coconote.site](https://coconote.site)
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+---
 
-### Compiles and minifies for production
-```
-npm run build
-```
+## 💚 TEAM 
+| 팀원 | 역할 |
+|------|------|
+| 김정은 | Backend |
+| 김민지 | Backend |
+| 김지호 | Frontend |
+| 전상민 | Frontend |
+| 최세호 | DevOps |
 
-### Lints and fixes files
-```
-npm run lint
-```
+---
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## 📌 목차
+1. [프로젝트 소개](#프로젝트-소개)
+2. [기획](#기획)
+3. [협업 도구](#협업-도구)
+4. [기술 스택](#기술-스택)
+5. [개발](#개발)
+6. [백엔드 API (Swagger)](#백엔드-api-요청-및-응답-swagger)
+7. [프론트엔드 기능 시연](#프론트엔드-기능-시연)
+8. [구조 및 아키텍처](#구조-및-아키텍처)
+9. [배포](#배포)
+10. [테스트](#테스트)
+
+---
+
+## 🧡 프로젝트 소개  
+### 📌 **COCONOTE란?**  
+COCONOTE는 **노션**의 문서 관리 기능과 **슬랙**의 실시간 커뮤니케이션 기능을 통합한 **지식 공유 및 협업 플랫폼**입니다.
+
+### 🎯 **배경 및 목적**
+- 기업 및 팀 프로젝트 협업 도구 통합 🚀  
+- **효율적이고 체계적인 지식 관리 및 공유**  
+- **실시간 채팅을 통한 커뮤니케이션 및 협업 극대화**  
+- **드래그 앤 드롭**을 활용한 직관적인 파일 공유  
+- 여러 협업 도구를 넘나드는 번거로움 및 피로감 감소  
+
+### 🔍 **주요 기능**
+✅ **SNS 간편 로그인 지원**  
+✅ **워크스페이스(Workspace) 생성**  
+✅ **공개/비공개 채널 설정 및 초대 기능**  
+✅ **각 채널 내 다양한 기능 지원**
+  - 📢 **쓰레드** : 단체 채팅, 이미지 기반 정보 공유  
+  - 📝 **캔버스** : 실시간 문서 공동 수정 (유저 동기화)  
+  - 📂 **드라이브** : 자동 업로드 & 동기화  
+
+---
+
+## 💛 기획
+📌 **협업 도구** : `JIRA` `Notion`  
+📌 **프로젝트 관리** : `WBS`  
+📌 **요구사항 정의**  
+📌 **ERD 설계**  
+📌 **화면 설계 (FIGMA)**  
+📌 **API 명세서**  
+
+🔗 [WBS 보러가기](#)  
+🔗 [요구사항 정의서 보러가기](#)  
+🔗 [ERD 보러가기](#)  
+🔗 [화면설계서(FIGMA) 보러가기](#)  
+🔗 [API 명세서 보러가기](#)  
+
+---
+
+## 🛠️ 기술 스택  
+
+### 📌 Backend  
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-6DB33F?style=flat-square&logo=SpringBoot&logoColor=white)  
+📌 **Spring Boot** 사용  
+
+### 📌 Frontend  
+📌 **기술 스택 작성**  
+
+### 📌 Database  
+📌 **기술 스택 작성**  
+
+### 📌 CI/CD  
+📌 **기술 스택 작성**  
+
+### 📌 기타  
+📌 **기술 스택 작성**  
+
+### 📌 Communication  
+![Discord](https://img.shields.io/badge/Discord-5865F2?style=flat-square&logo=Discord&logoColor=white)  
+📌 **Discord**  
+📌 **GitHub**  
+
+---
+
+## 📌 개발
+
+### 🔹 **백엔드 API 요청 및 응답 (Swagger)**
+API 문서화 작업을 위해 **Swagger**를 활용했습니다.  
+📌 [Swagger 문서 보러가기](#)
+
+---
+
+## 🎬 프론트엔드 기능 시연  
+**기능 시연 GIF 또는 링크 추가**  
+
+---
+
+## 🏗️ 구조 및 아키텍처  
+📌 프로젝트 구조 설명  
+
+---
+
+## 🚀 배포  
+📌 **배포 환경 및 과정 정리**  
+
+---
+
+## ✅ 테스트  
+📌 **테스트 방식 및 결과 정리**  
+📌 **테스트 스크린샷 첨부**  
+
+---
+
+## 🎯 프로젝트 마무리  
+### 📌 **배운 점 & 개선할 점**
+📌 **팀원들이 느낀 점 & 피드백 공유**
