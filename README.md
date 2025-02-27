@@ -112,7 +112,7 @@
 <details>
   <summary>▶️</summary>
   <video controls width="600">
-    ![testtest](https://github.com/user-attachments/assets/6f210444-698c-40b9-935b-9f18cd876812)
+    ![test](https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/testtest.gif?raw=true)
   </video>
   
 
