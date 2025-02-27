@@ -70,7 +70,7 @@
 📌 **ERD 설계**  
 📌 **화면 설계 (FIGMA)**  
 
-🔗 [요구사항 정의서 보러가기](#)  
+🔗 [요구사항 정의서 보러가기](https://docs.google.com/spreadsheets/d/1DBmJCVfnOjsCebl_T0jYjfnuHkb_mHtqmZW0du6Pse4/edit?usp=sharing)  
 🔗 [ERD 보러가기](https://www.erdcloud.com/d/wSEbrXDob5fz8JEo5)  
 🔗 [화면설계서(FIGMA) 보러가기](https://www.figma.com/design/vi3vWmmWRPv8dq9VBIt2Oc/%EB%B1%83%EC%82%B4%EB%A0%A5?node-id=0-1&t=Xts1hEkIqwq3ehUJ-1)  
 
@@ -110,12 +110,14 @@
 
  ##  프론트엔드 기능 시연  
 <details>
-  <summary>▶️ 클릭해서 보기</summary>
+  <summary>▶️ 테스트입니다.</summary>
   <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/testtest.gif?raw=true" width="600">
 </details>
 ---
 
  ##   프로젝트 마무리  
 ### 📌 배운 점 & 개선할 점
-📌 **팀원들이 느낀 점 & 피드백 공유**  
+📌 **팀원들이 느낀 점 & 피드백 공유** 
+홍성혁 : 처음에 협업분담, 일정들을 정할때 할 수 있는양을 정확히 작성해야한다고 느꼈다.
+
 
