@@ -53,9 +53,9 @@
                 ></v-pagination>
                 <v-btn
                     color="red"
-                    :to="{path:'/service/post/create'}"
                     prepend-icon="mdi-plus"
                     class="create-btn"
+                    @click="handleCreatePostClick"
                 >
                     게시글 등록
                 </v-btn>
@@ -78,6 +78,14 @@ export default {
         };
     },
     methods: {
+        handleCreatePostClick() {
+            if (!this.currentUser) {
+                alert('로그인이 필요합니다.');
+                return;
+            }
+            this.$router.push('/service/post/create');
+        
+    },
         getCategoryText(category) {
             const categoryMap = {
                 'INQUIRY': '문의사항',
@@ -118,9 +126,6 @@ export default {
             return true; // 기본적으로는 블러 처리
         },
         handlePostClick(post) {
-            console.log('Checking post access:');
-            console.log('Current User:', this.currentUser);
-            console.log('Post:', post);
 
             // 공개글은 모든 사용자가 볼 수 있음
             if (post.visibility === 'Y') {
@@ -183,10 +188,6 @@ export default {
                     role: payload.role
                 };
                 this.userRole = payload.role;
-
-                console.log('Token Payload:', payload);
-                console.log('UserId from localStorage:', userId);
-                console.log('Current User:', this.currentUser);
             } catch (error) {
                 console.error('사용자 정보 조회 실패:', error);
                 this.currentUser = null;
@@ -215,7 +216,6 @@ export default {
                     })
                 );
                 this.posts = postsWithAnswers;
-                console.log('Fetched Posts:', this.posts);
             } catch (error) {
                 console.error('게시글 목록 조회 실패:', error);
             }

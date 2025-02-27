@@ -259,8 +259,6 @@ export default {
                     role: payload.role
                 };
                 this.userRole = payload.role;
-
-                console.log('Current User:', this.currentUser);
             } catch (error) {
                 console.error('사용자 정보 조회 실패:', error);
                 this.currentUser = null;
@@ -282,7 +280,6 @@ export default {
                     `${process.env.VUE_APP_API_BASE_URL}/service/post/${postId}`
                 );
                 this.post = response.data;
-                console.log(response.data);
 
                 // 작성자 닉네임 찾기
                 const author = this.users.find(user => Number(user.userId) === Number(this.post.userId));

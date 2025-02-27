@@ -515,7 +515,6 @@ export default {
           `${process.env.VUE_APP_API_BASE_URL}/restaurant/detail/${this.restaurantId}`
         );
         this.restaurant = response.data;
-        console.log(response.data);
         if (!this.restaurant.imagePath || this.restaurant.imagePath.length === 0) {
           this.restaurant.imagePath = ["/assets/noImage.jpg"];
         }
