@@ -37,7 +37,7 @@
         <!-- 프로필 섹션 -->
         <v-row justify="center" align="center" class="profile-section">
           <v-col cols="12" sm="3" class="text-center">
-            <v-avatar size="130">
+            <v-avatar size="150">
               <v-img :src="profilePhoto" alt="프로필" />
             </v-avatar>
           </v-col>
@@ -54,13 +54,14 @@
             </h2>
             <p class="user-email">{{ userEmail }}</p>
             <v-row class="stats mt-2" justify="left">
+              <!-- 서버에서 받은 follwers, followings 값을 그대로 사용 -->
               <v-col cols="auto" class="stat-item text-center">
                 <strong @click="openFollowersDialog" style="cursor:pointer;">팔로워</strong>
-                <p @click="openFollowersDialog" style="cursor:pointer;">{{ filteredFollowersCount }}</p>
+                <p @click="openFollowersDialog" style="cursor:pointer;">{{ followerCount }}</p>
               </v-col>
               <v-col cols="auto" class="stat-item text-center">
                 <strong @click="openFollowingDialog" style="cursor:pointer;">팔로잉</strong>
-                <p @click="openFollowingDialog" style="cursor:pointer;">{{ filteredFollowingCount }}</p>
+                <p @click="openFollowingDialog" style="cursor:pointer;">{{ followingCount }}</p>
               </v-col>
               <v-col cols="auto" class="stat-item text-center">
                 <strong>게시글</strong>
@@ -115,6 +116,132 @@
         </div>
       </v-container>
     </v-main>
+
+    <!-- 팔로워 다이얼로그 -->
+    <v-dialog v-model="showFollowersDialog" max-width="360">
+      <v-card class="follow-dialog">
+        <v-card-title class="dialog-title px-6 py-4">
+          <span class="text-h6 font-weight-medium">팔로워</span>
+          <v-btn
+            icon
+            variant="text"
+            density="comfortable"
+            class="close-btn"
+            @click="showFollowersDialog = false"
+          >
+            <v-icon size="20">mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text class="pa-0">
+          <v-text-field
+            v-model="followerSearch"
+            label="닉네임 검색"
+            dense
+            outlined
+            hide-details
+            class="mx-4 mt-2"
+          ></v-text-field>
+          <v-list v-if="filteredFollowers.length > 0" class="follow-list py-2">
+            <v-list-item
+              v-for="(follower, index) in filteredFollowers"
+              :key="index"
+              class="follow-item px-6 py-3"
+              @click="goToUserYourPage(follower.userNickName)"
+              rounded="0"
+            >
+              <template v-slot:prepend>
+                <v-avatar size="44" class="mr-4">
+                  <v-img
+                    :src="follower.userProfile || placeholderProfile"
+                    class="profile-image"
+                  />
+                </v-avatar>
+              </template>
+              <v-list-item-title class="d-flex align-center">
+                <span class="font-weight-medium text-body-1">{{ follower.userNickName }}</span>
+                <v-icon
+                  v-if="follower.influencer === 'Y'"
+                  class="ml-2 gold-icon"
+                  size="16"
+                >
+                  mdi-silverware-variant
+                </v-icon>
+              </v-list-item-title>
+            </v-list-item>
+          </v-list>
+          <div v-else class="empty-state">
+            <v-icon size="40" color="grey-lighten-1" class="mb-3">
+              mdi-account-multiple-outline
+            </v-icon>
+            <span class="text-body-1 text-medium-emphasis">아직 팔로워가 없습니다</span>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
+    <!-- 팔로잉 다이얼로그 -->
+    <v-dialog v-model="showFollowingDialog" max-width="360">
+      <v-card class="follow-dialog">
+        <v-card-title class="dialog-title px-6 py-4">
+          <span class="text-h6 font-weight-medium">팔로잉</span>
+          <v-btn
+            icon
+            variant="text"
+            density="comfortable"
+            class="close-btn"
+            @click="showFollowingDialog = false"
+          >
+            <v-icon size="20">mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text class="pa-0">
+          <v-text-field
+            v-model="followingSearch"
+            label="닉네임 검색"
+            dense
+            outlined
+            hide-details
+            class="mx-4 mt-2"
+          ></v-text-field>
+          <v-list v-if="filteredFollowing.length > 0" class="follow-list py-2">
+            <v-list-item
+              v-for="(following, index) in filteredFollowing"
+              :key="index"
+              class="follow-item px-6 py-3"
+              @click="goToUserYourPage(following.userNickName)"
+              rounded="0"
+            >
+              <template v-slot:prepend>
+                <v-avatar size="44" class="mr-4">
+                  <v-img
+                    :src="following.userProfile || placeholderProfile"
+                    class="profile-image"
+                  />
+                </v-avatar>
+              </template>
+              <v-list-item-title class="d-flex align-center">
+                <span class="font-weight-medium text-body-1">{{ following.userNickName }}</span>
+                <v-icon
+                  v-if="following.influencer === 'Y'"
+                  class="ml-2 gold-icon"
+                  size="16"
+                >
+                  mdi-silverware-variant
+                </v-icon>
+              </v-list-item-title>
+            </v-list-item>
+          </v-list>
+          <div v-else class="empty-state">
+            <v-icon size="40" color="grey-lighten-1" class="mb-3">
+              mdi-account-multiple-outline
+            </v-icon>
+            <span class="text-body-1 text-medium-emphasis">팔로잉하는 사용자가 없습니다</span>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-app>
 </template>
 
@@ -124,50 +251,63 @@ export default {
   name: "YourPage",
   data() {
     return {
+      // 프로필 정보
       userNickName: "",
       userEmail: "",
-      profilePhoto: "https://via.placeholder.com/130",
-      influencer: "N", // 서버에서 받아온 값
-      totalPost: 0,
+      influencer: "N",
+      profilePhoto: localStorage.getItem("profilePhoto") || "https://via.placeholder.com/130",
+      // 게시글 관련 데이터
       postPhotos: [],
       postIds: [],
+      totalPost: 0,
+      // 백엔드에서 받은 팔로워/팔로잉 수
+      followerCount: 0,
+      followingCount: 0,
+      // 페이징/무한 스크롤 상태
       pageSize: 6,
       currentPage: 0,
       isLoading: false,
       isLastPage: false,
       isFollowing: false,
-      // 페이지 주인이 방문자를 차단한 경우(즉, 내가 차단당한 경우)
-      isBlockedByOwner: false,
-      // 내가 해당 페이지 주인을 차단했는지 여부
-      iBlockedOwner: false,
-      // 팔로워, 팔로잉, 차단 목록
+      // 차단 관련 상태
+      isBlockedByOwner: false, // 페이지 주인이 방문자를 차단한 경우
+      iBlockedOwner: false,    // 내가 해당 페이지 주인을 차단했는지 여부
+      // 팔로워, 팔로잉, 차단 목록 (다이얼로그용)
       followersList: [],
       followingList: [],
-      blockedList: []
+      blockedList: [],
+      // 검색 변수 및 모달 제어
+      followerSearch: "",
+      followingSearch: "",
+      showFollowersDialog: false,
+      showFollowingDialog: false,
+      placeholderProfile: "https://via.placeholder.com/50"
     };
   },
   computed: {
-    // 차단 목록의 닉네임 배열 생성
+    // 차단된 사용자 닉네임 배열
     blockedUserNickNames() {
       return this.blockedList.map(user => user.userNickName);
     },
-    // 차단 관계에 있는 사용자는 제외한 팔로워 목록
+    // 차단된 사용자를 제외한 팔로워 목록
     filteredFollowers() {
-      return this.followersList.filter(follower =>
-        !this.blockedUserNickNames.includes(follower.userNickName)
-      );
+      return this.followersList.filter(user => {
+        const notBlocked = !this.blockedUserNickNames.includes(user.userNickName);
+        const matchesSearch = this.followerSearch
+          ? user.userNickName.toLowerCase().includes(this.followerSearch.toLowerCase())
+          : true;
+        return notBlocked && matchesSearch;
+      });
     },
-    // 차단 관계에 있는 사용자는 제외한 팔로잉 목록
+    // 차단된 사용자를 제외한 팔로잉 목록
     filteredFollowing() {
-      return this.followingList.filter(following =>
-        !this.blockedUserNickNames.includes(following.userNickName)
-      );
-    },
-    filteredFollowersCount() {
-      return this.filteredFollowers.length;
-    },
-    filteredFollowingCount() {
-      return this.filteredFollowing.length;
+      return this.followingList.filter(user => {
+        const notBlocked = !this.blockedUserNickNames.includes(user.userNickName);
+        const matchesSearch = this.followingSearch
+          ? user.userNickName.toLowerCase().includes(this.followingSearch.toLowerCase())
+          : true;
+        return notBlocked && matchesSearch;
+      });
     }
   },
   async created() {
@@ -175,15 +315,15 @@ export default {
     if (this.$route.query.nickName) {
       this.userNickName = this.$route.query.nickName;
     }
-    // 먼저 차단 여부를 체크
+    // 차단 여부 체크 후, 차단 상태가 아니라면 나머지 데이터 로드
     await this.checkBlockStatus();
     console.log("checkBlockStatus:", this.isBlockedByOwner, this.iBlockedOwner);
-    // 만약 페이지 주인이 방문자를 차단한 경우, "비공개 계정입니다" 화면을 띄우고 나머지 데이터 로드는 진행하지 않음
     if (!this.isBlockedByOwner) {
       await this.loadUserPage();
-      await this.fetchFollowersList();
-      await this.fetchFollowingList();
+      // 차단 목록을 먼저 로드한 후, 팔로워/팔로잉 목록을 로드
       await this.fetchBlockedList();
+      await this.fetchFollowers();
+      await this.fetchFollowing();
       window.addEventListener("scroll", this.scrollPagination);
     }
   },
@@ -207,7 +347,7 @@ export default {
           }
         );
         console.log("API isblocked result:", response.data);
-        // response.data가 [true, false] 형태라면:
+        // response.data가 [true, false] 형태
         this.isBlockedByOwner = response.data[0];
         this.iBlockedOwner = response.data[1];
       } catch (error) {
@@ -230,7 +370,7 @@ export default {
             headers: { "Content-Type": "application/x-www-form-urlencoded" }
           }
         );
-    
+        console.log("response : ", response.data);
         const data = response.data;
         if (this.currentPage === 0) {
           this.profilePhoto = data.profile || "https://via.placeholder.com/130";
@@ -241,6 +381,9 @@ export default {
           this.influencer = data.influencer;
           this.postPhotos = data.postPhotos || [];
           this.postIds = data.postIds || [];
+          // 서버에서 받은 followers/followings 값 사용
+          this.followerCount = data.follwers;
+          this.followingCount = data.followings;
         } else {
           this.postPhotos = [...this.postPhotos, ...(data.postPhotos || [])];
           this.postIds = [...this.postIds, ...(data.postIds || [])];
@@ -292,10 +435,13 @@ export default {
         );
     
         const responseMessage = response.data;
-        if (responseMessage === "팔로우가 취소되었습니다.") {
+        console.log(responseMessage)
+        if (responseMessage.result === "팔로우가 취소되었습니다.") {
           this.isFollowing = false;
-        } else if (responseMessage === "ok") {
+          this.followerCount--;
+        } else if (responseMessage.result === "ok") {
           this.isFollowing = true;
+          this.followerCount++;
         }
       } catch (error) {
         console.error("팔로우 요청 실패:", error);
@@ -324,8 +470,10 @@ export default {
         );
         alert("차단되었습니다.");
         this.iBlockedOwner = true;
-        // 차단 후 blockedList 업데이트
+        // 차단 후 blockedList와 팔로워/팔로잉 목록 갱신
         await this.fetchBlockedList();
+        await this.fetchFollowers();
+        await this.fetchFollowing();
       } catch (error) {
         console.error("차단 요청 실패:", error);
         alert("차단 요청에 실패했습니다.");
@@ -348,14 +496,16 @@ export default {
         );
         alert("차단 해제되었습니다.");
         this.iBlockedOwner = false;
-        // 차단 해제 후 blockedList 업데이트
+        // 차단 해제 후 목록 갱신
         await this.fetchBlockedList();
+        await this.fetchFollowers();
+        await this.fetchFollowing();
       } catch (error) {
         console.error("차단 해제 요청 실패:", error);
         alert("차단 해제 요청에 실패했습니다.");
       }
     },
-    async fetchFollowersList() {
+    async fetchFollowers() {
       try {
         const response = await axios.get(
           `${process.env.VUE_APP_API_BASE_URL}/user/followerList`,
@@ -366,12 +516,13 @@ export default {
             }
           }
         );
+        console.log("Followers:", response.data);
         this.followersList = response.data;
       } catch (error) {
         console.error("팔로워 목록 로드 실패:", error);
       }
     },
-    async fetchFollowingList() {
+    async fetchFollowing() {
       try {
         const response = await axios.get(
           `${process.env.VUE_APP_API_BASE_URL}/user/followingList`,
@@ -382,6 +533,7 @@ export default {
             }
           }
         );
+        console.log("Following:", response.data);
         this.followingList = response.data;
       } catch (error) {
         console.error("팔로잉 목록 로드 실패:", error);
@@ -403,10 +555,16 @@ export default {
       }
     },
     openFollowersDialog() {
-      // 모달 관련 처리 (필요 시 filteredFollowers 사용)
+      this.showFollowersDialog = true;
     },
     openFollowingDialog() {
-      // 모달 관련 처리 (필요 시 filteredFollowing 사용)
+      this.showFollowingDialog = true;
+    },
+    goToPostCreate() {
+      this.$router.push("/post/create");
+    },
+    goToUserYourPage(nickName) {
+      this.$router.push({ path: "/user/yourPage", query: { nickName } });
     }
   }
 };
@@ -463,7 +621,62 @@ export default {
 .clickable-card:hover .post-image {
   opacity: 0.8;
 }
+.follow-dialog {
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+.dialog-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+}
+.close-btn {
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+.close-btn:hover {
+  opacity: 1;
+}
+.follow-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+.follow-item {
+  transition: all 0.2s ease;
+  border-radius: 0;
+}
+.follow-item:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+.profile-image {
+  border-radius: 50%;
+  object-fit: cover;
+}
 .gold-icon {
   color: #FFD700 !important;
+}
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+/* 스크롤바 스타일링 */
+.follow-list::-webkit-scrollbar {
+  width: 6px;
+}
+.follow-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.follow-list::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+.follow-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
 }
 </style>
