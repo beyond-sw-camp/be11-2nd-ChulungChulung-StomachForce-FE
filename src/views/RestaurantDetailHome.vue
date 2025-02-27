@@ -1,131 +1,154 @@
 <template>
-  <v-container>
-    <!-- 네비게이션 바 -->
-    <v-tabs v-model="tab">
-      <v-tab @click="reload">레스토랑 홈</v-tab>
-      <v-tab :to="`/restaurant/detail/${restaurantId}/main`">상세정보</v-tab>
-      <v-tab :to="`/menu/list/${restaurantId}`">메뉴</v-tab>
-      <v-tab :to="`/restaurant/detail/${restaurantId}/reviews`">리뷰</v-tab>
-    </v-tabs>
-
-    <!-- 매장명 카드 (리뷰작성 버튼 포함) -->
-    <v-card class="title-card">
-      <v-btn
-        class="review-button"
-        color="primary"
-        small
-        @click="reviewDialog = true"
-      >
-        리뷰작성
-      </v-btn>
-      <v-card-title class="text-h4 text-center">
-        {{ restaurant.name }}
-      </v-card-title>
+  <v-container class="pa-0" fluid>
+    <!-- 상단 네비게이션 바 -->
+    <v-card flat class="navigation-bar">
+      <v-container>
+        <v-tabs v-model="tab" background-color="transparent" class="custom-tabs">
+          <v-tab @click="reload">레스토랑 홈</v-tab>
+          <v-tab :to="`/restaurant/detail/${restaurantId}/main`">상세정보</v-tab>
+          <v-tab :to="`/menu/list/${restaurantId}`">메뉴</v-tab>
+          <v-tab :to="`/restaurant/detail/${restaurantId}/reviews`">리뷰</v-tab>
+        </v-tabs>
+      </v-container>
     </v-card>
-    
-    <!-- 매장 사진 (수동 무한 넘기기) -->
-    <v-row justify="center" v-if="restaurant.imagePath.length">
-      <v-col cols="12" md="8">
-        <v-card>
-          <v-img
-            :src="restaurant.imagePath[currentIndex]"
-            lazy-src="/assets/loading-placeholder.jpg"
-            height="300px"
-            contain
-          />
-          <v-card-actions class="d-flex justify-center">
-            <v-btn icon @click="prevImage">
-              <v-icon>mdi-chevron-left</v-icon>
+
+    <v-container class="main-content">
+      <!-- 레스토랑 헤더 섹션 -->
+      <v-card class="restaurant-header mb-6" elevation="0">
+        <v-row align="center" no-gutters>
+          <v-col cols="12" md="8">
+            <h1 class="restaurant-title">{{ restaurant.name }}</h1>
+            <div class="restaurant-stats">
+              <span class="stat-item">
+                <v-icon color="amber">mdi-star</v-icon>
+                {{ restaurant.averageRating }}
+              </span>
+              <span class="stat-divider">|</span>
+              <span class="stat-item">
+                <v-icon>mdi-bookmark</v-icon>
+                {{ restaurant.bookmarkCount }}
+              </span>
+            </div>
+          </v-col>
+          <v-col cols="12" md="4" class="d-flex justify-end">
+            <v-btn
+              color="primary"
+              class="action-btn mr-2"
+              @click="reviewDialog = true"
+            >
+              <v-icon left>mdi-pencil</v-icon>
+              리뷰작성
             </v-btn>
-            <span>{{ currentIndex + 1 }} / {{ restaurant.imagePath.length }}</span>
-            <v-btn icon @click="nextImage">
-              <v-icon>mdi-chevron-right</v-icon>
+            <v-btn
+              :color="isBookMarked ? 'red' : 'grey'"
+              class="action-btn"
+              @click="toggleBookmark"
+            >
+              <v-icon>{{ isBookMarked ? 'mdi-bookmark' : 'mdi-bookmark-outline' }}</v-icon>
             </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-col>
-    </v-row>
-    
-    <!-- 대표 메뉴 -->
-    <v-card class="menu-section">
-      <div class="d-flex justify-space-between align-center mb-4">
-        <v-card-title class="text-h5">🍔 대표 메뉴</v-card-title>
-        <v-btn
-          variant="text"
-          color="#FB8C00"
-          class="more-menu-btn"
-          @click="goToMenuList"
-        >
-          <v-icon left class="mr-1">mdi-menu</v-icon>
-          메뉴 더보기
-        </v-btn>
-      </div>
-      <v-row>
-        <v-col v-for="menu in topMenus" :key="menu.id" cols="12" sm="6" md="3">
-          <v-card class="menu-card" elevation="2">
-            <v-img 
-              :src="menu.menuPhoto || '/assets/noImage.jpg'" 
-              height="180"
-              contain
-              class="menu-image"
-              style="background-color: #f5f5f5;"
-            ></v-img>
-            <v-card-title class="pt-2 text-subtitle-1">{{ menu.name }}</v-card-title>
-            <v-card-subtitle class="pb-2">{{ numberWithCommas(menu.price) }}원</v-card-subtitle>
+          </v-col>
+        </v-row>
+      </v-card>
+
+      <!-- 이미지 갤러리를 단일 이미지로 변경 -->
+      <v-card class="image-container mb-6" v-if="restaurant.imagePath.length">
+        <v-img
+          :src="restaurant.imagePath[0]"
+          height="400"
+          cover
+          class="main-image"
+        ></v-img>
+      </v-card>
+
+      <!-- 정보 그리드 -->
+      <v-row class="info-grid">
+        <v-col cols="12" md="4">
+          <v-card class="info-card">
+            <v-card-text>
+              <h3 class="info-title">
+                <v-icon color="var(--primary-orange)">mdi-map-marker</v-icon>
+                위치
+              </h3>
+              <p class="info-content">{{ restaurant.addressCity }} {{ restaurant.addressStreet }}</p>
+            </v-card-text>
+          </v-card>
+        </v-col>
+
+        <v-col cols="12" md="4">
+          <v-card class="info-card">
+            <v-card-text>
+              <h3 class="info-title">
+                <v-icon color="var(--primary-orange)">mdi-phone</v-icon>
+                연락처
+              </h3>
+              <p class="info-content">{{ restaurant.phoneNumber || "정보 없음" }}</p>
+            </v-card-text>
+          </v-card>
+        </v-col>
+
+        <v-col cols="12" md="4">
+          <v-card class="info-card">
+            <v-card-text>
+              <h3 class="info-title">
+                <v-icon color="var(--primary-orange)">mdi-clock-outline</v-icon>
+                영업시간
+              </h3>
+              <div class="time-info">
+                <p>영업: {{ restaurant.openingTime }} - {{ formatTime(restaurant.closingTime) }}</p>
+                <p>브레이크타임: {{ formatTime(restaurant.breakTimeStart) }} - {{ formatTime(restaurant.breakTimeEnd) }}</p>
+                <p>라스트오더: {{ formatTime(restaurant.lastOrder) }}</p>
+              </div>
+            </v-card-text>
           </v-card>
         </v-col>
       </v-row>
-    </v-card>
-    
-    <!-- 매장 기본 정보 -->
-    <v-row class="info-section">
-      <v-col cols="12" md="6">
-        <v-card class="info-card">
-          <v-card-title>📍 주소</v-card-title>
-          <v-card-text>{{ restaurant.addressCity }} {{ restaurant.addressStreet }}</v-card-text>
-        </v-card>
-        <v-card class="info-card">
-          <v-card-title>📞 전화번호</v-card-title>
-          <v-card-text>{{ restaurant.phoneNumber || "정보 없음" }}</v-card-text>
-        </v-card>
-      </v-col>
 
-      <v-col cols="12" md="6">
-        <v-card class="info-card">
-          <v-card-title class="d-flex align-center">
-            ⭐ 평점
-          </v-card-title>
-          <v-card-text>{{ restaurant.averageRating }} / 5.0</v-card-text>
-        </v-card>
-        <!-- 즐겨찾기 섹션 (아이콘 버튼으로 토글) -->
-        <v-card class="info-card">
-          <v-card-title class="d-flex align-center">
-            📌 즐겨찾기
-            <v-spacer></v-spacer>
-            <v-btn icon @click="toggleBookmark">
-              <v-icon color="red" v-if="isBookMarked">mdi-bookmark</v-icon>
-              <v-icon v-else>mdi-bookmark-outline</v-icon>
-            </v-btn>
-          </v-card-title>
-          <v-card-text>{{ restaurant.bookmarkCount }}명</v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
+      <!-- 대표 메뉴 섹션 -->
+      <v-card class="menu-section mt-6">
+        <v-card-title class="section-title">
+          <v-icon large color="var(--primary-orange)" class="mr-2">mdi-food</v-icon>
+          대표 메뉴
+          <v-spacer></v-spacer>
+          <v-btn
+            text
+            color="var(--primary-orange)"
+            @click="goToMenuList"
+            class="menu-view-all-btn"
+          >
+            전체 메뉴 보기
+            <v-icon right>mdi-chevron-right</v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-card-text>
+          <v-row>
+            <v-col v-for="menu in topMenus" :key="menu.id" cols="12" sm="6" md="3">
+              <v-card class="menu-item" elevation="2">
+                <v-img
+                  :src="menu.menuPhoto || '/assets/noImage.jpg'"
+                  height="200"
+                  class="menu-image"
+                ></v-img>
+                <v-card-text>
+                  <h3 class="menu-name">{{ menu.name }}</h3>
+                  <p class="menu-price">{{ numberWithCommas(menu.price) }}원</p>
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-card-text>
+      </v-card>
 
-    <!-- 영업시간 -->
-    <v-card class="time-section">
-      <v-card-title class="text-h5">⏰ 영업시간</v-card-title>
-      <v-card-text>
-        <p>🕒 운영 시간: {{ restaurant.openingTime }} ~ {{ formatTime(restaurant.closingTime) }}</p>
-        <p>🍽️ 라스트 오더: {{ formatTime(restaurant.lastOrder) }}</p>
-        <p>☕ 브레이크 타임: {{ formatTime(restaurant.breakTimeStart) }} ~ {{ formatTime(restaurant.breakTimeEnd) }}</p>
-      </v-card-text>
-    </v-card>
-
-    <!-- 예약 버튼 -->
-    <v-btn class="reservation-btn" color="red" block @click="goToReservation">
-      예약하기
-    </v-btn>
+      <!-- 예약 버튼 -->
+      <v-btn
+        block
+        x-large
+        color="primary"
+        class="reservation-button mt-6"
+        @click="goToReservation"
+      >
+        예약하기
+      </v-btn>
+    </v-container>
 
     <!-- 리뷰 작성 다이얼로그 -->
     <v-dialog v-model="reviewDialog" max-width="600">
@@ -167,8 +190,8 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="reviewDialog = false">취소</v-btn>
-          <v-btn color="blue darken-1" text @click="submitReview" :loading="reviewLoading">등록하기</v-btn>
+          <v-btn color="orange lighten-1" text @click="reviewDialog = false">취소</v-btn>
+          <v-btn color="orange darken-1" text @click="submitReview" :loading="reviewLoading">등록하기</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -176,68 +199,257 @@
 </template>
 
 <style scoped>
-.title-card {
-  margin-top: 20px;
-  padding: 15px;
-  background-color: #f8f8f8;
+/* 색상 변수 정의 */
+:root {
+  --primary-orange: #FF6B00;
+  --light-orange: #FFF0E6;
+  --dark-orange: #E65100;
+  --white: #FFFFFF;
+  --text-dark: #333333;
 }
 
-.info-section {
-  margin-top: 20px;
+.navigation-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--white);
+  border-bottom: 1px solid rgba(255, 107, 0, 0.1);
+}
+
+.custom-tabs {
+  border-bottom: none;
+}
+
+/* v-tab 활성화 색상 변경 */
+::v-deep .v-tab--active {
+  color: #FF6B00 !important;
+}
+
+.main-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  background-color: var(--white);
+}
+
+.restaurant-header {
+  background-color: transparent;
+}
+
+.restaurant-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 16px;
+}
+
+.restaurant-stats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--primary-orange);
+}
+
+.stat-divider {
+  color: #ddd;
+}
+
+.action-btn {
+  text-transform: none;
+  font-weight: 600;
+  border-radius: 8px;
+  background-color: var(--primary-orange) !important;
+  color: var(--white) !important;
+}
+
+.image-container {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(255, 107, 0, 0.1);
+}
+
+.main-image {
+  transition: transform 0.3s ease;
+}
+
+.main-image:hover {
+  transform: scale(1.02);
 }
 
 .info-card {
-  margin-bottom: 10px;
-  padding: 15px;
+  height: 100%;
+  border-radius: 12px;
+  transition: transform 0.2s;
+  background-color: var(--light-orange);
+  border: 1px solid rgba(255, 107, 0, 0.1);
+}
+
+.info-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(255, 107, 0, 0.15);
+}
+
+.info-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.1rem;
+  margin-bottom: 16px;
+  color: var(--text-dark);
+}
+
+.info-content {
+  color: #666;
+  line-height: 1.6;
+}
+
+.time-info p {
+  margin: 8px 0;
+  color: #666;
 }
 
 .menu-section {
-  margin-top: 20px;
-  padding: 20px;
+  border-radius: 12px;
+  background-color: var(--white);
+  border: 1px solid rgba(255, 107, 0, 0.1);
 }
 
-.time-section {
-  margin-top: 20px;
-  padding: 15px;
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--primary-orange);
 }
 
-.reservation-btn {
-  margin-top: 20px;
-  font-size: 20px;
-  padding: 15px;
+.menu-item {
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.2s;
+  border: 1px solid rgba(255, 107, 0, 0.1);
 }
 
-.menu-card {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+.menu-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(255, 107, 0, 0.15);
 }
 
 .menu-image {
-  border-radius: 8px 8px 0 0;
+  background-color: #f5f5f5;
 }
 
-.v-card-title {
-  font-size: 1.1rem !important;
-  line-height: 1.4;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.v-card-subtitle {
-  color: #FB8C00 !important;
+.menu-name {
+  font-size: 1.1rem;
   font-weight: 600;
+  margin-bottom: 8px;
 }
 
-.more-menu-btn {
+.menu-price {
+  color: #666;
   font-weight: 500;
-  letter-spacing: 0.3px;
-  text-transform: none;
 }
 
-.more-menu-btn:hover {
-  opacity: 0.8;
+.reservation-button {
+  height: 56px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 12px;
+  background-color: var(--primary-orange) !important;
+  color: var(--white) !important;
+}
+
+.reservation-button:hover {
+  background-color: #FF8533 !important;
+}
+
+/* 리뷰 작성 버튼 스타일 */
+.action-btn.primary {
+  background-color: var(--primary-orange) !important;
+}
+
+/* 북마크 버튼 스타일 */
+.action-btn.red {
+  background-color: #FF4444 !important;
+}
+
+@media (max-width: 600px) {
+  .restaurant-title {
+    font-size: 1.8rem;
+  }
+
+  .main-content {
+    padding: 16px;
+  }
+
+  .info-card {
+    margin-bottom: 16px;
+  }
+
+  .image-container {
+    height: 250px;
+  }
+}
+
+/* v-btn 색상 오버라이드 */
+::v-deep .v-btn--text {
+  color: var(--primary-orange) !important;
+}
+
+/* 전체 메뉴 보기 버튼 색상 */
+.v-btn.v-btn--text {
+  color: var(--primary-orange) !important;
+}
+
+/* 리뷰 다이얼로그 스타일 */
+.v-dialog .headline {
+  color: var(--primary-orange);
+}
+
+.v-dialog .v-btn {
+  color: var(--primary-orange) !important;
+}
+
+/* 파일 입력 컴포넌트 색상 */
+::v-deep .v-file-input .v-input__icon--prepend .v-icon {
+  color: var(--primary-orange) !important;
+}
+
+/* 텍스트 영역 포커스 색상 */
+::v-deep .v-input--is-focused .v-input__slot {
+  border-color: var(--primary-orange) !important;
+}
+
+/* 입력 필드 포커스 색상 */
+::v-deep .v-input--is-focused .v-input__slot:before,
+::v-deep .v-input--is-focused .v-input__slot:after {
+  border-color: var(--primary-orange) !important;
+}
+
+/* 탭 인디케이터 색상 */
+::v-deep .v-tabs-slider {
+  background-color: var(--primary-orange) !important;
+}
+
+/* 링크 색상 */
+a {
+  color: var(--primary-orange);
+}
+
+a:hover {
+  color: var(--dark-orange);
+}
+
+/* 전체 메뉴 보기 버튼 스타일 추가 */
+.menu-view-all-btn {
+  color: var(--primary-orange) !important;
+}
+
+.menu-view-all-btn .v-icon {
+  color: var(--primary-orange) !important;
 }
 </style>
 
@@ -303,6 +515,7 @@ export default {
           `${process.env.VUE_APP_API_BASE_URL}/restaurant/detail/${this.restaurantId}`
         );
         this.restaurant = response.data;
+        console.log(response.data);
         if (!this.restaurant.imagePath || this.restaurant.imagePath.length === 0) {
           this.restaurant.imagePath = ["/assets/noImage.jpg"];
         }
