@@ -147,14 +147,13 @@ mounted() {
   this.fetchUserRole();
 },
 methods: {
-  goToUpdatePage(id){
-    if(id){
+  goToUpdatePage(id) {
+    if(id) {
       this.$router.push(`/notice/update/${id}`);
     }
   },
-  async confirmDelete(id){
-    if(id){
-
+  async confirmDelete(id) {
+    if(id) {
       await axios.post(`${process.env.VUE_APP_API_BASE_URL}/announcement/delete/${id}`);
       alert("삭제되었습니다.")
       window.location.reload();
@@ -181,19 +180,6 @@ methods: {
   goToAnnouncementDetail(id) {
     if (id) {
       this.$router.push(`/notice/${id}`);
-    }
-  },
-  goToUpdatePage(id){
-    if(id){
-      this.$router.push(`/notice/update/${id}`)
-    }
-  },
-  async confirmDelete(id){
-    if(id){
-
-      await axios.post(`${process.env.VUE_APP_API_BASE_URL}/announcement/delete/${id}`);
-      alert("삭제되었습니다.")
-      window.location.reload();
     }
   },
 
