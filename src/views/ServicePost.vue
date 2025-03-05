@@ -183,7 +183,7 @@
 
             <!-- 하단 버튼 -->
             <div class="d-flex mt-6">
-                <v-btn color="grey" variant="outlined" @click="$router.push('/service/list')">
+                <v-btn color="grey" variant="outlined" @click="goToList">
                     <v-icon left class="mr-1">mdi-arrow-left</v-icon>
                     목록으로
                 </v-btn>
@@ -512,6 +512,12 @@ export default {
                     text: '답변 삭제에 실패했습니다.'
                 });
             }
+        },
+        goToList() {
+            this.$router.push({
+                path: '/service',
+                query: { tab: 'service' }
+            });
         }
     },
     async mounted() {

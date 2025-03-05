@@ -76,7 +76,7 @@
                     <v-btn
                         color="grey"
                         class="ml-2"
-                        :to="{path:'/service/list'}"
+                        @click="goToList"
                     >
                         취소
                     </v-btn>
@@ -133,6 +133,12 @@ export default {
         window.scrollTo(0, 0);
     },
     methods: {
+        goToList() {
+            this.$router.push({
+                path: '/service',
+                query: { tab: 'service' }
+            });
+        },
         async submitPost() {
             try {
                 const formData = new FormData();
@@ -163,11 +169,14 @@ export default {
                     // 성공 메시지 표시
                     this.showSuccessAlert = true;
                     
-                    // 3초 후 목록 페이지로 이동
+                    // 1초 후 목록 페이지로 이동
                     setTimeout(() => {
-                        this.$router.push('/service/list');
-                    }, 3000);
-                }
+                        this.$router.push({
+                        path: '/service',
+                        query: { tab: 'service' }});
+                        }, 1000);
+                    }
+                
 
             } catch (error) {
                 console.error('게시글 작성 실패:', error);

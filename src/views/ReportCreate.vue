@@ -67,7 +67,7 @@
                     <v-btn
                         color="grey"
                         class="ml-2"
-                        :to="{path:'/report/list'}"
+                        @click="goToList"
                     >
                         취소
                     </v-btn>
@@ -125,6 +125,12 @@ export default {
         window.scrollTo(0, 0);
     },
     methods: {
+        goToList() {
+            this.$router.push({
+                path: '/service',
+                query: { tab: 'report' }
+            });
+        },
         async searchUsers() {
             try {
                 this.loading = true;
@@ -163,7 +169,9 @@ export default {
 
                 if (response.status === 200 || response.status === 201) {
                     alert('신고가 접수되었습니다.');
-                    this.$router.push('/report/list');
+                    this.$router.push({
+                        path: '/service',
+                        query: { tab: 'report' }});
                 }
 
             } catch (error) {
