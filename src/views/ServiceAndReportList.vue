@@ -31,6 +31,21 @@ export default {
         return {
             activeTab: 'service'
         }
+    },
+    created() {
+        // URL 쿼리 파라미터에서 탭 정보 가져오기
+        const tabFromQuery = this.$route.query.tab;
+        if (tabFromQuery && ['service', 'report'].includes(tabFromQuery)) {
+            this.activeTab = tabFromQuery;
+        }
+    },
+    watch: {
+        // 라우터 쿼리 변경 감지
+        '$route.query.tab'(newTab) {
+            if (newTab && ['service', 'report'].includes(newTab)) {
+                this.activeTab = newTab;
+            }
+        }
     }
 }
 </script>

@@ -1,5 +1,17 @@
 <template>
     <v-container>
+        <!-- 상단 헤더 영역 -->
+        <div class="d-flex justify-space-between align-center mb-4">
+            <h2 class="text-h5">문의사항</h2>
+            <v-btn
+                color="red"
+                prepend-icon="mdi-plus"
+                @click="handleCreatePostClick"
+            >
+                문의하기
+            </v-btn>
+        </div>
+
         <v-divider class="mb-4"></v-divider>
         <!-- 리스트 아이템 -->
         <v-list class="list-content">
@@ -51,14 +63,6 @@
                     :length="totalPages"
                     :total-visible="7"
                 ></v-pagination>
-                <v-btn
-                    color="red"
-                    prepend-icon="mdi-plus"
-                    class="create-btn"
-                    @click="handleCreatePostClick"
-                >
-                    게시글 등록
-                </v-btn>
             </div>
         </div>
     </v-container>
@@ -293,12 +297,6 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    position: relative;
-}
-
-.create-btn {
-    position: absolute;
-    right: 0;
 }
 
 /* v-list 기본 패딩 제거 */

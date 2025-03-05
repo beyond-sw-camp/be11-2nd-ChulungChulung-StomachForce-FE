@@ -1,171 +1,169 @@
 <template>
-    <v-container>
-        <!-- 목록으로 돌아가기 버튼 추가 -->
-        <div class="mb-4">
-            <v-btn
-                color="primary"
-                variant="outlined"
-                @click="goToList"
-                prepend-icon="mdi-arrow-left"
-            >
-                목록으로 돌아가기
-            </v-btn>
-        </div>
-
-        <v-card class="mx-auto" max-width="800">
-            <v-card-title class="d-flex align-center">
-                신고 내용
-                <v-chip
-                    class="ml-4"
-                    :color="getReportClassColor(report?.reportClass)"
-                    size="small"
-                >
-                    {{ getReportClassText(report?.reportClass) }}
-                </v-chip>
-                <v-chip
-                    class="ml-4"
-                    :color="answer ? 'success' : 'warning'"
-                    size="small"
-                >
-                    {{ answer ? '답변완료' : '답변대기' }}
-                </v-chip>
-            </v-card-title>
-
-            <v-card-subtitle class="pt-2">
-                <div class="d-flex align-center mb-2">
-                    <span class="font-weight-medium">신고자:</span>
-                    <span class="ml-2">{{ reporterNickname }}</span>
-                </div>
-                <div class="d-flex align-center">
-                    <span class="font-weight-medium">신고 대상자:</span>
-                    <span class="ml-2">{{ reportedNickname }}</span>
-                </div>
-            </v-card-subtitle>
-
-            <v-card-subtitle v-if="report">
-                작성일: {{ new Date(report.createdTime).toLocaleDateString() }} {{ new Date(report.createdTime).toLocaleTimeString() }} <br>
-                수정일: {{ new Date(report.updatedTime).toLocaleDateString() }} {{ new Date(report.updatedTime).toLocaleTimeString() }}
-            </v-card-subtitle>
-
-            <v-card-text v-if="report">
-                <div class="content-text">{{ report.contents }}</div>
-                
-                <!-- 이미지 표시 부분 -->
-                <div v-if="report.photos && report.photos.length > 0" class="image-container mt-4">
-                    <v-img
-                        v-for="(photo, index) in report.photos"
-                        :key="index"
-                        :src="photo"
-                        @click="openImageDialog(photo)"
-                        class="report-image ma-2"
-                        cover
-                        max-height="200"
-                    ></v-img>
-                </div>
-            </v-card-text>
-
-            <!-- 수정/삭제 버튼 (작성자인 경우에만 표시) -->
-            <v-card-actions v-if="isAuthor">
-                <v-spacer></v-spacer>
-                <v-btn color="primary" @click="editPost">
-                    수정하기
-                </v-btn>
-                <v-btn color="error" @click="deletePost">
-                    삭제하기
-                </v-btn>
-            </v-card-actions>
-        </v-card>
-
-        <!-- 답변 표시 -->
-        <v-card v-if="answer" class="mx-auto mt-4" max-width="800">
-            <v-card-title>
-                답변
-                <v-spacer></v-spacer>
-                <v-btn
-                    v-if="userRole === 'ADMIN'"
-                    icon="mdi-pencil"
-                    size="small"
-                    @click="startEditAnswer"
-                ></v-btn>
-                <v-btn
-                    v-if="userRole === 'ADMIN'"
-                    icon="mdi-delete"
-                    size="small"
-                    color="error"
-                    @click="deleteAnswer"
-                ></v-btn>
-            </v-card-title>
-
-            <v-card-subtitle v-if="answer">
-                작성일: {{ new Date(answer.createdTime).toLocaleDateString() }} {{ new Date(answer.createdTime).toLocaleTimeString() }} <br>
-                수정일: {{ new Date(answer.updatedTime).toLocaleDateString() }} {{ new Date(answer.updatedTime).toLocaleTimeString() }}
-            </v-card-subtitle>
-
-            <v-card-text>
-                <!-- 수정 모드일 때는 폼 표시 -->
-                <v-form
-                    v-if="isEditingAnswer"
-                    ref="editAnswerForm"
-                    v-model="isAnswerFormValid"
-                >
-                    <v-textarea
-                        v-model="editAnswerContents"
-                        label="답변 내용"
-                        :rules="answerRules"
-                        rows="5"
-                        auto-grow
-                        variant="outlined"
-                    ></v-textarea>
-                    <div class="d-flex justify-end gap-2">
-                        <v-btn
-                            color="error"
-                            variant="text"
-                            @click="cancelEditAnswer"
-                        >
-                            취소
-                        </v-btn>
-                        <v-btn
-                            color="primary"
-                            :loading="answerLoading"
-                            :disabled="!isAnswerFormValid"
-                            @click="updateAnswer"
-                        >
-                            저장
-                        </v-btn>
+    <div class="report-detail">
+        <v-container class="pt-8">
+            <v-card class="post-card mb-6" elevation="3">
+                <!-- 게시글 헤더 -->
+                <div class="post-header pa-6">
+                    <div class="d-flex justify-space-between align-center mb-4">
+                        <h2 class="text-h5 font-weight-bold">신고 내용</h2>
+                        <div class="d-flex gap-2">
+                            <v-chip
+                                :color="getReportClassColor(report?.reportClass)"
+                                class="status-chip"
+                            >
+                                {{ getReportClassText(report?.reportClass) }}
+                            </v-chip>
+                            <v-chip
+                                :color="answer ? 'success' : 'warning'"
+                                class="status-chip"
+                            >
+                                {{ answer ? '처리완료' : '처리중' }}
+                            </v-chip>
+                        </div>
                     </div>
-                </v-form>
-                <!-- 일반 모드일 때는 텍스트 표시 -->
-                <div v-else class="content-text">{{ answer.contents }}</div>
-            </v-card-text>
-        </v-card>
 
-        <!-- 관리자용 답변 등록 폼 -->
-        <v-card v-else-if="userRole === 'ADMIN'" class="mx-auto mt-4" max-width="800">
-            <v-card-title>답변 등록</v-card-title>
-            <v-card-text>
-                <v-form ref="answerForm" v-model="isAnswerFormValid">
-                    <v-textarea
-                        v-model="answerContents"
-                        label="답변 내용"
-                        :rules="answerRules"
-                        rows="5"
-                        auto-grow
-                        variant="outlined"
-                    ></v-textarea>
-                    <div class="d-flex justify-end gap-2">
-                        <v-btn
-                            color="primary"
-                            :loading="answerLoading"
-                            :disabled="!isAnswerFormValid"
-                            @click="createAnswer"
-                        >
-                            답변 등록
-                        </v-btn>
+                    <div class="post-info">
+                        <div class="info-item">
+                            <v-icon size="small" color="grey">mdi-account</v-icon>
+                            <span>신고자: {{ reporterNickname }}</span>
+                        </div>
+                        <div class="info-item">
+                            <v-icon size="small" color="grey">mdi-account-alert</v-icon>
+                            <span>신고 대상: {{ reportedNickname }}</span>
+                        </div>
+                        <div class="info-item">
+                            <v-icon size="small" color="grey">mdi-calendar</v-icon>
+                            <span>작성일: {{ new Date(report?.createdTime).toLocaleDateString() }}</span>
+                        </div>
+                        <div class="info-item">
+                            <v-icon size="small" color="grey">mdi-update</v-icon>
+                            <span>수정일: {{ new Date(report?.updatedTime).toLocaleDateString() }}</span>
+                        </div>
                     </div>
-                </v-form>
-            </v-card-text>
-        </v-card>
-    </v-container>
+                </div>
+
+                <v-divider></v-divider>
+                <div class="post-content pa-6">
+                    <p class="content-text">{{ report?.contents }}</p>
+                    
+                    <div v-if="report?.photos && report.photos.length > 0" class="image-grid mt-4">
+                        <v-img
+                            v-for="(photo, index) in report.photos"
+                            :key="index"
+                            :src="photo"
+                            @click="openImageDialog(photo)"
+                            class="post-image"
+                            height="200"
+                            cover
+                        ></v-img>
+                    </div>
+                </div>
+
+                <!-- 작성자 전용 버튼 -->
+                <v-divider v-if="isAuthor"></v-divider>
+                <v-card-actions v-if="isAuthor" class="pa-4">
+                    <v-spacer></v-spacer>
+                    <v-btn color="primary" variant="outlined" class="mr-2" @click="editPost">
+                        <v-icon left class="mr-1">mdi-pencil</v-icon>
+                        수정하기
+                    </v-btn>
+                    <v-btn color="error" variant="outlined" @click="deletePost">
+                        <v-icon left class="mr-1">mdi-delete</v-icon>
+                        삭제하기
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+
+            <!-- 처리 결과 섹션 -->
+            <v-card v-if="answer" class="answer-card mb-6" elevation="2">
+                <div class="answer-header pa-6">
+                    <div class="d-flex justify-space-between align-center">
+                        <h3 class="text-h6 font-weight-bold">
+                            <v-icon color="success" class="mr-2">mdi-check-circle</v-icon>
+                            처리 결과
+                        </h3>
+                        <div v-if="userRole === 'ADMIN'" class="d-flex gap-2">
+                            <v-btn icon="mdi-pencil" size="small" @click="startEditAnswer"></v-btn>
+                            <v-btn icon="mdi-delete" size="small" color="error" @click="deleteAnswer"></v-btn>
+                        </div>
+                    </div>
+                </div>
+
+                <v-divider></v-divider>
+                <div class="answer-content pa-6">
+                    <v-form
+                        v-if="isEditingAnswer"
+                        ref="editAnswerForm"
+                        v-model="isAnswerFormValid"
+                    >
+                        <v-textarea
+                            v-model="editAnswerContents"
+                            label="답변 내용"
+                            :rules="answerRules"
+                            rows="5"
+                            auto-grow
+                            variant="outlined"
+                        ></v-textarea>
+                        <div class="d-flex justify-end gap-2">
+                            <v-btn color="error" variant="text" @click="cancelEditAnswer">
+                                취소
+                            </v-btn>
+                            <v-btn
+                                color="primary"
+                                :loading="answerLoading"
+                                :disabled="!isAnswerFormValid"
+                                @click="updateAnswer"
+                            >
+                                저장
+                            </v-btn>
+                        </div>
+                    </v-form>
+                    <p v-else class="content-text">{{ answer.contents }}</p>
+                </div>
+            </v-card>
+
+            <!-- 관리자용 처리 등록 폼 -->
+            <v-card v-else-if="userRole === 'ADMIN'" class="answer-form-card" elevation="2">
+                <div class="answer-header pa-6">
+                    <h3 class="text-h6 font-weight-bold">
+                        <v-icon color="primary" class="mr-2">mdi-clipboard-check</v-icon>
+                        처리 결과 등록
+                    </h3>
+                </div>
+                <v-divider></v-divider>
+                <div class="pa-6">
+                    <v-form ref="answerForm" v-model="isAnswerFormValid">
+                        <v-textarea
+                            v-model="answerContents"
+                            label="처리 결과"
+                            :rules="answerRules"
+                            rows="5"
+                            auto-grow
+                            variant="outlined"
+                        ></v-textarea>
+                        <div class="d-flex justify-end mt-4">
+                            <v-btn
+                                color="primary"
+                                :loading="answerLoading"
+                                :disabled="!isAnswerFormValid"
+                                @click="createAnswer"
+                            >
+                                등록하기
+                            </v-btn>
+                        </div>
+                    </v-form>
+                </div>
+            </v-card>
+
+            <!-- 하단 버튼 -->
+            <div class="d-flex mt-6">
+                <v-btn color="grey" variant="outlined" @click="goToList">
+                    <v-icon left class="mr-1">mdi-arrow-left</v-icon>
+                    목록으로
+                </v-btn>
+            </div>
+        </v-container>
+    </div>
 </template>
 
 <script>
@@ -392,30 +390,79 @@ export default {
             }
         },
         goToList() {
-            this.$router.push('/report/list');
+            this.$router.push({
+                path: '/service',
+                query: { tab: 'report' }
+            });
         }
     }
 }
 </script>
 
 <style scoped>
-.content-text {
-    white-space: pre-line;
-    line-height: 1.5;
+.report-detail {
+    background-color: #f5f5f5;
+    min-height: 100vh;
 }
 
-.image-container {
+.post-card, .answer-card, .answer-form-card {
+    border-radius: 12px;
+    background-color: white;
+}
+
+.post-header, .answer-header {
+    background-color: #fafafa;
+}
+
+.status-chip {
+    font-weight: 500;
+}
+
+.post-info, .answer-info {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 16px;
+    color: #666;
 }
 
-.report-image {
-    width: 200px;
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.9rem;
+}
+
+.content-text {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #333;
+    white-space: pre-wrap;
+}
+
+.image-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+.post-image {
+    border-radius: 8px;
     cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.post-image:hover {
+    transform: scale(1.02);
 }
 
 .gap-2 {
     gap: 8px;
+}
+
+@media (max-width: 600px) {
+    .post-info, .answer-info {
+        flex-direction: column;
+        gap: 8px;
+    }
 }
 </style>
