@@ -60,8 +60,11 @@
 
 ### 🔍 주요 기능
 ✅ **홈화면에서 유명 레스토랑과 인기 인플루언서를 확인 가능**  
+
 ✅ **레스토랑 리스트를 통해 원하는 식당 예약 가능**  
+<img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/reservation_create.gif?raw=true" width="600">
 ✅ **좋아요 및 댓글 기능으로 맛집 추천 및 공유 활성화**  
+<img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EA%B2%8C%EC%8B%9C%EA%B8%80%EC%83%81%EC%84%B8_%EC%A2%8B%EC%95%84%EC%9A%94_%EB%8C%93%EA%B8%80%EC%9E%91%EC%84%B1.gif?raw=true" width="600">
 
 ---
 
@@ -110,7 +113,7 @@
 
  ##  요구사항정의에 따른 프론트엔드 기능 시연  
 <details>
-  <summary>▶️회원 & 관리자 </summary>
+  <summary>📂회원 & 관리자 </summary>
   <details>
     <summary> ▶️ 일반회원-회원가입</summary>
     <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EC%9D%BC%EB%B0%98%ED%9A%8C%EC%9B%90_%ED%9A%8C%EC%9B%90%EA%B0%80%EC%9E%85.gif?raw=true" width="600">
@@ -173,7 +176,7 @@
   </details>
 </details><br>
 <details>
-  <summary>▶️ 레스토랑</summary>
+  <summary>📂 레스토랑</summary>
   <details>
   <summary>▶️ 레스토랑 회원가입(링크x)</summary>
   <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/testtest.gif?raw=true" width="600">
@@ -216,7 +219,7 @@
 </details>
 </details><br>
 <details>
-  <summary>▶️고객센터</summary>
+  <summary>📂고객센터</summary>
   <details>
   <summary>▶️ 문의사항-등록-수정-삭제</summary>
   <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%AC%B8%EC%9D%98%EC%82%AC%ED%95%AD_%EB%93%B1%EB%A1%9D_%EC%88%98%EC%A0%95_%EC%82%AD%EC%A0%9C.gif?raw=true" width="600">
@@ -227,7 +230,7 @@
 </details>
 </details><br>
 <details>
-  <summary>▶️ 신고</summary>
+  <summary>📂 신고</summary>
   <details>
   <summary>▶️ 신고-등록-수정-삭제</summary>
   <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EC%8B%A0%EA%B3%A0_%EB%93%B1%EB%A1%9D_%EC%88%98%EC%A0%95_%EC%82%AD%EC%A0%9C.gif?raw=true" width="600">
@@ -242,7 +245,7 @@
 </details>
 </details><br>
 <details>
-  <summary>▶️ 공지사항 & 이벤트</summary>
+  <summary>📂 공지사항 & 이벤트</summary>
   <details>
   <summary>▶️ 이벤트생성</summary>
   <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/event_create.gif?raw=true" width="600">
