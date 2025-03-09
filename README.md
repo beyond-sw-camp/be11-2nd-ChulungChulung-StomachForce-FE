@@ -171,7 +171,7 @@
   <summary>▶️ 회원관리-상태수정</summary>
     <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%ED%9A%8C%EC%9B%90%EA%B4%80%EB%A6%AC_%EC%83%81%ED%83%9C%EC%88%98%EC%A0%95.gif?raw=true" width="600">
   </details>
-</details>
+</details><br>
 <details>
   <summary>▶️ 레스토랑</summary>
   <details>
@@ -214,7 +214,7 @@
   <summary>▶️ 메뉴등록</summary>
   <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%A9%94%EB%89%B4_%EB%93%B1%EB%A1%9D_%EC%88%98%EC%A0%95_%EC%82%AD%EC%A0%9C.gif?raw=true" width="600">
 </details>
-</details>
+</details><br>
 <details>
   <summary>▶️고객센터</summary>
   <details>
@@ -225,7 +225,7 @@
   <summary>▶️ 문의사항-답변-등록-수정-삭제</summary>
   <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%AC%B8%EC%9D%98%EC%82%AC%ED%95%AD_%EB%8B%B5%EB%B3%80_%EB%93%B1%EB%A1%9D_%EC%88%98%EC%A0%95_%EC%82%AD%EC%A0%9C.gif?raw=true" width="600">
 </details>
-</details>
+</details><br>
 <details>
   <summary>▶️ 신고</summary>
   <details>
@@ -240,7 +240,7 @@
   <summary>▶️ 유저-프로필-신고</summary>
   <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EC%9C%A0%EC%A0%80_%ED%94%84%EB%A1%9C%ED%95%84_%EC%8B%A0%EA%B3%A0.gif?raw=true" width="600">
 </details>
-</details>
+</details><br>
 <details>
   <summary>▶️ 공지사항 & 이벤트</summary>
   <details>
