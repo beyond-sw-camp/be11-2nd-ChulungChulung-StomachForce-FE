@@ -50,13 +50,15 @@
   <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/stomach.png?raw=true" width="30" align="center">
   <strong>뱃살력이란?</strong>  
 </p>
+맛집을 찾고 예약하는 과정이 번거롭고, 사용자 간의 소통이 단절된 기존 시스템을 개선하기 위해 뱃살력을 생각하게 되었습니다. 단순한 예약 플랫폼이 아닌, 외식 경험을 더욱 기억되고 특별하게 만드는 커뮤니티 공간을 제공하고자 했습니다. 사용자는 직관적인 인터페이스로 손쉽게 레스토랑을 탐색하고, 게시글을 통해 정보를 확인하며, 다양한 사용자들과 소통할 수 있습니다. 이를 통해 보다 즐거운 외식 문화를 만들어 보고자 했습니다. 또한, 예약을 하는 사람뿐만 아니라 레스토랑을 운영하는 사업자도 뱃살력을 통해 편리한 가게 홍보 및 운영을 진행할수 있도록 서비스를 설계하였습니다.
 
 ### 🎯 배경 및 목적
 - 레스토랑 예약과 SNS를 하나로 통합  
 - 효율적이고 직관적인 맛집 탐색 및 예약 시스템  
 - 실시간 공지 및 이벤트 확인으로 최신 정보 제공  
 - 커뮤니티 기능을 통한 사용자 간 소통 극대화  
-- 편리한 고객센터를 통한 문의 및 신고 접수  
+- 편리한 고객센터를 통한 문의 및 신고 접수
+- 쉬운 메뉴 설정 및 가게 홍보보
 
 ### 🔍 주요 기능
 ✅ **홈화면에서 유명 레스토랑과 인기 인플루언서를 확인 가능**  
@@ -67,6 +69,8 @@
 ✅ **좋아요 및 댓글 기능으로 맛집 추천 및 공유 활성화**  
 <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EA%B2%8C%EC%8B%9C%EA%B8%80%EC%83%81%EC%84%B8_%EC%A2%8B%EC%95%84%EC%9A%94_%EB%8C%93%EA%B8%80%EC%9E%91%EC%84%B1.gif?raw=true" width="600">
 
+✅ **쉬운 레스토랑 메뉴 등록**  
+<img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%A9%94%EB%89%B4_%EB%93%B1%EB%A1%9D_%EC%88%98%EC%A0%95_%EC%82%AD%EC%A0%9C.gif?raw=true" width="600">
 
 ## 기획
 📌 **요구사항 정의**  
