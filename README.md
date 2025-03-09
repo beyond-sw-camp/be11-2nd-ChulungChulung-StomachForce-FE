@@ -112,11 +112,11 @@
 <details>
   <summary>▶️회원 & 관리자 </summary>
   <details>
-    <summary>▶️ 일반회원-회원가입</summary>
+    <summary> ▶️ 일반회원-회원가입</summary>
     <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EC%9D%BC%EB%B0%98%ED%9A%8C%EC%9B%90_%ED%9A%8C%EC%9B%90%EA%B0%80%EC%9E%85.gif?raw=true" width="600">
   </details>
   <details>
-    <summary>▶️ 업로드예정</summary>
+    <summary> ▶️ 일반유저로그인</summary>
     <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/testtest.gif?raw=true" width="600">
   </details>
   <details>
