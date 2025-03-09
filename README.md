@@ -140,6 +140,10 @@
 <details>
   <summary>▶️ 업로드예정</summary>
   <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/testtest.gif?raw=true" width="600">
+  <details>
+  <summary>▶️ 업로드예정</summary>
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/testtest.gif?raw=true" width="600">
+</details>
 </details>
 <details>
   <summary>▶️ 업로드예정</summary>
