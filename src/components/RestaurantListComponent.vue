@@ -61,8 +61,8 @@
         </div>
 
         <!-- 🔹 레스토랑 리스트 -->
-        <v-row>
-            <v-col v-for="restaurant in restaurantList" :key="restaurant.id" cols="12" sm="6" md="4" lg="3">
+        <v-row v-show="restaurantList.length > 0">
+            <v-col v-for="(restaurant, index) in restaurantList" :key="restaurant.id || index" cols="12" sm="6" md="4" lg="3">
                 <v-card @click="goToDetail(restaurant.id)" class="restaurant-card" elevation="0">
                     <div class="image-wrapper">
                         <v-img 
@@ -84,7 +84,9 @@
                             </v-chip>
                             <div class="rating-badge">
                                 <v-icon color="amber-darken-2" size="18">mdi-star</v-icon>
-                                <span>{{ restaurant.averageRating }}</span>
+                                <span class="review-count">
+                                    별점 {{ restaurant.averageRating ? restaurant.averageRating.toFixed(1) : '0.0' }} <br> 리뷰 {{ restaurant.reviewCount }}개
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -362,6 +364,10 @@ export default {
             searchType: "name",
             searchValue: "",
             selectedType: null,
+            page: 0, // 현재 페이지 번호
+            pageSize: 8, // 한 번에 불러올 개수
+            isLoading: false, // 데이터 로딩 상태
+            isLastPage: false, // 마지막 페이지 여부
             searchOptions: [
                 { text: "레스토랑명", value: "name" },
                 { text: "주소", value: "address" },
@@ -385,24 +391,72 @@ export default {
     },
     created() {
         this.loadData();
+        window.addEventListener("scroll", this.scrollPagination);
+    },
+    beforeUnmount() {
+        this.isLoading = true;
+        window.removeEventListener("scroll", this.scrollPagination);
     },
     methods: {
-        async searchRestaurants() {
-            this.loadData();
-        },
         async loadData() {
+            if (this.isLoading || this.isLastPage) return;
+
+            this.isLoading = true;
             try {
-                let params = { size: 8, page: 0 };
+                let params = { size: this.pageSize, page: this.page };
+
                 if (this.searchType === "restaurantType" && this.selectedType) {
                     params["restaurantType"] = this.selectedType;
                 } else if (this.searchValue) {
                     params[this.searchType] = this.searchValue;
                 }
+
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/restaurant/list`, { params });
-                this.restaurantList = response.data.content;
+
+                const newRestaurants = response.data?.content || [];
+                
+                if (newRestaurants.length === 0) {
+                    console.log("📌 더 이상 불러올 데이터 없음");
+                    this.isLastPage = true;
+                    return;
+                }
+
+                // 중복 제거
+                const existingIds = new Set(this.restaurantList.map(r => r.id));
+                const uniqueNewRestaurants = newRestaurants.filter(r => !existingIds.has(r.id));
+
+                if (uniqueNewRestaurants.length === 0) {
+                    console.log("📌 중복된 데이터가 감지되어 추가하지 않음");
+                    this.isLastPage = true;
+                    return;
+                }
+
+                this.restaurantList = [...this.restaurantList, ...uniqueNewRestaurants];
+                this.page++;
             } catch (e) {
-                console.error("데이터 로드 실패:", e);
+                console.error("❌ 데이터 로드 실패:", e);
+            } finally {
+                this.isLoading = false;
             }
+        },
+        scrollPagination() {
+            if (this.isLoading || this.isLastPage) return;
+
+            const isBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 200;
+            if (isBottom) {
+                this.loadData();
+            }
+        },
+        searchRestaurants() {
+            console.log("📌 검색 실행: ", this.searchValue || this.selectedType);
+
+            // ✅ 검색 시 기존 데이터 초기화 & 첫 페이지부터 다시 시작
+            this.page = 0;
+            this.restaurantList = [];
+            this.isLastPage = false;
+            
+            // ✅ 검색 후에도 페이지네이션 유지
+            this.loadData();
         },
         setCategoryAndSearch(categoryValue) {
             this.searchType = "restaurantType";
@@ -410,7 +464,12 @@ export default {
             this.searchRestaurants();
         },
         goToDetail(id) {
-            this.$router.push(`/restaurant/detail/${id}`);
+            if (this.isLoading) return;
+            this.isLoading = true;
+            
+            this.$router.push(`/restaurant/detail/${id}`).catch(() => {
+                this.isLoading = false; // 만약 라우팅 실패 시 다시 false로 설정
+            });
         }
     }
 };
