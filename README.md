@@ -65,7 +65,7 @@
 
 ### 🔍 주요 기능
 ✅ **홈화면에서 유명 레스토랑과 인기 인플루언서를 확인 가능**  
-
+<img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91_%EC%A0%84%EC%B2%B4%20%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91%20%EC%A1%B0%ED%9A%8C.gif?raw=true" width="600"><br>
 ✅ **레스토랑 리스트를 통해 원하는 식당 예약 가능**  
 <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/reservation_create.gif?raw=true" width="600"><br>
 
@@ -184,20 +184,20 @@
 <details>
   <summary>📂 레스토랑</summary>
   <details>
-  <summary>▶️ 레스토랑 회원가입(링크x)</summary>
-  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/testtest.gif?raw=true" width="600">
+  <summary>▶️ 레스토랑 회원가입</summary>
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91_%EC%82%AC%EC%97%85%EC%9E%90%20%ED%9A%8C%EC%9B%90%EA%B0%80%EC%9E%85.gif?raw=true" width="600">
 </details>
   <details>
-  <summary>▶️ 레스토랑 로그인(링크x)</summary>
-  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/testtest.gif?raw=true" width="600">
+  <summary>▶️ 레스토랑 로그인</summary>
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91_%EC%82%AC%EC%97%85%EC%9E%90%20%EB%A1%9C%EA%B7%B8%EC%9D%B8.gif?raw=true" width="600">
 </details>
   <details>
   <summary>▶️ 레스토랑 리뷰조회</summary>
   <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91_%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91%20%EB%A6%AC%EB%B7%B0%20%EC%A1%B0%ED%9A%8C.gif?raw=true" width="600">
 </details>
   <details>
-  <summary>▶️ 레스토랑 정보 수정(링크x)</summary>
-  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/testtest.gif?raw=true" width="600">
+  <summary>▶️ 레스토랑 정보 수정</summary>
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91_%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91%20%EC%A0%95%EB%B3%B4%20%EC%88%98%EC%A0%95.gif?raw=true" width="600">
 </details>
   <details>
   <summary>▶️ 레스토랑 정보조회 정보</summary>
@@ -212,8 +212,8 @@
   <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91_%EC%A3%BC%EC%86%8C%20%EB%B3%84%20%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91%20%EA%B2%80%EC%83%89.gif?raw=true" width="600">
 </details>
   <details>
-  <summary>▶️ 전체 레스토랑 조회(링크x)</summary>
-  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/testtest.gif?raw=true" width="600">
+  <summary>▶️ 전체 레스토랑 조회</summary>
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91_%EC%A0%84%EC%B2%B4%20%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91%20%EC%A1%B0%ED%9A%8C.gif?raw=true" width="600">
 </details>
   <details>
   <summary>▶️ 카테고리별 레스토랑 조회</summary>
