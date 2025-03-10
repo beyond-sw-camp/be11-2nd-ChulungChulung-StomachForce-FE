@@ -202,9 +202,7 @@ export default {
         localStorage.setItem("profilePhoto", updatedData.profilePhoto);
         alert("회원정보가 수정되었습니다.");
         // 라우팅 후 페이지 전체 리로드
-        this.$router.push("/user/myPage").then(() => {
-          window.location.reload();
-        });
+        window.location.href = "/user/myPage";
       } catch (error) {
         console.error("회원정보 수정 실패", error);
         alert("회원정보 수정에 실패했습니다.");
