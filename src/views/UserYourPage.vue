@@ -27,7 +27,7 @@
     <v-main v-if="isBlockedByOwner">
       <v-container class="pa-12" style="text-align: center;">
         <h2>비공개 계정입니다.</h2>
-        <p>해당 계정은 현재 차단 상태입니다.</p>
+        <p>해당 계정 게시물을 확인하실 수 없습니다.</p>
       </v-container>
     </v-main>
 
@@ -57,11 +57,11 @@
               <!-- 서버에서 받은 follwers, followings 값을 그대로 사용 -->
               <v-col cols="auto" class="stat-item text-center">
                 <strong @click="openFollowersDialog" style="cursor:pointer;">팔로워</strong>
-                <p @click="openFollowersDialog" style="cursor:pointer;">{{ followerCount }}</p>
+                <p @click="openFollowersDialog" style="cursor:pointer;">{{ followerCountDisplay }}</p>
               </v-col>
               <v-col cols="auto" class="stat-item text-center">
                 <strong @click="openFollowingDialog" style="cursor:pointer;">팔로잉</strong>
-                <p @click="openFollowingDialog" style="cursor:pointer;">{{ followingCount }}</p>
+                <p @click="openFollowingDialog" style="cursor:pointer;">{{ filteredFollowing.length }}</p>
               </v-col>
               <v-col cols="auto" class="stat-item text-center">
                 <strong>게시글</strong>
@@ -261,7 +261,6 @@ export default {
       postIds: [],
       totalPost: 0,
       // 백엔드에서 받은 팔로워/팔로잉 수
-      followerCount: 0,
       followingCount: 0,
       // 페이징/무한 스크롤 상태
       pageSize: 6,
@@ -269,6 +268,8 @@ export default {
       isLoading: false,
       isLastPage: false,
       isFollowing: false,
+      followerCount: 0,  // 서버에서 받은 전체 숫자 (새로고침 시에는 이 값으로 초기화)
+      followerCountDisplay: 0,
       // 차단 관련 상태
       isBlockedByOwner: false, // 페이지 주인이 방문자를 차단한 경우
       iBlockedOwner: false,    // 내가 해당 페이지 주인을 차단했는지 여부
@@ -383,6 +384,7 @@ export default {
           this.postIds = data.postIds || [];
           // 서버에서 받은 followers/followings 값 사용
           this.followerCount = data.follwers;
+          this.followerCountDisplay = data.follwers; 
           this.followingCount = data.followings;
         } else {
           this.postPhotos = [...this.postPhotos, ...(data.postPhotos || [])];
@@ -420,8 +422,6 @@ export default {
       this.$router.push(`/post/detail/${postId}`);
     },
     async toggleFollow() {
-      // 현재 팔로잉 상태 토글 후 API 호출
-      this.isFollowing = !this.isFollowing;
       try {
         const response = await axios.post(
           `${process.env.VUE_APP_API_BASE_URL}/user/follow`,
@@ -433,20 +433,39 @@ export default {
             }
           }
         );
-    
+        
         const responseMessage = response.data;
-        console.log(responseMessage)
+        console.log(responseMessage);
+        const currentUser = localStorage.getItem("userNickName");
         if (responseMessage.result === "팔로우가 취소되었습니다.") {
           this.isFollowing = false;
-          this.followerCount--;
+          // followersList에서 현재 사용자를 제거하는 기존 로직은 그대로 두고,
+          // 화면에 보이는 숫자만 바로 줄임
+          this.followerCountDisplay = Math.max(this.followerCountDisplay - 1, 0);
+          this.followersList = this.followersList.filter(
+            follower => follower.userNickName !== currentUser
+          );
         } else if (responseMessage.result === "ok") {
           this.isFollowing = true;
-          this.followerCount++;
+          // 화면에 보이는 숫자 1 증가
+          this.followerCountDisplay++;
+          // followersList에 현재 사용자의 정보를 추가 (이미 있는지 확인)
+          const currentProfile = localStorage.getItem("profilePhoto") || "https://via.placeholder.com/50";
+          if (!this.followersList.find(follower => follower.userNickName === currentUser)) {
+            this.followersList.push({
+              userNickName: currentUser,
+              userProfile: currentProfile,
+              influencer: "N" // 또는 적절한 값을 설정
+            });
+          }
         }
       } catch (error) {
         console.error("팔로우 요청 실패:", error);
       }
     },
+
+
+
     reportUser() {
       this.$router.push({
         path: "/report/create",
@@ -496,7 +515,16 @@ export default {
         );
         alert("차단 해제되었습니다.");
         this.iBlockedOwner = false;
-        // 차단 해제 후 목록 갱신
+        
+        // 차단 해제 시 팔로우 관계가 이미 취소되었으므로, 클라이언트 상태 업데이트:
+        this.isFollowing = false;
+        // 현재 사용자의 닉네임을 로컬 스토리지 또는 다른 곳에서 가져온다고 가정
+        const currentUser = localStorage.getItem("userNickName");
+        this.followersList = this.followersList.filter(
+          follower => follower.userNickName !== currentUser
+        );
+        
+        // 목록 갱신도 추가적으로 호출할 수 있음
         await this.fetchBlockedList();
         await this.fetchFollowers();
         await this.fetchFollowing();
@@ -505,12 +533,13 @@ export default {
         alert("차단 해제 요청에 실패했습니다.");
       }
     },
+
     async fetchFollowers() {
       try {
-        const response = await axios.get(
+        const response = await axios.post(
           `${process.env.VUE_APP_API_BASE_URL}/user/followerList`,
+          { nickName: this.$route.query.nickName },
           {
-            params: { nickName: this.$route.query.nickName },
             headers: {
               Authorization: `Bearer ${localStorage.getItem("accessToken")}`
             }
@@ -522,12 +551,13 @@ export default {
         console.error("팔로워 목록 로드 실패:", error);
       }
     },
+
     async fetchFollowing() {
       try {
-        const response = await axios.get(
+        const response = await axios.post(
           `${process.env.VUE_APP_API_BASE_URL}/user/followingList`,
+          { nickName: this.$route.query.nickName },
           {
-            params: { nickName: this.$route.query.nickName },
             headers: {
               Authorization: `Bearer ${localStorage.getItem("accessToken")}`
             }
@@ -539,6 +569,7 @@ export default {
         console.error("팔로잉 목록 로드 실패:", error);
       }
     },
+
     async fetchBlockedList() {
       try {
         const response = await axios.get(
@@ -554,12 +585,15 @@ export default {
         console.error("차단 목록 로드 실패:", error);
       }
     },
-    openFollowersDialog() {
+    async openFollowersDialog() {
+      await this.fetchFollowers();  // 최신 팔로워 명단을 다시 불러옴
       this.showFollowersDialog = true;
     },
-    openFollowingDialog() {
+    async openFollowingDialog() {
+      await this.fetchFollowing();  // 최신 팔로잉 명단을 다시 불러옴
       this.showFollowingDialog = true;
     },
+
     goToPostCreate() {
       this.$router.push("/post/create");
     },

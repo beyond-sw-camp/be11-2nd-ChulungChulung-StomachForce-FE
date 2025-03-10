@@ -270,9 +270,9 @@ export default {
   },
   async created() {
     // 먼저 팔로워/팔로잉 리스트를 로드한 후, 각 항목별로 차단 여부를 확인
+    await this.loadData();
     await this.fetchFollowers();
     await this.fetchFollowing();
-    await this.loadData();
     window.addEventListener("scroll", this.scrollPagination);
   },
   beforeUnmount() {
@@ -403,11 +403,15 @@ export default {
     },
     async fetchFollowers() {
       try {
-        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/user/followerList`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+        const response = await axios.post(
+          `${process.env.VUE_APP_API_BASE_URL}/user/followerList`,
+          { nickName: this.userNickName }, // $route.query.nickName 대신 this.userNickName 사용
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+            }
           }
-        });
+        );
         // 각 항목별로 차단 여부 확인 후, isBlocked 필드를 추가
         const list = response.data;
         const checkedList = await Promise.all(
@@ -421,13 +425,19 @@ export default {
         console.error("팔로워 목록 로드 실패:", error);
       }
     },
+
     async fetchFollowing() {
       try {
-        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/user/followingList`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+        const response = await axios.post(
+          `${process.env.VUE_APP_API_BASE_URL}/user/followingList`,
+          { nickName: this.userNickName }, // 여기도 this.userNickName 사용
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+            }
           }
-        });
+        );
+        console.log(response.data);
         // 각 항목별로 차단 여부 확인 후, isBlocked 필드를 추가
         const list = response.data;
         const checkedList = await Promise.all(
@@ -441,6 +451,8 @@ export default {
         console.error("팔로잉 목록 로드 실패:", error);
       }
     },
+
+
     async openFollowersDialog() {
       this.showFollowersDialog = true;
     },
