@@ -21,7 +21,7 @@
             <div class="restaurant-stats">
               <span class="stat-item">
                 <v-icon color="amber">mdi-star</v-icon>
-                {{ restaurant.averageRating }}
+                {{ restaurant.averageRating ? restaurant.averageRating.toFixed(1) : '0.0' }}
               </span>
               <span class="stat-divider">|</span>
               <span class="stat-item">
@@ -613,7 +613,8 @@ export default {
         alert("리뷰 등록 완료");
       } catch (error) {
         console.error("리뷰 작성 실패:", error);
-        alert("리뷰 작성에 실패했습니다. 다시 시도해주세요.");
+        const errorMessage = error.response?.data?.status_message || "리뷰 작성에 실패했습니다. 다시 시도해주세요.";
+        alert(errorMessage);
       } finally {
         this.reviewLoading = false;
       }
