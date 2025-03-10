@@ -65,7 +65,7 @@
 
 ### 🔍 주요 기능
 ✅ **홈화면에서 유명 레스토랑과 인기 인플루언서를 확인 가능**  
-<img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91_%EC%A0%84%EC%B2%B4%20%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91%20%EC%A1%B0%ED%9A%8C.gif?raw=true" width="600"><br><br><br>
+<img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%ED%99%88%ED%8E%98%EC%9D%B4%EC%A7%80%20%EC%B4%88%EA%B8%B0%ED%99%94%EB%A9%B4.gif?raw=true" width="600"><br><br><br>
 ✅ **레스토랑 리스트를 통해 원하는 식당 예약 가능**  
 <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/reservation_create.gif?raw=true" width="600"><br><br><br>
 
