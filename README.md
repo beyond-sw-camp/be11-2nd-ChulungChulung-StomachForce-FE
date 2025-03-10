@@ -65,12 +65,12 @@
 
 ### 🔍 주요 기능
 ✅ **홈화면에서 유명 레스토랑과 인기 인플루언서를 확인 가능**  
-<img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91_%EC%A0%84%EC%B2%B4%20%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91%20%EC%A1%B0%ED%9A%8C.gif?raw=true" width="600"><br>
+<img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91_%EC%A0%84%EC%B2%B4%20%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91%20%EC%A1%B0%ED%9A%8C.gif?raw=true" width="600"><br><br><br>
 ✅ **레스토랑 리스트를 통해 원하는 식당 예약 가능**  
-<img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/reservation_create.gif?raw=true" width="600"><br>
+<img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/reservation_create.gif?raw=true" width="600"><br><br><br>
 
 ✅ **좋아요 및 댓글 기능으로 맛집 추천 및 공유 활성화**  
-<img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EA%B2%8C%EC%8B%9C%EA%B8%80%EC%83%81%EC%84%B8_%EC%A2%8B%EC%95%84%EC%9A%94_%EB%8C%93%EA%B8%80%EC%9E%91%EC%84%B1.gif?raw=true" width="600">
+<img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EA%B2%8C%EC%8B%9C%EA%B8%80%EC%83%81%EC%84%B8_%EC%A2%8B%EC%95%84%EC%9A%94_%EB%8C%93%EA%B8%80%EC%9E%91%EC%84%B1.gif?raw=true" width="600"><br><br><br>
 
 ✅ **쉬운 레스토랑 메뉴 등록**  
 <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%A9%94%EB%89%B4_%EB%93%B1%EB%A1%9D_%EC%88%98%EC%A0%95_%EC%82%AD%EC%A0%9C.gif?raw=true" width="600">
