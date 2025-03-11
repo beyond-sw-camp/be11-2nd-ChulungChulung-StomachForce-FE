@@ -11,7 +11,7 @@
 <table>
   <tr>
     <td align="center" width="150">
-      <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/%EC%8B%AC%EC%88%9C.jpeg?raw=true" width="120" height="120">
+      <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/src/assets/%EC%8B%AC%EC%88%9C.jpeg?raw=true" width="120" height="120">
       <hr>
       <b>임성재</b><br>팀장
     </td>
