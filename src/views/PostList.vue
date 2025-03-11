@@ -181,12 +181,14 @@ export default {
       isLastPage: false,   // 마지막 페이지 여부
       isLoading: false,    // 로딩 상태
       influencerRanking: [], // 인플루언서 랭킹 데이터
-      loginUserNickName: "" // 로그인한 유저의 닉네임 (서버에서 받아옴)
+      loginUserNickName: "", // 로그인한 유저의 닉네임 (서버에서 받아옴)
+      blockedList: []
     };
   },
   async created() {
     // 로그인한 유저 정보를 먼저 받아와서 loginUserNickName에 저장
     await this.fetchLoginUserInfo();
+    await this.fetchBlockedList();
     await this.loadPosts({ done: () => {} });
     this.loadInfluencers();
   },
@@ -204,6 +206,21 @@ export default {
         console.error("로그인 유저 정보 불러오기 실패:", error);
       }
     },
+    async fetchBlockedList() {
+      try {
+        const response = await axios.get(
+          `${process.env.VUE_APP_API_BASE_URL}/user/blockedList`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+            }
+          }
+        );
+        this.blockedList = response.data;
+      } catch (error) {
+        console.error("차단 목록 로드 실패:", error);
+      }
+    },
     async loadPosts({ done }) {
       if (this.isLoading || this.isLastPage) return;
       this.isLoading = true;
@@ -217,7 +234,13 @@ export default {
             }
           }
         );
-        const newPosts = response.data.content;
+        let newPosts = response.data.content;
+        
+        // 차단한 유저의 닉네임 배열 생성
+        const blockedNicknames = this.blockedList.map(user => user.userNickName);
+        // blockedNicknames에 포함되지 않은 게시글만 필터링
+        newPosts = newPosts.filter(post => !blockedNicknames.includes(post.userNickName));
+        
         if (newPosts.length === 0) {
           this.isLastPage = true;
           done("empty");

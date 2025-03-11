@@ -493,6 +493,7 @@ export default {
         await this.fetchBlockedList();
         await this.fetchFollowers();
         await this.fetchFollowing();
+        window.location.reload();
       } catch (error) {
         console.error("차단 요청 실패:", error);
         alert("차단 요청에 실패했습니다.");
