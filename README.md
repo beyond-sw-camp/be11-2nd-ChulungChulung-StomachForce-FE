@@ -65,15 +65,15 @@
 
 ### 🔍 주요 기능
 ✅ **홈화면에서 유명 레스토랑과 인기 인플루언서를 확인 가능**  
-<img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%ED%99%88%ED%8E%98%EC%9D%B4%EC%A7%80%20%EC%B4%88%EA%B8%B0%ED%99%94%EB%A9%B4.gif?raw=true" width="600"><br><br><br>
+<img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%ED%99%88%ED%8E%98%EC%9D%B4%EC%A7%80%20%EC%B4%88%EA%B8%B0%ED%99%94%EB%A9%B4.gif?raw=true" width="600"><br><br><br>
 ✅ **레스토랑 리스트를 통해 원하는 식당 예약 가능**  
-<img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/reservation_create.gif?raw=true" width="600"><br><br><br>
+<img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/reservation_create.gif?raw=true" width="600"><br><br><br>
 
 ✅ **좋아요 및 댓글 기능으로 맛집 추천 및 공유 활성화**  
-<img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EA%B2%8C%EC%8B%9C%EA%B8%80%EC%83%81%EC%84%B8_%EC%A2%8B%EC%95%84%EC%9A%94_%EB%8C%93%EA%B8%80%EC%9E%91%EC%84%B1.gif?raw=true" width="600"><br><br><br>
+<img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%EA%B2%8C%EC%8B%9C%EA%B8%80%EC%83%81%EC%84%B8_%EC%A2%8B%EC%95%84%EC%9A%94_%EB%8C%93%EA%B8%80%EC%9E%91%EC%84%B1.gif?raw=true" width="600"><br><br><br>
 
 ✅ **쉬운 레스토랑 메뉴 등록**  
-<img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%A9%94%EB%89%B4_%EB%93%B1%EB%A1%9D_%EC%88%98%EC%A0%95_%EC%82%AD%EC%A0%9C.gif?raw=true" width="600">
+<img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%EB%A9%94%EB%89%B4_%EB%93%B1%EB%A1%9D_%EC%88%98%EC%A0%95_%EC%82%AD%EC%A0%9C.gif?raw=true" width="600">
 
 ## 기획
 📌 **요구사항 정의**  
@@ -122,143 +122,143 @@
   <summary>📂회원 & 관리자 </summary>
   <details>
     <summary> ▶️ 일반회원-회원가입</summary>
-    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EC%9D%BC%EB%B0%98%ED%9A%8C%EC%9B%90_%ED%9A%8C%EC%9B%90%EA%B0%80%EC%9E%85.gif?raw=true" width="600">
+    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%EC%9D%BC%EB%B0%98%ED%9A%8C%EC%9B%90_%ED%9A%8C%EC%9B%90%EA%B0%80%EC%9E%85.gif?raw=true" width="600">
   </details>
   <details>
     <summary> ▶️ 일반유저로그인</summary>
-    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EC%9D%BC%EB%B0%98%EC%9C%A0%EC%A0%80%EB%A1%9C%EA%B7%B8%EC%9D%B8.gif?raw=true" width="600">
+    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%EC%9D%BC%EB%B0%98%EC%9C%A0%EC%A0%80%EB%A1%9C%EA%B7%B8%EC%9D%B8.gif?raw=true" width="600">
   </details>
   <details>
     <summary>▶️ 예약생성</summary>
-    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/reservation_create.gif?raw=true" width="600">
+    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/reservation_create.gif?raw=true" width="600">
   </details>
   <details>
     <summary>▶️ 예약내역-조회-삭제-상세화면보기</summary>
-    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EC%98%88%EC%95%BD%EB%82%B4%EC%97%AD_%EC%A1%B0%ED%9A%8C_%EC%82%AD%EC%A0%9C_%EC%83%81%EC%84%B8%ED%99%94%EB%A9%B4%EB%B3%B4%EA%B8%B0.gif?raw=true" width="600">
+    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%EC%98%88%EC%95%BD%EB%82%B4%EC%97%AD_%EC%A1%B0%ED%9A%8C_%EC%82%AD%EC%A0%9C_%EC%83%81%EC%84%B8%ED%99%94%EB%A9%B4%EB%B3%B4%EA%B8%B0.gif?raw=true" width="600">
   </details>
   <details>
     <summary>▶️ 게시글 신고</summary>
-    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EA%B2%8C%EC%8B%9C%EA%B8%80_%EC%8B%A0%EA%B3%A0.gif?raw=true" width="600">
+    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%EA%B2%8C%EC%8B%9C%EA%B8%80_%EC%8B%A0%EA%B3%A0.gif?raw=true" width="600">
   </details>
     <details>
   <summary>▶️ 게시글상세-좋아요-댓글작성</summary>
-    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EA%B2%8C%EC%8B%9C%EA%B8%80%EC%83%81%EC%84%B8_%EC%A2%8B%EC%95%84%EC%9A%94_%EB%8C%93%EA%B8%80%EC%9E%91%EC%84%B1.gif?raw=true" width="600">
+    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%EA%B2%8C%EC%8B%9C%EA%B8%80%EC%83%81%EC%84%B8_%EC%A2%8B%EC%95%84%EC%9A%94_%EB%8C%93%EA%B8%80%EC%9E%91%EC%84%B1.gif?raw=true" width="600">
   </details>
     <details>
   <summary>▶️ 게시글작성-댓글작성-수정-삭제</summary>
-    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EA%B2%8C%EC%8B%9C%EA%B8%80%EC%9E%91%EC%84%B1_%EB%8C%93%EA%B8%80%EC%9E%91%EC%84%B1_%EC%88%98%EC%A0%95_%EC%82%AD%EC%A0%9C.gif?raw=true" width="600">
+    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%EA%B2%8C%EC%8B%9C%EA%B8%80%EC%9E%91%EC%84%B1_%EB%8C%93%EA%B8%80%EC%9E%91%EC%84%B1_%EC%88%98%EC%A0%95_%EC%82%AD%EC%A0%9C.gif?raw=true" width="600">
   </details>
     <details>
   <summary>▶️ 내정보-조회-수정</summary>
-    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%82%B4%EC%A0%95%EB%B3%B4_%EC%A1%B0%ED%9A%8C_%EC%88%98%EC%A0%95.gif?raw=true" width="600">
+    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%EB%82%B4%EC%A0%95%EB%B3%B4_%EC%A1%B0%ED%9A%8C_%EC%88%98%EC%A0%95.gif?raw=true" width="600">
   </details>
     <details>
   <summary>▶️ 팔로우기능구현</summary>
-    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%ED%8C%94%EB%A1%9C%EC%9A%B0%EA%B8%B0%EB%8A%A5%EA%B5%AC%ED%98%84.gif?raw=true" width="600">
+    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%ED%8C%94%EB%A1%9C%EC%9A%B0%EA%B8%B0%EB%8A%A5%EA%B5%AC%ED%98%84.gif?raw=true" width="600">
   </details>
     <details>
   <summary>▶️ 차단기능구현</summary>
-    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EC%B0%A8%EB%8B%A8%EA%B8%B0%EB%8A%A5%EA%B5%AC%ED%98%84.gif?raw=true" width="600">
+    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%EC%B0%A8%EB%8B%A8%EA%B8%B0%EB%8A%A5%EA%B5%AC%ED%98%84.gif?raw=true" width="600">
   </details>
     <details>
   <summary>▶️ 회원_리뷰_회원의 리뷰 삭제</summary>
-    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%ED%9A%8C%EC%9B%90_%EB%A6%AC%EB%B7%B0_%ED%9A%8C%EC%9B%90%EC%9D%98%20%EB%A6%AC%EB%B7%B0%20%EC%82%AD%EC%A0%9C.gif?raw=true" width="600">
+    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%ED%9A%8C%EC%9B%90_%EB%A6%AC%EB%B7%B0_%ED%9A%8C%EC%9B%90%EC%9D%98%20%EB%A6%AC%EB%B7%B0%20%EC%82%AD%EC%A0%9C.gif?raw=true" width="600">
   </details>
     <details>
   <summary>▶️ 회원_리뷰_회원의 리뷰 작성+별점</summary>
-    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%ED%9A%8C%EC%9B%90_%EB%A6%AC%EB%B7%B0_%ED%9A%8C%EC%9B%90%EC%9D%98%20%EB%A6%AC%EB%B7%B0%20%EC%9E%91%EC%84%B1+%EB%B3%84%EC%A0%90.gif?raw=true" width="600">
+    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%ED%9A%8C%EC%9B%90_%EB%A6%AC%EB%B7%B0_%ED%9A%8C%EC%9B%90%EC%9D%98%20%EB%A6%AC%EB%B7%B0%20%EC%9E%91%EC%84%B1+%EB%B3%84%EC%A0%90.gif?raw=true" width="600">
   </details>
   <details>
   <summary>▶️ 회원_리뷰_회원의 리뷰 작성_예약여부확인</summary>
-    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%ED%9A%8C%EC%9B%90_%EB%A6%AC%EB%B7%B0_%ED%9A%8C%EC%9B%90%EC%9D%98%20%EB%A6%AC%EB%B7%B0%20%EC%9E%91%EC%84%B1_%EC%98%88%EC%95%BD%EC%97%AC%EB%B6%80%ED%99%95%EC%9D%B8.gif?raw=true" width="600">
+    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%ED%9A%8C%EC%9B%90_%EB%A6%AC%EB%B7%B0_%ED%9A%8C%EC%9B%90%EC%9D%98%20%EB%A6%AC%EB%B7%B0%20%EC%9E%91%EC%84%B1_%EC%98%88%EC%95%BD%EC%97%AC%EB%B6%80%ED%99%95%EC%9D%B8.gif?raw=true" width="600">
   </details>
   <details>
   <summary>▶️ 회원_리뷰_회원이 리뷰 수정</summary>
-    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%ED%9A%8C%EC%9B%90_%EB%A6%AC%EB%B7%B0_%ED%9A%8C%EC%9B%90%EC%9D%B4%20%EB%A6%AC%EB%B7%B0%20%EC%88%98%EC%A0%95.gif?raw=true" width="600">
+    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%ED%9A%8C%EC%9B%90_%EB%A6%AC%EB%B7%B0_%ED%9A%8C%EC%9B%90%EC%9D%B4%20%EB%A6%AC%EB%B7%B0%20%EC%88%98%EC%A0%95.gif?raw=true" width="600">
   </details>
   <details>
   <summary>▶️ 회원관리-상태수정</summary>
-    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%ED%9A%8C%EC%9B%90%EA%B4%80%EB%A6%AC_%EC%83%81%ED%83%9C%EC%88%98%EC%A0%95.gif?raw=true" width="600">
+    <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%ED%9A%8C%EC%9B%90%EA%B4%80%EB%A6%AC_%EC%83%81%ED%83%9C%EC%88%98%EC%A0%95.gif?raw=true" width="600">
   </details>
 </details><br>
 <details>
   <summary>📂 레스토랑</summary>
   <details>
   <summary>▶️ 레스토랑 회원가입</summary>
-  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91_%EC%82%AC%EC%97%85%EC%9E%90%20%ED%9A%8C%EC%9B%90%EA%B0%80%EC%9E%85.gif?raw=true" width="600">
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91_%EC%82%AC%EC%97%85%EC%9E%90%20%ED%9A%8C%EC%9B%90%EA%B0%80%EC%9E%85.gif?raw=true" width="600">
 </details>
   <details>
   <summary>▶️ 레스토랑 로그인</summary>
-  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91_%EC%82%AC%EC%97%85%EC%9E%90%20%EB%A1%9C%EA%B7%B8%EC%9D%B8.gif?raw=true" width="600">
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91_%EC%82%AC%EC%97%85%EC%9E%90%20%EB%A1%9C%EA%B7%B8%EC%9D%B8.gif?raw=true" width="600">
 </details>
   <details>
   <summary>▶️ 레스토랑 리뷰조회</summary>
-  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91_%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91%20%EB%A6%AC%EB%B7%B0%20%EC%A1%B0%ED%9A%8C.gif?raw=true" width="600">
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91_%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91%20%EB%A6%AC%EB%B7%B0%20%EC%A1%B0%ED%9A%8C.gif?raw=true" width="600">
 </details>
   <details>
   <summary>▶️ 레스토랑 정보 수정</summary>
-  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91_%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91%20%EC%A0%95%EB%B3%B4%20%EC%88%98%EC%A0%95.gif?raw=true" width="600">
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91_%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91%20%EC%A0%95%EB%B3%B4%20%EC%88%98%EC%A0%95.gif?raw=true" width="600">
 </details>
   <details>
   <summary>▶️ 레스토랑 정보조회 정보</summary>
-  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91_%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91%20%EC%A0%95%EB%B3%B4%20%EC%A1%B0%ED%9A%8C+%EC%A0%95%EB%B3%B4.gif?raw=true" width="600">
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91_%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91%20%EC%A0%95%EB%B3%B4%20%EC%A1%B0%ED%9A%8C+%EC%A0%95%EB%B3%B4.gif?raw=true" width="600">
 </details>
   <details>
   <summary>▶️ 레스토랑-이름 별 레스토랑 검색</summary>
-  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91_%EC%9D%B4%EB%A6%84%20%EB%B3%84%20%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91%20%EA%B2%80%EC%83%89.gif?raw=true" width="600">
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91_%EC%9D%B4%EB%A6%84%20%EB%B3%84%20%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91%20%EA%B2%80%EC%83%89.gif?raw=true" width="600">
 </details>
   <details>
   <summary>▶️ 레스토랑-주소 별 레스토랑 검색</summary>
-  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91_%EC%A3%BC%EC%86%8C%20%EB%B3%84%20%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91%20%EA%B2%80%EC%83%89.gif?raw=true" width="600">
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91_%EC%A3%BC%EC%86%8C%20%EB%B3%84%20%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91%20%EA%B2%80%EC%83%89.gif?raw=true" width="600">
 </details>
   <details>
   <summary>▶️ 전체 레스토랑 조회</summary>
-  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91_%EC%A0%84%EC%B2%B4%20%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91%20%EC%A1%B0%ED%9A%8C.gif?raw=true" width="600">
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91_%EC%A0%84%EC%B2%B4%20%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91%20%EC%A1%B0%ED%9A%8C.gif?raw=true" width="600">
 </details>
   <details>
   <summary>▶️ 카테고리별 레스토랑 조회</summary>
-  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91_%EC%B9%B4%ED%85%8C%EA%B3%A0%EB%A6%AC%EB%B3%84%20%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91%20%EC%A1%B0%ED%9A%8C.gif?raw=true" width="600">
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91_%EC%B9%B4%ED%85%8C%EA%B3%A0%EB%A6%AC%EB%B3%84%20%EB%A0%88%EC%8A%A4%ED%86%A0%EB%9E%91%20%EC%A1%B0%ED%9A%8C.gif?raw=true" width="600">
 </details>
   <details>
   <summary>▶️ 메뉴등록</summary>
-  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%A9%94%EB%89%B4_%EB%93%B1%EB%A1%9D_%EC%88%98%EC%A0%95_%EC%82%AD%EC%A0%9C.gif?raw=true" width="600">
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%EB%A9%94%EB%89%B4_%EB%93%B1%EB%A1%9D_%EC%88%98%EC%A0%95_%EC%82%AD%EC%A0%9C.gif?raw=true" width="600">
 </details>
 </details><br>
 <details>
   <summary>📂고객센터</summary>
   <details>
   <summary>▶️ 문의사항-등록-수정-삭제</summary>
-  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%AC%B8%EC%9D%98%EC%82%AC%ED%95%AD_%EB%93%B1%EB%A1%9D_%EC%88%98%EC%A0%95_%EC%82%AD%EC%A0%9C.gif?raw=true" width="600">
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%EB%AC%B8%EC%9D%98%EC%82%AC%ED%95%AD_%EB%93%B1%EB%A1%9D_%EC%88%98%EC%A0%95_%EC%82%AD%EC%A0%9C.gif?raw=true" width="600">
 </details>
   <details>
   <summary>▶️ 문의사항-답변-등록-수정-삭제</summary>
-  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EB%AC%B8%EC%9D%98%EC%82%AC%ED%95%AD_%EB%8B%B5%EB%B3%80_%EB%93%B1%EB%A1%9D_%EC%88%98%EC%A0%95_%EC%82%AD%EC%A0%9C.gif?raw=true" width="600">
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%EB%AC%B8%EC%9D%98%EC%82%AC%ED%95%AD_%EB%8B%B5%EB%B3%80_%EB%93%B1%EB%A1%9D_%EC%88%98%EC%A0%95_%EC%82%AD%EC%A0%9C.gif?raw=true" width="600">
 </details>
 </details><br>
 <details>
   <summary>📂 신고</summary>
   <details>
   <summary>▶️ 신고-등록-수정-삭제</summary>
-  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EC%8B%A0%EA%B3%A0_%EB%93%B1%EB%A1%9D_%EC%88%98%EC%A0%95_%EC%82%AD%EC%A0%9C.gif?raw=true" width="600">
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%EC%8B%A0%EA%B3%A0_%EB%93%B1%EB%A1%9D_%EC%88%98%EC%A0%95_%EC%82%AD%EC%A0%9C.gif?raw=true" width="600">
 </details>
   <details>
   <summary>▶️ 신고-답변-등록-수정-삭제</summary>
-  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EC%8B%A0%EA%B3%A0_%EB%8B%B5%EB%B3%80_%EB%93%B1%EB%A1%9D_%EC%88%98%EC%A0%95_%EC%82%AD%EC%A0%9C.gif?raw=true" width="600">
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%EC%8B%A0%EA%B3%A0_%EB%8B%B5%EB%B3%80_%EB%93%B1%EB%A1%9D_%EC%88%98%EC%A0%95_%EC%82%AD%EC%A0%9C.gif?raw=true" width="600">
 </details>
   <details>
   <summary>▶️ 유저-프로필-신고</summary>
-  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/%EC%9C%A0%EC%A0%80_%ED%94%84%EB%A1%9C%ED%95%84_%EC%8B%A0%EA%B3%A0.gif?raw=true" width="600">
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%EC%9C%A0%EC%A0%80_%ED%94%84%EB%A1%9C%ED%95%84_%EC%8B%A0%EA%B3%A0.gif?raw=true" width="600">
 </details>
 </details><br>
 <details>
   <summary>📂 공지사항 & 이벤트</summary>
   <details>
   <summary>▶️ 이벤트생성</summary>
-  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/event_create.gif?raw=true" width="600">
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/event_create.gif?raw=true" width="600">
 </details>
   <details>
   <summary>▶️ 이벤트수정_삭제</summary>
-  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/event_update_delete.gif?raw=true" width="600">
+  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/event_update_delete.gif?raw=true" width="600">
 </details>
 </details>
 ---
