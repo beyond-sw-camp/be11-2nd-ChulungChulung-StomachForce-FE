@@ -28,12 +28,14 @@
 
                     <v-select
                         v-model="category"
-                        :items="['REQUEST', 'INQUIRY', 'COMPLAINT']"
+                        :items="categoryItems"
                         label="카테고리"
                         variant="outlined"
                         :rules="[v => !!v || '카테고리를 선택해주세요']"
                         required
                         class="mb-4"
+                        item-title="text"
+                        item-value="value"
                     ></v-select>
 
                     <v-select
@@ -121,12 +123,17 @@ export default {
             contents: '',
             category: '',
             visibility: 'Y',
-            photos: [], // 새로 선택한 사진
-            currentPhotos: [], // 현재 첨부된 사진 URL 배열
+            photos: [],
+            currentPhotos: [],
             isFormValid: false,
             loading: false,
             showError: false,
             errorMessage: '',
+            categoryItems: [
+                { text: '요청사항', value: 'REQUEST' },
+                { text: '문의사항', value: 'INQUIRY' },
+                { text: '불만사항', value: 'COMPLAINT' }
+            ],
             titleRules: [
                 v => !!v || '제목을 입력해주세요',
                 v => v.length <= 100 || '제목은 100자 이하여야 합니다'
@@ -146,7 +153,7 @@ export default {
             this.contents = response.data.contents;
             this.category = response.data.category;
             this.visibility = response.data.visibility;
-            this.currentPhotos = response.data.photos || []; // 현재 첨부된 사진 URL 저장
+            this.currentPhotos = response.data.photos || [];
         } catch (error) {
             console.error('게시글 불러오기 실패:', error);
             this.errorMessage = '게시글을 불러오는데 실패했습니다.';
@@ -166,26 +173,13 @@ export default {
                 formData.append('category', this.category);
                 formData.append('visibility', this.visibility);
 
-                // FormData 내용 확인
-                console.log('현재 사진:', this.currentPhotos);
-                console.log('새로운 사진:', this.photos);
-
-                // 새로운 사진이 선택된 경우에만 photos 필드 추가
                 if (this.photos && this.photos.length > 0) {
                     this.photos.forEach(photo => {
                         formData.append('photos', photo);
                     });
-                    console.log('새로운 사진 추가됨');
-                } else {
-                    console.log('새로운 사진 없음, 기존 사진 유지');
                 }
 
-                // FormData 내용 확인
-                for (let [key, value] of formData.entries()) {
-                    console.log(`${key}:`, value);
-                }
-
-                const response = await axios.patch(
+                await axios.patch(
                     `${process.env.VUE_APP_API_BASE_URL}/service/post/update/${this.$route.params.id}`,
                     formData,
                     {
@@ -196,7 +190,6 @@ export default {
                     }
                 );
 
-                console.log('서버 응답:', response.data);
                 this.$router.push(`/service/post/${this.$route.params.id}`);
             } catch (error) {
                 console.error('업데이트 실패:', error);

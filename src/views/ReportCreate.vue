@@ -17,20 +17,17 @@
                     class="mb-4"
                 ></v-select>
 
-                <v-autocomplete
-                    v-model="reportedId"
-                    :items="users"
-                    :item-title="item => item.nickName"
-                    :item-value="item => item.userId"
+                <v-text-field
+                    v-model="searchQuery"
                     label="신고할 사용자 닉네임"
                     variant="outlined"
                     required
                     class="mb-4"
                     :loading="loading"
-                    v-model:search-input="searchQuery"
-                    return-object
-                    @update:search="searchUsers"
-                ></v-autocomplete>
+                    :error-messages="userNotFoundError"
+                    @input="validateUser"
+                    hint="신고할 사용자의 닉네임을 입력해주세요"
+                ></v-text-field>
 
                 <v-textarea
                     v-model="contents"
@@ -91,6 +88,7 @@ export default {
             loading: false,
             users: [],
             searchQuery: '',
+            userNotFoundError: '',
             reportClassOptions: [
                 { title: '스팸', value: 'SPAM' },
                 { title: '욕설/비방', value: 'ABUSE' },
@@ -111,13 +109,8 @@ export default {
         // URL 쿼리 파라미터에서 신고할 사용자 닉네임을 가져옴
         const reportedNickName = this.$route.query.reportedNickName;
         if (reportedNickName) {
-            await this.searchUsers();
-            // users 배열에서 해당 닉네임을 가진 사용자를 찾아 자동 설정
-            const reportedUser = this.users.find(user => user.nickName === reportedNickName);
-            if (reportedUser) {
-                this.reportedId = reportedUser;
-                this.searchQuery = reportedUser.nickName;
-            }
+            this.searchQuery = reportedNickName;
+            await this.validateUser();
         }
     },
     mounted() {
@@ -142,7 +135,38 @@ export default {
                 this.loading = false;
             }
         },
+        async validateUser() {
+            if (!this.searchQuery) {
+                this.userNotFoundError = '';
+                this.reportedId = null;
+                return;
+            }
+
+            this.loading = true;
+            try {
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/user/list`);
+                this.users = response.data;
+                const foundUser = this.users.find(user => user.nickName === this.searchQuery);
+                
+                if (foundUser) {
+                    this.reportedId = foundUser;
+                    this.userNotFoundError = '';
+                } else {
+                    this.reportedId = null;
+                    this.userNotFoundError = '없는 사용자입니다';
+                }
+            } catch (error) {
+                console.error('사용자 검색 실패:', error);
+                this.userNotFoundError = '사용자 검색에 실패했습니다';
+            } finally {
+                this.loading = false;
+            }
+        },
         async submitPost() {
+            if (!this.reportedId) {
+                alert('유효한 사용자를 선택해주세요');
+                return;
+            }
             try {
                 const formData = new FormData();
                 formData.append('reporterId', localStorage.getItem('userId'));
