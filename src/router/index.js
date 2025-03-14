@@ -7,6 +7,7 @@ import { loginRouter } from "./loginRouter";
 import { homeRouter } from "./homeRouter";
 import { announcementRouter } from "./announcementRouter";
 import { reportRouter } from "./reportRouter";
+import GoogleRedirect from "@/components/GoogleRedirect.vue";
 
 const routes = [
     ...membereRouter,
@@ -16,7 +17,11 @@ const routes = [
     ...loginRouter,
     ...homeRouter,
     ...announcementRouter,
-    ...reportRouter
+    ...reportRouter,
+    {
+        path:"/oauth/google/redirect",
+        component:GoogleRedirect
+    }
 ]
 
 const router = createRouter({
