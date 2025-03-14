@@ -57,8 +57,8 @@
 
 
               <v-btn
-                :loading="loading"
                 block
+                :loading="loading"
                 color="primary"
                 size="large"
                 :disabled="!isFormValid"
@@ -67,7 +67,20 @@
               >
                 로그인
               </v-btn>
-
+              <v-btn
+                block
+                variant="outlined"
+                class="mb-4 google-login-btn"
+                @click="googleLogin"
+                color="default"
+              >
+                <img
+                  src="https://www.google.com/favicon.ico"
+                  alt="Google Logo"
+                  class="google-logo mr-2"
+                />
+                Google 계정으로 로그인
+              </v-btn>
               <div class="text-center">
                 <span class="text-body-2">계정이 없으신가요? </span>
                 <v-btn
@@ -129,7 +142,11 @@ export default {
       passwordRules: [
         v => !!v || '비밀번호를 입력해주세요',
         v => v.length >= 8 || '영어,숫자, 특수문자 중 2가지를 포함해 최소 8자 이상이어야 합니다'
-      ]
+      ],
+      googleUrl: "https://accounts.google.com/o/oauth2/auth",
+      googleClientID:"752078374240-4tdtnn7i8de5jpavh9qbupu7nbimt5rn.apps.googleusercontent.com",
+      googleRedirectUrl:"http://localhost:3000/oauth/google/redirect",
+      googleScope: "openid email profile",
     }
   },
   methods: {
@@ -182,6 +199,10 @@ export default {
       },
     goToSignup() {
       this.$router.push('/user/create');
+    },
+    googleLogin(){
+      const auth_uri = `${this.googleUrl}?client_id=${this.googleClientID}&redirect_uri=${this.googleRedirectUrl}&response_type=code&scope=${this.googleScope}`;
+      window.location.href= auth_uri;
     }
   }
 }
@@ -252,5 +273,28 @@ theme.themes.value.light = {
 .login-btn:disabled {
   background: rgba(0, 0, 0, 0.12) !important;
   color: rgba(0, 0, 0, 0.38) !important;
+}
+
+/* 구글 로그인 버튼 스타일링 */
+.google-login-btn {
+  background-color: white !important;
+  border: 1px solid #dadce0 !important;
+  color: #3c4043 !important;
+  font-weight: 500 !important;
+  height: 48px !important;
+  letter-spacing: 0.25px !important;
+  transition: all 0.3s ease;
+}
+
+.google-login-btn:hover {
+  background-color: #f8f9fa !important;
+  border-color: #dadce0 !important;
+  box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15) !important;
+}
+
+.google-logo {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
 }
 </style>

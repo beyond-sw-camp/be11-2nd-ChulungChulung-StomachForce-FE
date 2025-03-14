@@ -27,7 +27,7 @@
                 <v-stepper-window>
                   <!-- 스텝 1: 기본정보 -->
                   <v-stepper-window-item :value="1">
-                    <v-form ref="form1" v-model="isStep1Valid" @submit.prevent>
+                    <v-form ref="form1" @submit.prevent>
                       <v-text-field
                         v-model="identify"
                         label="아이디"
@@ -38,8 +38,9 @@
                         prepend-inner-icon="mdi-account"
                         variant="outlined"
                         class="mb-2 mt-4"
+                        :readonly="isGoogleLogin"
                       >
-                        <template #append-inner>
+                        <template v-if="!isGoogleLogin" #append-inner>
                           <v-btn
                             small
                             style="background-color: #F57C00; color: white;"
@@ -53,7 +54,7 @@
   
                       <!-- 중복확인 결과 메시지 출력 -->
                       <div
-                        v-if="idValidMessage"
+                        v-if="idValidMessage && !isGoogleLogin"
                         class="dup-check-message"
                         :class="{'valid-text': idValid, 'invalid-text': !idValid}"
                       >
@@ -269,14 +270,15 @@
         isStep2Valid: false,
         isStep3Valid: false,
         // 폼 데이터
-        name: "",
+        identify: localStorage.getItem("signup_identify") || "",
+        email: localStorage.getItem("signup_email") || "",
+        name: localStorage.getItem("signup_name") || "",
+        isGoogleLogin: !!localStorage.getItem("signup_identify"),
         nickName: "",
-        identify: "",
         password: "",
         phoneNumber: "",
         birth: "",
         gender: "FEMALE",
-        email: "",
         userAddress: {
           state: "",
           city: "",
@@ -290,11 +292,40 @@
         nickNameValid: false
       }
     },
+    watch: {
+      identify(value) {
+        if (this.isGoogleLogin) {
+          this.isStep1Valid = !!this.password; // 구글 로그인 시 비밀번호 입력 필요
+        } else {
+          this.isStep1Valid = !!value && this.idValid && !!this.password; // 일반 회원가입 시 중복확인 & 비밀번호 입력 필요
+        }
+      },
+      password(value) {
+        if (this.isGoogleLogin) {
+          this.isStep1Valid = !!value; // 구글 로그인 시 비밀번호 필수
+        } else {
+          this.isStep1Valid = !!value && !!this.identify && this.idValid; // 일반 회원가입 시 조건 유지
+        }
+      },
+      email(value) {
+        this.isStep1Valid = !!value && !!this.identify && this.idValid && !!this.password;
+      }
+    },
+    mounted() {
+      if (this.isGoogleLogin) {
+        this.idValid = true;
+        this.isStep1Valid = true; // 구글 로그인 시 1단계 자동 통과
+      }
+      // 회원가입 후 필요 없는 데이터 제거
+      localStorage.removeItem("signup_identify");
+      localStorage.removeItem("signup_email");
+      localStorage.removeItem("signup_name");
+    },
     computed: {
       canProceed() {
         switch (this.currentStep) {
           case 1:
-            return this.isStep1Valid && this.idValid;
+            return this.isStep1Valid && (this.idValid || this.isGoogleLogin)&& !!this.password;
           case 2:
             return this.isStep2Valid && this.nickNameValid;
           case 3:
@@ -312,7 +343,7 @@
         return this.idRule;
       },
       canCheckId() {
-        return this.idRule.test(this.identify);
+        return this.idRule.test(this.identify) && !this.isGoogleLogin;
       }
     },
     methods: {
