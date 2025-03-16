@@ -43,17 +43,20 @@
 5. [프로젝트 마무리](#프로젝트-마무리)
 
 
+## 프로젝트 소개
 
-## 프로젝트 소개  
-### 
-<p>
-  <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/stomach.png?raw=true" width="30" align="center">
-  <strong>뱃살력이란?</strong>  
-</p>
-맛집을 찾고 예약하는 과정이 번거롭고, 사용자 간의 소통이 단절된 기존 시스템을 개선하기 위해 뱃살력을 생각하게 되었습니다. <br><br>
-단순한 예약 플랫폼이 아닌, 외식 경험을 더욱 기억되고 특별하게 만드는 커뮤니티 공간을 제공하고자 했습니다. <br><br>
-사용자는 직관적인 인터페이스로 손쉽게 레스토랑을 탐색하고, 게시글을 통해 정보를 확인하며, 다양한 사용자들과 소통할 수 있습니다. 이를 통해 보다 즐거운 외식 문화를 만들어 보고자 했습니다. <br><br>
-또한, 예약을 하는 사람뿐만 아니라 레스토랑을 운영하는 사업자도 뱃살력을 통해 편리한 가게 홍보 및 운영을 진행할수 있도록 서비스를 설계하였습니다.
+<img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/stomach.png?raw=true" width="40" align="left" />
+
+### **뱃살력이란?**
+
+맛집을 찾고 예약하는 과정이 번거롭고, 사용자 간의 소통이 단절된 기존 시스템을 개선하기 위해 **뱃살력**을 기획하게 되었습니다.
+
+단순한 예약 플랫폼이 아닌, 외식 경험을 더욱 **기억에 남고 특별하게 만드는 커뮤니티 공간**을 제공하고자 했습니다.
+
+사용자는 직관적인 인터페이스로 손쉽게 레스토랑을 탐색하고, 게시글을 통해 정보를 확인하며 다양한 사용자들과 소통할 수 있습니다. 이를 통해 **보다 즐거운 외식 문화**를 만들어 보고자 했습니다.
+
+또한, 예약하는 사용자뿐만 아니라 레스토랑을 운영하는 사업자도 뱃살력을 통해 **편리한 가게 홍보 및 운영**이 가능하도록 서비스를 설계하였습니다.
+
 
 ###  배경 및 목적
 - 레스토랑 예약과 SNS를 하나로 통합  
@@ -72,7 +75,7 @@
 | 다양한 로그인 방식 도입             | 사용자 편의성을 높이기 위해 **자체 회원가입/로그인** 기능 외에도, **구글 로그인 서비스**을 도입하였습니다. 이를 통해 다양한 사용자층의 접근성을 높이고, 빠른 회원가입 및 로그인 경험을 제공합니다. |
 | 사용자 중심의 화면 설계 및 UX 최적화 | 다양한 사용자의 요구들 반영하여 **방대한 UI 화면을 설계**하고 구현하였습니다. 단순한 화면 배치가 아닌, 실제 사용 흐름을 고려해 **직관적인 인터페이스**와 **편리한 사용자 경험**을 제공하기 위해 반복적인 기획 및 피드백 과정을 거쳤습니다. |
 
-### 🔍 주요 기능 요약 화면면
+### 🔍 주요 기능 요약 화면
 ✅ **홈화면에서 유명 레스토랑과 인기 인플루언서를 확인 가능**  
 <img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/giffolder/%ED%99%88%ED%8E%98%EC%9D%B4%EC%A7%80%20%EC%B4%88%EA%B8%B0%ED%99%94%EB%A9%B4.gif?raw=true" width="600"><br><br><br>
 ✅ **레스토랑 리스트를 통해 원하는 식당 예약 가능**  
@@ -124,7 +127,6 @@
   <img src="https://img.shields.io/badge/Discord-5865F2?style=flat-square&logo=Discord&logoColor=white">
   <img src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=GitHub&logoColor=white">
 </div>
----
 
  ##  요구사항정의에 따른 프론트엔드 기능 시연  
 <details>
@@ -275,7 +277,7 @@
  ##   프로젝트 마무리  
 ###  배운 점 & 개선할 점
 <details>
-  <summary>▶️ ###  배운 점 & 개선할 점</summary>
+  <summary>▶️조원 피드백</summary>
   
   🎵 **홍성혁**  
   - **느낀 점**  
