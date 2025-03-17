@@ -79,7 +79,6 @@
   <img src="https://img.shields.io/badge/Hibernate-59666C?style=flat-square&logo=Hibernate&logoColor=white">
   <img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=Docker&logoColor=white">
   <img src="https://img.shields.io/badge/WebSocket-000000?style=flat-square&logo=WebSocket&logoColor=white">
-  <img src="https://img.shields.io/badge/STOMP-000000?style=flat-square&logo=Messenger&logoColor=white">
 </div>
 
 ### 📌 Frontend  
