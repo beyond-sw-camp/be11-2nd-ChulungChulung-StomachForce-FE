@@ -100,6 +100,21 @@
   <img src="https://img.shields.io/badge/RabbitMQ-FF6600?style=flat-square&logo=RabbitMQ&logoColor=white">
 </div>
 
+### 📌 DevOps  
+<div>
+  <img src="https://img.shields.io/badge/Kubernetes-326CE5?style=flat-square&logo=Kubernetes&logoColor=white">
+  <img src="https://img.shields.io/badge/AmazonEKS-FF9900?style=flat-square&logo=AmazonEKS&logoColor=white">
+  <img src="https://img.shields.io/badge/AmazonEC2-FF9900?style=flat-square&logo=AmazonEC2&logoColor=white">
+  <img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=Docker&logoColor=white">
+  <img src="https://img.shields.io/badge/AmazonElastiCache-EF3A24?style=flat-square&logo=AmazonElastiCache&logoColor=white">
+  <img src="https://img.shields.io/badge/AmazonRDS-527FFF?style=flat-square&logo=AmazonRDS&logoColor=white">
+  <img src="https://img.shields.io/badge/AmazonS3-569A31?style=flat-square&logo=AmazonS3&logoColor=white">
+  <img src="https://img.shields.io/badge/AmazonRoute53-FF9900?style=flat-square&logo=AmazonRoute53&logoColor=white">
+  <img src="https://img.shields.io/badge/GitHubActions-2088FF?style=flat-square&logo=GitHubActions&logoColor=white">
+</div>
+
+
+
 ### 📌 Communication  
 <div>
   <img src="https://img.shields.io/badge/Discord-5865F2?style=flat-square&logo=Discord&logoColor=white">
