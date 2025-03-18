@@ -66,6 +66,10 @@
 - 편리한 고객센터를 통한 문의 및 신고 접수
 - 쉬운 메뉴 설정 및 가게 홍보
 
+
+## 시스템 아키텍처
+<img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/deployimage.png?raw=true">
+
 ## 기술 스택  
 
 ### 📌 Backend  
