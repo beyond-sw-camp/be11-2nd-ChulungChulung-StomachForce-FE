@@ -69,7 +69,7 @@
 
 
 ## 시스템 아키텍처
-<img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/image.png?raw=true">
+<img src="https://github.com/beyond-sw-camp/be11-2nd-ChulungChulung-StomachForce-FE/blob/main/src/assets/readmeimage.png?raw=true">
 
 ## 기술 스택  
 
